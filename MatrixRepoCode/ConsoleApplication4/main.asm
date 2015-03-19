@@ -18,7 +18,7 @@ beginX byte 39
 .code
 
 main PROC
-	
+	;Laptop test
 	INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
 
 	mov eax,green + (black * 16);Green Text, black background
