@@ -13,8 +13,10 @@ rain byte '0'			;Random int (0 or 1)
 y byte 0				;Y for coordinate
 titleStr byte "Matrix Rain",0				;Title
 beginX byte 39 
-
-
+deathMessage byte "You were hit!...",0
+rainX byte ?
+replay byte "Play Again? (Y/N)",0
+response byte 0; Response to yes or no for replay
 .code
 
 main PROC
@@ -53,6 +55,7 @@ startX PROC ;proc for starting x position for falling char Proc by kilian
 	mov y,0              ;resets the y
 	mGotoxy al,y         ;Moves cursor to 0,randPos
 	mov randPos,eax      ;eax into randPos
+	mov rainX, al
 	mov al,rain          ;Move rain into eax 
 	call WriteChar        ;Writes it
 	mov rain,al          ;Moves it back 
@@ -66,6 +69,7 @@ checkY PROC ;proc to check y-coordinate Proc by Kilian
 	je  _there
 	jmp _endif1
 _there:
+	call Death
 	call newNum ;make new piece of rain
 	call startX ;make new starting X-coord
 _endif1:
@@ -166,5 +170,52 @@ print PROC
 		xor al,al           ;clear al
 		ret
 print		ENDP
+
+;----------------------------------------------------------------------------------------------------------------------
+
+Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
+
+	If4:
+		mov al , beginX ; Moves the Character's X coordinate into eax for cmp
+		cmp al , rainX
+		je then4
+		jmp yes
+		then4:
+			call Clrscr
+			mov dh, 12
+			mov dl, 33
+			call Gotoxy; Sets cursor to print kill message
+			mov edx, offset deathmessage
+			call WriteString; Displays deathmessage
+			call Crlf
+			XOR eax,eax; clears eax for the yes/no loop
+
+		loop1:
+			cmp response , 0
+			jne answer	
+			mov dl,33
+			mov dh,13
+			call Gotoxy
+			mov edx, offset replay
+			call WriteString
+			call Readchar
+			mov response, al
+			jmp loop1
+
+		answer:
+			 Or response, 00100000B; bitmask for lowercase conversion
+			 cmp response, 'y'; Yes reponse
+			 je yes
+
+		      mov dh, 24
+			 mov dl, 0
+			 call Gotoxy
+			
+			 exit; Exits if al is not 'y'
+		
+		yes:
+		mov response, 0
+		ret
+Death ENDP
 
 END main
