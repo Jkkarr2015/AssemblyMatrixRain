@@ -17,29 +17,32 @@ deathMessage byte "You were hit!...",0
 rainX byte ?
 replay byte "Play Again? (Y/N)",0
 response byte 0; Response to yes or no for replay
+
+
 .code
 
 main PROC
-	;Laptop test
+	
 	INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
 
 	mov eax,green + (black * 16);Green Text, black background
 	call SetTextColor    ;Sets the color
 	XOR eax,eax          ;clear eax
-	call clrscr
+	;call clrscr
 	call StartPosition
 	call newNum
 	call startX
 	KeyLoop:;Die to break the loop
 		call checkY
+		call print
 		call fall ;call fall proc
-		;Testing Speed;mov eax, 35       ; Allows for OS to time slice
-		;call Delay         ; need to read key presses without losing any
+		
 		call ReadKey       ; looks for keyboard input
 		jz KeyLoop
 
 		call RightIf
 		call LeftIf
+		
 		
 		jmp KeyLoop
 	EndLoop:
@@ -77,10 +80,11 @@ checkY ENDP ;end checkY proc
 ;---------------------------------------------------------------------------------------------------------------------
 
 fall PROC ;proc for moving pieces downProc by Kilian	
-		mov eax,50 		; delay time ms
+		mov eax,50	; delay time ms
 		call Delay		;So we can see change speed 
-		inc y			;increment y coordinate 
-	     call print
+		inc y			;increment y coordinate
+	     
+		
 	ret
 fall ENDP;End move proc
 
@@ -109,7 +113,14 @@ RightIf PROC USES edx;John Proc
                        jmp endright        ; Jmp to end of proc
 			Then1: 
 				inc beginX       ; Increments X coordinate value	
-				call print
+				if5: cmp beginX, 79; check if X goes past 79
+					jg then5
+					jmp end5
+					then5: 
+						mov beginX, 79
+						mov dh, 23
+					end5:
+				
 				call ReadKeyFlush;
 	endright:
 	ret
@@ -129,7 +140,9 @@ RightIf PROC USES edx;John Proc
 					then6: 
 						mov beginX, 0
 					end6:	
-				 call print
+                     
+				 
+				 
 				 call ReadKeyFlush ;Flushes keyboard input buffer and clears internal counter for faster response time
 			endleft:
 			ret
@@ -140,7 +153,7 @@ RightIf PROC USES edx;John Proc
  
  StartPosition PROC USES edx;John Proc
 	;Player Starting Point
-	mov dh , 23d; column 24
+	mov dh , 23d; column 23
 	mov dl,beginX ; row 39
 	call Gotoxy; places cursor in the middle of the bottom part of the console window
 	mov al,'X'; Copies player character to the AL register to be printed
@@ -165,13 +178,6 @@ print PROC
 		call WriteChar      ;Rewrite rain
 	     mov dh,23d  ;move cursor to character's current position ********* Added to this version by Killian edited by John
 		mov dl , beginX
-		if5: cmp beginX, 79; check if X goes past 79
-					jg then5
-					jmp end5
-					then5: 
-						mov dl, 78d
-						mov dh, 23d
-					end5:
 		call Gotoxy
 		mov al,'X'          ;move X into al                              *********
 		call WriteChar      ;print it					**********
