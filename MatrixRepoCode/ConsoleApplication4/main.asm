@@ -30,13 +30,11 @@ main PROC
 	call StartPosition
 	call newNum
 	call startX
-	KeyLoop:
-		cmp al, 8h       ; Loop check to break out of loop back space breaks loop//Moved to top from the previous version By killian
-		je EndLoop
+	KeyLoop:;Die to break the loop
 		call checkY
 		call fall ;call fall proc
-		mov eax, 50        ; Allows for OS to time slice
-		call Delay         ; need to read key presses without losing any
+		;Testing Speed;mov eax, 35       ; Allows for OS to time slice
+		;call Delay         ; need to read key presses without losing any
 		call ReadKey       ; looks for keyboard input
 		jz KeyLoop
 
@@ -82,7 +80,7 @@ fall PROC ;proc for moving pieces downProc by Kilian
 		mov eax,50 		; delay time ms
 		call Delay		;So we can see change speed 
 		inc y			;increment y coordinate 
-	        call print
+	     call print
 	ret
 fall ENDP;End move proc
 
@@ -110,9 +108,7 @@ RightIf PROC USES edx;John Proc
 	               je Then1
                        jmp endright        ; Jmp to end of proc
 			Then1: 
-				
-				call print   ;reprints the rain **************
-				inc beginX       ; Increments X coordinate value
+				inc beginX       ; Increments X coordinate value	
 				call print
 				call ReadKeyFlush;
 	endright:
@@ -126,9 +122,13 @@ RightIf PROC USES edx;John Proc
 	 je Then2
 			 jmp endleft        ; Jmp to end of loop if user put in value that is not 3 or left arrow
 			 Then2:
-				 
-				 call print  ;reprints everything ***************
 				 dec beginX      ; Decrements X to move to the left
+				 if6: cmp beginX, 0; check if X goes under 0
+					jl then6
+					jmp end6
+					then6: 
+						mov beginX, 0
+					end6:	
 				 call print
 				 call ReadKeyFlush ;Flushes keyboard input buffer and clears internal counter for faster response time
 			endleft:
@@ -140,7 +140,7 @@ RightIf PROC USES edx;John Proc
  
  StartPosition PROC USES edx;John Proc
 	;Player Starting Point
-	mov dh , 24d; column 24
+	mov dh , 23d; column 24
 	mov dl,beginX ; row 39
 	call Gotoxy; places cursor in the middle of the bottom part of the console window
 	mov al,'X'; Copies player character to the AL register to be printed
@@ -163,7 +163,16 @@ print PROC
 		mov randPos,eax     ;Move x Coordinate back to eax
 		mov al,rain         ;Moves rain to eax to write
 		call WriteChar      ;Rewrite rain
-		mGotoxy beginX,24d  ;move cursor to character's current position ********* Added to this version by Killian
+	     mov dh,23d  ;move cursor to character's current position ********* Added to this version by Killian edited by John
+		mov dl , beginX
+		if5: cmp beginX, 79; check if X goes past 79
+					jg then5
+					jmp end5
+					then5: 
+						mov dl, 78d
+						mov dh, 23d
+					end5:
+		call Gotoxy
 		mov al,'X'          ;move X into al                              *********
 		call WriteChar      ;print it					**********
 		call Crlf
@@ -214,7 +223,7 @@ Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is
 			 exit; Exits if al is not 'y'
 		
 		yes:
-		mov response, 0
+		mov response,0
 		ret
 Death ENDP
 
