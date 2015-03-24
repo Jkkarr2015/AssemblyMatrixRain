@@ -20,7 +20,7 @@ response byte 0; Response to yes or no for replay
 .code
 
 main PROC
-	
+	;Laptop test
 	INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
 
 	mov eax,green + (black * 16);Green Text, black background
