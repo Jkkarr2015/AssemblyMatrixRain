@@ -1,13 +1,11 @@
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    03/24/15 13:20:15
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/01/15 12:51:20
 main.asm						     Page 1 - 1
 
 
-				
-				
 				; Description: Matrix Rain
 				; 
 				; Revision date: 2/13/2015
-				
+
 				INCLUDE Irvine32.inc
 			      C ; Include file for Irvine32.lib             (Irvine32.inc)
 			      C 
@@ -31,257 +29,455 @@ main.asm						     Page 1 - 1
 			      C .LIST
 			      C 
  00000000			.data
-				
- 00000000 00000000		randPos dword ?		;Random int for 1 and 0 X position
- 00000004 30			rain byte '0'			;Random int (0 or 1)
- 00000005 00			y byte 0				;Y for coordinate
- 00000006 4D 61 74 72 69	titleStr byte "Matrix Rain",0				;Title
+
+ 00000000 00000000		numRainX dword 0		;storage for increments of 4 for pointer of the last position in x array wanted
+ 00000004 00000000		numRainY dword 0		;storage for increments of 4 for position of the last position in the y array wanted
+ 00000008 00000000		numRaining dword 0		;for increments of 1 for pointer to the last position in rainArray 
+ 0000000C 48 6F 77 20 6D	question byte "How many pieces will fall (under 15)?",0						;number asked to enter that will rain(all at once unless there's a duplicate number, then for now I will see if that really hurts it)
+	   61 6E 79 20 70
+	   69 65 63 65 73
+	   20 77 69 6C 6C
+	   20 66 61 6C 6C
+	   20 28 75 6E 64
+	   65 72 20 31 35
+	   29 3F 00
+ 00000032 30 30 30 30 30	rainArray  byte '0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'
+	   30 30 30 30 30
+	   30 30 30 30 30
+ 00000041 00000000		xArray dword 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	;and rain character x and y coordinate arrays of 15, initialized to 0 (First level initial idea) 
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+ 0000007D 00000000		yArray dword 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+ 000000B9 30			rain byte '0'			;Random int (0 to 9)
+ 000000BA 00000000		y dword 0				;Y for coordinate
+ 000000BE 4D 61 74 72 69	titleStr byte "Matrix Rain",0				;Title
 	   78 20 52 61 69
 	   6E 00
- 00000012 27			beginX byte 39 
- 00000013 59 6F 75 20 77	deathMessage byte "You were hit!...",0
+ 000000CA 27			beginX byte 39 
+ 000000CB 59 6F 75 20 77	deathMessage byte "You were hit!...",0
 	   65 72 65 20 68
 	   69 74 21 2E 2E
 	   2E 00
- 00000024 00			rainX byte ?
- 00000025 50 6C 61 79 20	replay byte "Play Again? (Y/N)",0
+
+ 000000DC 50 6C 61 79 20	replay byte "Play Again? (Y/N)",0
 	   41 67 61 69 6E
 	   3F 20 28 59 2F
 	   4E 29 00
- 00000037 00			response byte 0; Response to yes or no for replay
+ 000000EE 00			response byte 0; Response to yes or no for replay
+
+
  00000000			.code
-				
+
  00000000			main PROC
-					;Laptop test
+					
 					INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
-				
+
  0000000A  B8 00000002			mov eax,green + (black * 16);Green Text, black background
  0000000F  E8 00000000 E		call SetTextColor    ;Sets the color
  00000014  33 C0			XOR eax,eax          ;clear eax
- 00000016  E8 00000000 E		call clrscr
- 0000001B  E8 00000104			call StartPosition
- 00000020  E8 00000094			call newNum
- 00000025  E8 00000024			call startX
- 0000002A				KeyLoop:;Die to break the loop
- 0000002A  E8 00000059				call checkY
- 0000002F  E8 0000006F				call fall ;call fall proc
-						;Testing Speed;mov eax, 35       ; Allows for OS to time slice
-						;call Delay         ; need to read key presses without losing any
- 00000034  E8 00000000 E			call ReadKey       ; looks for keyboard input
- 00000039  74 EF				jz KeyLoop
-				
- 0000003B  E8 0000009E				call RightIf
- 00000040  E8 000000B3				call LeftIf
+					
+ 00000016  BA 0000000C R		mov edx,offset question		;how many pieces will fall?
+ 0000001B  E8 00000000 E		call WriteString			;write it
+ 00000020  33 D2			xor edx,edx
+
+ 00000022  E8 00000000 E		call ReadDec
+					
+ 00000027  83 F8 00			cmp eax,0					
+ 0000002A  0F 8E 00000082		jle  EndLoop				;if num inputted is equal to 0, end
+
+ 00000030  8B C8			mov ecx,eax
+ 00000032  56				push esi
+ 00000033  BE 00000032 R		mov esi,offset rainArray		
+ 00000038  A3 00000008 R		mov numRaining,eax			;copy number wanted to make for pieces into numRaining
+ 0000003D  03 35 00000008 R		add esi,numRaining			;add pointer and num wanted to increment accordingly later in newNum
+ 00000043  89 35 00000008 R		mov numRaining,esi			;copy into numRaining
+
+ 00000049  BE 00000041 R		mov esi,offset xArray
+ 0000004E  BB 00000004			mov ebx,4
+ 00000053  F7 E3			mul ebx					;for each increment needed of 4
+ 00000055  72 5B			jc  EndLoop 
+ 00000057  03 C6			add eax,esi				;add multiple of 4 and pointer for array size wanted
+ 00000059  A3 00000000 R		mov numRainX,eax			;save in numRainX(basically just did a LengthOf for dword arrays)
+					
+ 0000005E  8B C1			mov eax,ecx				;copy number inputted into eax
+ 00000060  BE 0000007D R		mov esi,offset yArray
+ 00000065  BB 00000004			mov ebx,4
+ 0000006A  F7 E3			mul ebx					;for each increment needed of 4
+ 0000006C  72 44			jc  EndLoop 
+ 0000006E  03 C6			add eax,esi				;add multiple of 4 and pointer for array size wanted
+ 00000070  A3 00000004 R		mov numRainY,eax			;save in numRainX(basically just did a LengthOf for dword arrays)	
+ 00000075  5E				pop esi
+
+ 00000076  33 C0			xor eax,eax
+ 00000078  33 C9			xor ecx,ecx
+ 0000007A  33 DB			xor ebx,ebx				;start with clear registers
+ 0000007C  E8 00000000 E		call clrscr
+ 00000081  E8 000001CB			call StartPosition
+ 00000086  E8 000000E3			call newNum
+ 0000008B  E8 00000029			call populateX
+ 00000090				KeyLoop:;Die to break the loop
+ 00000090  E8 00000084				call checkY
+ 00000095  E8 000001D5				call print
+ 0000009A  E8 000000A9				call fall ;call fall proc
 						
- 00000045  EB E3				jmp KeyLoop
- 00000047				EndLoop:
+ 0000009F  E8 00000000 E			call ReadKey       ; looks for keyboard input
+ 000000A4  74 EA				jz KeyLoop
+
+ 000000A6  E8 00000156				call RightIf
+ 000000AB  E8 0000017A				call LeftIf
+						
+						
+ 000000B0  EB DE				jmp KeyLoop
+ 000000B2				EndLoop:
 					exit
- 0000004E			main ENDP
-				
- 0000004E			startX PROC ;proc for starting x position for falling char Proc by kilian
-				
- 0000004E  B8 00000050			mov eax,80           ;Maybe need to use GetMax later to check size of console window, for now does between randomly 0 and 79
- 00000053  E8 00000000 E		call RandomRange     ;Getting the number
- 00000058  C6 05 00000005 R		mov y,0              ;resets the y
-	   00
-					mGotoxy al,y         ;Moves cursor to 0,randPos
- 0000005F  52		     1		push edx
- 00000060  8A 35 00000005 R  1		mov  dh,y
- 00000066  8A D0	     1		mov  dl,al
- 00000068  E8 00000000 E     1		call Gotoxy
- 0000006D  5A		     1		pop  edx
- 0000006E  A3 00000000 R		mov randPos,eax      ;eax into randPos
- 00000073  A2 00000024 R		mov rainX, al
- 00000078  A0 00000004 R		mov al,rain          ;Move rain into eax 
- 0000007D  E8 00000000 E		call WriteChar        ;Writes it
- 00000082  A2 00000004 R		mov rain,al          ;Moves it back 
- 00000087  C3				ret
- 00000088			startX ENDP ;end startX proc
-				
-				;---------------------------------------------------------------------------------------------------------------------
-				
- 00000088			checkY PROC ;proc to check y-coordinate Proc by Kilian
- 00000088  80 3D 00000005 R		cmp y,24d ;see if rain hits the ground
-	   18
- 0000008F  74 02			je  _there
- 00000091  EB 0F			jmp _endif1
- 00000093			_there:
- 00000093  E8 000000FD			call Death
- 00000098  E8 0000001C			call newNum ;make new piece of rain
- 0000009D  E8 FFFFFFAC			call startX ;make new starting X-coord
- 000000A2			_endif1:
- 000000A2  C3				ret
- 000000A3			checkY ENDP ;end checkY proc
-				
-				;---------------------------------------------------------------------------------------------------------------------
-				
- 000000A3			fall PROC ;proc for moving pieces downProc by Kilian	
- 000000A3  B8 00000032				mov eax,50 		; delay time ms
- 000000A8  E8 00000000 E			call Delay		;So we can see change speed 
- 000000AD  FE 05 00000005 R			inc y			;increment y coordinate 
- 000000B3  E8 0000008A			     call print
- 000000B8  C3				ret
- 000000B9			fall ENDP;End move proc
-				
-				;---------------------------------------------------------------------------------------------------------------------
-				
- 000000B9			newNum PROC	;Make a new number and put into rain Porc by Kilian
- 000000B9  E8 00000000 E			call Randomize	      ;Makes RandomRange random based on time of day 
- 000000BE  B0 02			        mov al,2		      ;Between 0 or 1
- 000000C0  E8 00000000 E		        call RandomRange     ;Get the number
- 000000C5  3C 00				cmp al,0			 ;compare al and 0  
- 000000C7  75 0B			        jne L2               ;If not equal go to L2             
- 000000C9  C6 05 00000004 R	L1:		mov rain,'0'				 ;if al equals 0, put 0(ASCII) in rain
-	   30
- 000000D0  33 C0				XOR eax,eax          ;clears eax
- 000000D2  EB 09				jmp ENDLOOP
- 000000D4  C6 05 00000004 R	L2:  	        mov rain,'1'	 ;else al equals 1, move 1(ASCII) into rain
-	   31
- 000000DB  33 C0				XOR eax,eax          ;Clears eax
- 000000DD			ENDLOOP:
- 000000DD  C3				ret
- 000000DE				newNum ENDP;End NewNum proc
-				
-				;------------------------------------------------------------------------------------
-				
- 000000DE			RightIf PROC USES edx;John Proc
- 000000DF  80 FC 4D			               cmp ah , 4Dh
- 000000E2  74 02			               je Then1
- 000000E4  EB 10		                       jmp endright        ; Jmp to end of proc
- 000000E6						Then1: 
- 000000E6  FE 05 00000012 R					inc beginX       ; Increments X coordinate value	
- 000000EC  E8 00000051						call print
- 000000F1  E8 00000000 E					call ReadKeyFlush;
- 000000F6				endright:
+ 000000B9			main ENDP
+
+ 000000B9			populateX PROC uses eax ebx ecx;proc for popualating starting X position array for falling char Proc by kilian
+ 000000BC  56				push esi
+ 000000BD  BE 00000041 R		mov esi,offset xArray		;at beginning of array
+ 000000C2  BB 0000007D R		mov ebx,offset yArray		;same
+ 000000C7  B9 00000032 R		mov ecx,offset rainArray		;same
+ 000000CC			L1:
+ 000000CC  B8 00000050			mov eax,80           ;Maybe need to use GetMax later to check size of console window, for now does between randomly 0 and 79
+ 000000D1  E8 00000000 E		call RandomRange     ;Getting the number
+ 000000D6  89 06			mov [esi],eax		 ;move the number into it's spot in array 
+ 000000D8  50				push eax
+ 000000D9  33 C0			xor eax,eax		 ;reset all y's to 0
+ 000000DB  89 03			mov [ebx],eax
+ 000000DD  58				pop eax
+					mGotoxy al,[ebx]         ;Moves cursor to 0,X coordinate
+ 000000DE  52		     1		push edx
+ 000000DF  8A 33	     1		mov  dh,[ebx]
+ 000000E1  8A D0	     1		mov  dl,al
+ 000000E3  E8 00000000 E     1		call Gotoxy
+ 000000E8  5A		     1		pop  edx
+ 000000E9  8A 01			mov al,[ecx]          ;Move rain into al
+ 000000EB  E8 00000000 E		call WriteChar        ;Writes it
+ 000000F0  33 C0			xor eax,eax 
+ 000000F2  83 C6 04			add esi,4			  ;point to next array spots
+ 000000F5  83 C3 04			add ebx,4
+ 000000F8  FE C3			inc bl
+ 000000FA  3B 35 00000000 R		cmp esi,numRainX
+ 00000100  77 12			ja  EndLoop		  ;if about to be greater than number wanted, stop
+ 00000102  3B 1D 00000004 R		cmp ebx,numRainY
+ 00000108  77 0A			ja  EndLoop		  ;if about to be greater than number wanted, stop
+ 0000010A  3B 1D 00000008 R		cmp ebx,numRaining
+ 00000110  77 02			ja  EndLoop		  ;if about to be greater than number wanted, stop
+ 00000112  EB B8			jmp L1			  ;else, keep moving through array
+ 00000114			Endloop:
+ 00000114  5E				pop esi
 					ret
- 000000F8			 RightIf ENDP
-				
+ 00000119			populateX ENDP ;end populateX proc
+
+				;---------------------------------------------------------------------------------------------------------------------
+
+ 00000119			checkY PROC uses eax;proc to check y-coordinate Proc by Kilian
+ 0000011A  56				push esi
+ 0000011B  BE 0000007D R		mov esi,offset yArray;put in beginning pointer to array
+ 00000120			L1:
+ 00000120  8B 06			mov eax,[esi]
+ 00000122  83 F8 18			cmp eax,24d ;see if rain hits the ground
+ 00000125  74 02			je  _there
+ 00000127  EB 0F			jmp _endif1
+ 00000129			_there:
+ 00000129  E8 000001B2			call Death
+ 0000012E  E8 0000003B			call newNum ;make new pieces of rain
+ 00000133  E8 FFFFFF81			call populateX ;make new starting X-coordinates
+ 00000138			_endif1:
+ 00000138  83 C6 04			add esi,4				;look at next spot
+ 0000013B  3B 35 00000004 R		cmp esi,numRainY
+ 00000141  77 02			ja EndLoop			;if the next spot's number is greater than the number wanted to rain, end
+ 00000143  EB DB			jmp L1				;if not, keep going through array
+ 00000145			EndLoop:
+ 00000145  5E				pop esi
+					ret
+ 00000148			checkY ENDP ;end checkY proc
+
+				;---------------------------------------------------------------------------------------------------------------------
+
+ 00000148			fall PROC uses eax;proc for moving pieces down. Proc by Kilian	
+ 00000149  56					push esi
+ 0000014A  B8 00000032				mov eax,50	; delay time ms
+ 0000014F  E8 00000000 E			call Delay		;So we can see change speed
+ 00000154  BE 0000007D R			mov esi,offset yArray;put the beginning pointer of array into esi
+ 00000159			L1: 
+ 00000159  8B 1E				mov ebx,[esi]		;copy contents into ebx
+ 0000015B  43					inc ebx			;increment y coordinate
+ 0000015C  89 1E				mov [esi],ebx
+ 0000015E  83 C6 04				add esi,4			;moves to next position of array
+ 00000161  3B 35 00000004 R			cmp esi,numRainY
+ 00000167  77 02				ja EndLoop		;if about to be past number wanted, end
+ 00000169  EB EE				jmp L1
+ 0000016B			EndLoop:
+ 0000016B  5E					pop esi 
+					ret
+ 0000016E			fall ENDP;End move proc
+
+				;---------------------------------------------------------------------------------------------------------------------
+
+ 0000016E			newNum PROC;Make a new number and put into rain Proc by Kilian
+ 0000016E  56					push esi
+ 0000016F  E8 00000000 E			call Randomize	      ;Makes RandomRange random based on time of day
+ 00000174  BE 00000032 R			mov esi,offset rainArray		;make pointer to array
+ 00000179			L1:
+ 00000179  B0 0A			     mov al,10		      ;Between 0 or 9 inclusive (changed this because I watched the matrix the other day ;p)
+ 0000017B  E8 00000000 E		     call RandomRange     ;Get the number
+ 00000180  3C 00				cmp al,0			 ;compare al and 0  
+ 00000182  75 09			     jne L2               ;If not equal go to L2             
+ 00000184  C6 05 000000B9 R			mov rain,'0'				 ;if al equals 0, put 0(ASCII) in rain			
+	   30
+ 0000018B  EB 5C				jmp EndLoop
+ 0000018D			L2:  	
+ 0000018D  3C 05				cmp al, 5			;If number is greater or below jump accordingly	  
+ 0000018F  77 0B				ja  above
+ 00000191  72 2A				jb  below 
+ 00000193  C6 05 000000B9 R			mov rain,'5'        ;If neither move 5 into rain and end
+	   35
+ 0000019A  EB 4D				jmp EndLoop
+ 0000019C			above:
+ 0000019C  3C 07				cmp al,7
+ 0000019E  77 14				ja  eight
+ 000001A0  72 09				jb  six
+ 000001A2  C6 05 000000B9 R			mov rain,'7'		;If neither it's 7
+	   37
+ 000001A9  EB 3E				jmp EndLoop
+ 000001AB			six:
+ 000001AB  C6 05 000000B9 R			mov rain,'6'		;if less than 7, must be 6
+	   36
+ 000001B2  EB 35				jmp EndLoop
+ 000001B4			eight:
+ 000001B4  C6 05 000000B9 R			mov rain,'8'        ;if greater, 8
+	   38
+ 000001BB  EB 2C				jmp EndLoop
+ 000001BD			below:
+ 000001BD  3C 03				cmp al,3
+ 000001BF  77 21				ja  four
+ 000001C1  72 09				jb  either
+ 000001C3  C6 05 000000B9 R			mov rain,'3'		;If neither it's 3
+	   33
+ 000001CA  EB 1D				jmp EndLoop
+ 000001CC			either:
+ 000001CC  3C 02				cmp al,2			;if less than 3, could be 2 or 1 
+ 000001CE  74 09				je  two 
+ 000001D0  C6 05 000000B9 R			mov rain,'1'		;if not equal to 2, is 1
+	   31
+ 000001D7  EB 10				jmp EndLoop
+ 000001D9			two:
+ 000001D9  C6 05 000000B9 R			mov rain,'2'
+	   32
+ 000001E0  EB 07				jmp EndLoop
+ 000001E2			four:
+ 000001E2  C6 05 000000B9 R			mov rain,'4'        ;if greater, 4
+	   34
+ 000001E9			EndLoop:
+ 000001E9  A0 000000B9 R			mov al,rain
+ 000001EE  88 06				mov [esi],al		;copy character into it's position
+ 000001F0  46					inc esi
+ 000001F1  3B 35 00000008 R			cmp esi,numRaining	;see if number wanted to rain is the next spot
+ 000001F7  77 F0				ja  EndLoop
+ 000001F9  E9 FFFFFF7B				jmp L1
+ 000001FE  33 C0				xor eax,eax         ;clear eax
+ 00000200  C3				ret
+ 00000201				newNum ENDP;End NewNum proc
+
+				;------------------------------------------------------------------------------------
+
+ 00000201			RightIf PROC USES edx;John Proc
+ 00000202  80 FC 4D			               cmp ah , 4Dh
+ 00000205  74 02			               je Then1
+ 00000207  EB 1F		                       jmp endright        ; Jmp to end of proc
+ 00000209						Then1: 
+ 00000209  FE 05 000000CA R					inc beginX       ; Increments X coordinate value	
+ 0000020F  80 3D 000000CA R					if5: cmp beginX, 79; check if X goes past 79
+	   4F
+ 00000216  7F 02							jg then5
+ 00000218  EB 09							jmp end5
+ 0000021A								then5: 
+ 0000021A  C6 05 000000CA R							mov beginX, 79
+	   4F
+ 00000221  B6 17								mov dh, 23
+ 00000223								end5:
+								
+ 00000223  E8 00000000 E					call ReadKeyFlush;
+ 00000228				endright:
+					ret
+ 0000022A			 RightIf ENDP
+
 				 ;---------------------------------------------------------------------------------------------------------------------
 				 
- 000000F8			 LeftIf PROC USES edx;John Proc
- 000000F9  80 FC 4B			cmp ah, 4Bh
- 000000FC  74 02			 je Then2
- 000000FE  EB 22					 jmp endleft        ; Jmp to end of loop if user put in value that is not 3 or left arrow
- 00000100						 Then2:
- 00000100  FE 0D 00000012 R					 dec beginX      ; Decrements X to move to the left
- 00000106  80 3D 00000012 R					 if6: cmp beginX, 0; check if X goes under 0
+ 0000022A			 LeftIf PROC USES edx;John Proc
+ 0000022B  80 FC 4B			cmp ah, 4Bh
+ 0000022E  74 02			 je Then2
+ 00000230  EB 1D					 jmp endleft        ; Jmp to end of loop if user put in value that is not 3 or left arrow
+ 00000232						 Then2:
+ 00000232  FE 0D 000000CA R					 dec beginX      ; Decrements X to move to the left
+ 00000238  80 3D 000000CA R					 if6: cmp beginX, 0; check if X goes under 0
 	   00
- 0000010D  7C 02							jl then6
- 0000010F  EB 07							jmp end6
- 00000111								then6: 
- 00000111  C6 05 00000012 R							mov beginX, 0
+ 0000023F  7C 02							jl then6
+ 00000241  EB 07							jmp end6
+ 00000243								then6: 
+ 00000243  C6 05 000000CA R							mov beginX, 0
 	   00
- 00000118								end6:	
- 00000118  E8 00000025						 call print
- 0000011D  E8 00000000 E					 call ReadKeyFlush ;Flushes keyboard input buffer and clears internal counter for faster response time
- 00000122						endleft:
+ 0000024A								end6:	
+				                     
+								 
+								 
+ 0000024A  E8 00000000 E					 call ReadKeyFlush ;Flushes keyboard input buffer and clears internal counter for faster response time
+ 0000024F						endleft:
 							ret
- 00000124			 LeftIf ENDP
-				
+ 00000251			 LeftIf ENDP
+
 				 ;------------------------------------------------------------------------------------------------------------------------
-				
+
 				 
- 00000124 StartPosition PROC USES edx;John Proc
-					;Player Starting Point
- 00000125  B6 17			mov dh , 23d; column 24
- 00000127  8A 15 00000012 R		mov dl,beginX ; row 39
- 0000012D  E8 00000000 E		call Gotoxy; places cursor in the middle of the bottom part of the console window
- 00000132  B0 58			mov al,'X'; Copies player character to the AL register to be printed
- 00000134  E8 00000000 E		call WriteChar; Prints player to screen console
- 00000139  E8 00000000 E		call crlf
+ 00000251			 StartPosition PROC USES edx;John Proc
+	;Player Starting Point
+ 00000252  B6 17			mov dh , 23d; column 23
+ 00000254  8A 15 000000CA R		mov dl,beginX ; row 39
+ 0000025A  E8 00000000 E		call Gotoxy; places cursor in the middle of the bottom part of the console window
+ 0000025F  B0 58			mov al,'X'; Copies player character to the AL register to be printed
+ 00000261  E8 00000000 E		call WriteChar; Prints player to screen console
+ 00000266  E8 00000000 E		call crlf
 					;Player Starting point
- 0000013E  32 C0			Xor al, al
+ 0000026B  32 C0			Xor al, al
 					ret
- 00000142			 StartPosition ENDP
-				
+ 0000026F			 StartPosition ENDP
+
 				;------------------------------------------------------------------------------------------------------------------------
-				
-				
-				;******* proc to make it easier to reprint the rain;Killian Proc
-				
- 00000142			print PROC
- 00000142  E8 00000000 E			call clrscr
- 00000147  A1 00000000 R			mov eax,randPos	    ;move x Coordinate into eax
-						mGotoxy al,y        ;Moves cursor to the position of rain
- 0000014C  52		     1		push edx
- 0000014D  8A 35 00000005 R  1		mov  dh,y
- 00000153  8A D0	     1		mov  dl,al
- 00000155  E8 00000000 E     1		call Gotoxy
- 0000015A  5A		     1		pop  edx
- 0000015B  A3 00000000 R			mov randPos,eax     ;Move x Coordinate back to eax
- 00000160  A0 00000004 R			mov al,rain         ;Moves rain to eax to write
- 00000165  E8 00000000 E			call WriteChar      ;Rewrite rain
- 0000016A  B6 17			     mov dh,23d  ;move cursor to character's current position ********* Added to this version by Killian edited by John
- 0000016C  8A 15 00000012 R			mov dl , beginX
- 00000172  80 3D 00000012 R			if5: cmp beginX, 79; check if X goes past 79
-	   4F
- 00000179  7F 02							jg then5
- 0000017B  EB 04							jmp end5
- 0000017D								then5: 
- 0000017D  B2 4E								mov dl, 78d
- 0000017F  B6 17								mov dh, 23d
- 00000181								end5:
- 00000181  E8 00000000 E			call Gotoxy
- 00000186  B0 58				mov al,'X'          ;move X into al                              *********
- 00000188  E8 00000000 E			call WriteChar      ;print it					**********
- 0000018D  E8 00000000 E			call Crlf
- 00000192  32 C0				xor al,al           ;clear al
- 00000194  C3					ret
- 00000195			print		ENDP
-				
+
+
+				;******* proc to make it easier to reprint the rain;Kilian Proc
+
+ 0000026F			print PROC uses ebx eax ecx 
+ 00000272  E8 00000000 E			call clrscr
+ 00000277  56					push esi
+ 00000278  BE 00000041 R			mov esi,offset xArray
+ 0000027D  BB 0000007D R			mov ebx,offset yArray
+ 00000282  B8 00000032 R			mov eax,offset rainArray
+ 00000287			L1:
+ 00000287  50					push eax			;save rainArray position
+ 00000288  8A 06				mov al,[esi]	     ;copy x Coordinate into al
+ 0000028A  8A 0B				mov cl,[ebx]		;copy y coordinate into cl
+						mGotoxy al,cl        ;Moves cursor to the position of rain
+ 0000028C  52		     1		push edx
+ 0000028D  8A F1	     1		mov  dh,cl
+ 0000028F  8A D0	     1		mov  dl,al
+ 00000291  E8 00000000 E     1		call Gotoxy
+ 00000296  5A		     1		pop  edx
+ 00000297  58					pop eax
+ 00000298  8A 00				mov al,[eax]         ;Moves rain to eax to write
+ 0000029A  E8 00000000 E			call WriteChar      ;Rewrite rain
+ 0000029F  40					inc eax			;increment all pointers to arrays
+ 000002A0  83 C6 04				add esi,4
+ 000002A3  83 C3 04				add ebx,4
+
+ 000002A6  3B 05 00000008 R			cmp eax,numRaining	;compare each to see if they're past their mark	
+ 000002AC  77 12				ja  EndLoop
+ 000002AE  3B 1D 00000004 R			cmp ebx,numRainY
+ 000002B4  77 0A				ja EndLoop
+ 000002B6  3B 35 00000000 R			cmp esi,numRainX
+ 000002BC  77 02			     ja EndLoop
+ 000002BE  EB C7				jmp L1
+ 000002C0			EndLoop:
+
+ 000002C0  B6 17				mov dh,23d  ;move cursor to character's current position ********* Added to this version by Kilian edited by John
+ 000002C2  8A 15 000000CA R			mov dl , beginX
+ 000002C8  E8 00000000 E			call Gotoxy
+ 000002CD  B0 58				mov al,'X'          ;move X into al                              *********
+ 000002CF  E8 00000000 E			call WriteChar      ;print it					**********
+ 000002D4  E8 00000000 E			call Crlf
+ 000002D9  5E					pop esi
+ 000002DA  32 C0				xor al,al           ;clear al
+						ret
+ 000002E0			print	ENDP
+
 				;----------------------------------------------------------------------------------------------------------------------
-				
- 00000195			Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
-				
- 00000197				If4:
- 00000197  A0 00000012 R			mov al , beginX ; Moves the Character's X coordinate into eax for cmp
- 0000019C  3A 05 00000024 R			cmp al , rainX
- 000001A2  74 02				je then4
- 000001A4  EB 67				jmp yes
- 000001A6					then4:
- 000001A6  E8 00000000 E				call Clrscr
- 000001AB  B6 0C					mov dh, 12
- 000001AD  B2 21					mov dl, 33
- 000001AF  E8 00000000 E				call Gotoxy; Sets cursor to print kill message
- 000001B4  BA 00000013 R				mov edx, offset deathmessage
- 000001B9  E8 00000000 E				call WriteString; Displays deathmessage
- 000001BE  E8 00000000 E				call Crlf
- 000001C3  33 C0					XOR eax,eax; clears eax for the yes/no loop
-				
- 000001C5					loop1:
- 000001C5  80 3D 00000037 R				cmp response , 0
+
+ 000002E0			Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
+
+ 000002E2  BE 00000041 R		mov esi,offset xArray
+ 000002E7				If4:
+ 000002E7			checkAll:
+ 000002E7  A0 000000CA R			mov al , beginX ; Moves the Character's X coordinate into eax for cmp
+ 000002EC  8B 1E				mov ebx,[esi]	
+ 000002EE  3A C3				cmp al , bl	;moves rain's x coordinate into ebx
+ 000002F0  74 02				je then4
+ 000002F2  EB 67				jmp yes
+ 000002F4					then4:
+ 000002F4  E8 00000000 E				call Clrscr
+ 000002F9  B6 0C					mov dh, 12
+ 000002FB  B2 21					mov dl, 33
+ 000002FD  E8 00000000 E				call Gotoxy; Sets cursor to print kill message
+ 00000302  BA 000000CB R				mov edx, offset deathmessage
+ 00000307  E8 00000000 E				call WriteString; Displays deathmessage
+ 0000030C  E8 00000000 E				call Crlf
+ 00000311  33 C0					XOR eax,eax; clears eax for the yes/no loop
+
+ 00000313					loop1:
+ 00000313  80 3D 000000EE R				cmp response , 0
 	   00
- 000001CC  75 1F					jne answer	
- 000001CE  B2 21					mov dl,33
- 000001D0  B6 0D					mov dh,13
- 000001D2  E8 00000000 E				call Gotoxy
- 000001D7  BA 00000025 R				mov edx, offset replay
- 000001DC  E8 00000000 E				call WriteString
- 000001E1  E8 00000000 E				call Readchar
- 000001E6  A2 00000037 R				mov response, al
- 000001EB  EB D8					jmp loop1
-				
- 000001ED					answer:
- 000001ED  80 0D 00000037 R				 Or response, 00100000B; bitmask for lowercase conversion
+ 0000031A  75 1F					jne answer	
+ 0000031C  B2 21					mov dl,33
+ 0000031E  B6 0D					mov dh,13
+ 00000320  E8 00000000 E				call Gotoxy
+ 00000325  BA 000000DC R				mov edx, offset replay
+ 0000032A  E8 00000000 E				call WriteString
+ 0000032F  E8 00000000 E				call Readchar
+ 00000334  A2 000000EE R				mov response, al
+ 00000339  EB D8					jmp loop1
+
+ 0000033B					answer:
+ 0000033B  80 0D 000000EE R				 Or response, 00100000B; bitmask for lowercase conversion
 	   20
- 000001F4  80 3D 00000037 R				 cmp response, 'y'; Yes reponse
+ 00000342  80 3D 000000EE R				 cmp response, 'y'; Yes reponse
 	   79
- 000001FB  74 10					 je yes
-				
- 000001FD  B6 18				      mov dh, 24
- 000001FF  B2 00					 mov dl, 0
- 00000201  E8 00000000 E				 call Gotoxy
+ 00000349  74 10					 je yes
+
+ 0000034B  B6 18				      mov dh, 24
+ 0000034D  B2 00					 mov dl, 0
+ 0000034F  E8 00000000 E				 call Gotoxy
 							
 							 exit; Exits if al is not 'y'
-						
- 0000020D					yes:
- 0000020D  C6 05 00000037 R			mov response,0
+							
+ 0000035B			yes:
+ 0000035B  C6 05 000000EE R			mov response,0
 	   00
+ 00000362  83 C6 04				add esi,4 
+ 00000365  3B 35 00000000 R			cmp esi,numRainX
+ 0000036B  77 05				ja EndLoop
+ 0000036D  E9 FFFFFF75				jmp checkAll
+ 00000372			EndLoop:
 						ret
- 00000217			Death ENDP
-				
+ 00000375			Death ENDP
+
 				END main
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    03/24/15 13:20:15
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/01/15 12:51:20
 main.asm						     Symbols 2 - 1
 
 
@@ -393,8 +589,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000038 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000217 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000000EF Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000375 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -407,12 +603,14 @@ Clrscr . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Death  . . . . . . . . . . . . .	P Near	 00000195 _TEXT	Length= 00000082 Public STDCALL
-  If4  . . . . . . . . . . . . .	L Near	 00000197 _TEXT	
-  then4  . . . . . . . . . . . .	L Near	 000001A6 _TEXT	
-  loop1  . . . . . . . . . . . .	L Near	 000001C5 _TEXT	
-  answer . . . . . . . . . . . .	L Near	 000001ED _TEXT	
-  yes  . . . . . . . . . . . . .	L Near	 0000020D _TEXT	
+Death  . . . . . . . . . . . . .	P Near	 000002E0 _TEXT	Length= 00000095 Public STDCALL
+  If4  . . . . . . . . . . . . .	L Near	 000002E7 _TEXT	
+  checkAll . . . . . . . . . . .	L Near	 000002E7 _TEXT	
+  then4  . . . . . . . . . . . .	L Near	 000002F4 _TEXT	
+  loop1  . . . . . . . . . . . .	L Near	 00000313 _TEXT	
+  answer . . . . . . . . . . . .	L Near	 0000033B _TEXT	
+  yes  . . . . . . . . . . . . .	L Near	 0000035B _TEXT	
+  EndLoop  . . . . . . . . . . .	L Near	 00000372 _TEXT	
 Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -447,12 +645,12 @@ HeapDestroy  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 HeapFree . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 HeapSize . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 IsDigit  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-LeftIf . . . . . . . . . . . . .	P Near	 000000F8 _TEXT	Length= 0000002C Public STDCALL
-  Then2  . . . . . . . . . . . .	L Near	 00000100 _TEXT	
-  if6  . . . . . . . . . . . . .	L Near	 00000106 _TEXT	
-  then6  . . . . . . . . . . . .	L Near	 00000111 _TEXT	
-  end6 . . . . . . . . . . . . .	L Near	 00000118 _TEXT	
-  endleft  . . . . . . . . . . .	L Near	 00000122 _TEXT	
+LeftIf . . . . . . . . . . . . .	P Near	 0000022A _TEXT	Length= 00000027 Public STDCALL
+  Then2  . . . . . . . . . . . .	L Near	 00000232 _TEXT	
+  if6  . . . . . . . . . . . . .	L Near	 00000238 _TEXT	
+  then6  . . . . . . . . . . . .	L Near	 00000243 _TEXT	
+  end6 . . . . . . . . . . . . .	L Near	 0000024A _TEXT	
+  endleft  . . . . . . . . . . .	L Near	 0000024F _TEXT	
 LocalFree  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MessageBoxA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MsgBoxAsk  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -476,9 +674,12 @@ ReadInt  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ReadKeyFlush . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadKey  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadString . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-RightIf  . . . . . . . . . . . .	P Near	 000000DE _TEXT	Length= 0000001A Public STDCALL
-  Then1  . . . . . . . . . . . .	L Near	 000000E6 _TEXT	
-  endright . . . . . . . . . . .	L Near	 000000F6 _TEXT	
+RightIf  . . . . . . . . . . . .	P Near	 00000201 _TEXT	Length= 00000029 Public STDCALL
+  Then1  . . . . . . . . . . . .	L Near	 00000209 _TEXT	
+  if5  . . . . . . . . . . . . .	L Near	 0000020F _TEXT	
+  then5  . . . . . . . . . . . .	L Near	 0000021A _TEXT	
+  end5 . . . . . . . . . . . . .	L Near	 00000223 _TEXT	
+  endright . . . . . . . . . . .	L Near	 00000228 _TEXT	
 SetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleCursorPosition . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -491,7 +692,7 @@ SetLocalTime . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 SetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ShowFPUStack . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Sleep  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-StartPosition  . . . . . . . . .	P Near	 00000124 _TEXT	Length= 0000001E Public STDCALL
+StartPosition  . . . . . . . . .	P Near	 00000251 _TEXT	Length= 0000001E Public STDCALL
 StrLength  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_compare  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_copy . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -517,24 +718,36 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-checkY . . . . . . . . . . . . .	P Near	 00000088 _TEXT	Length= 0000001B Public STDCALL
-  _there . . . . . . . . . . . .	L Near	 00000093 _TEXT	
-  _endif1  . . . . . . . . . . .	L Near	 000000A2 _TEXT	
-fall . . . . . . . . . . . . . .	P Near	 000000A3 _TEXT	Length= 00000016 Public STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000004E Public STDCALL
-  KeyLoop  . . . . . . . . . . .	L Near	 0000002A _TEXT	
-  EndLoop  . . . . . . . . . . .	L Near	 00000047 _TEXT	
-newNum . . . . . . . . . . . . .	P Near	 000000B9 _TEXT	Length= 00000025 Public STDCALL
-  L1 . . . . . . . . . . . . . .	L Near	 000000C9 _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 000000D4 _TEXT	
-  ENDLOOP  . . . . . . . . . . .	L Near	 000000DD _TEXT	
+checkY . . . . . . . . . . . . .	P Near	 00000119 _TEXT	Length= 0000002F Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000120 _TEXT	
+  _there . . . . . . . . . . . .	L Near	 00000129 _TEXT	
+  _endif1  . . . . . . . . . . .	L Near	 00000138 _TEXT	
+  EndLoop  . . . . . . . . . . .	L Near	 00000145 _TEXT	
+fall . . . . . . . . . . . . . .	P Near	 00000148 _TEXT	Length= 00000026 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000159 _TEXT	
+  EndLoop  . . . . . . . . . . .	L Near	 0000016B _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000000B9 Public STDCALL
+  KeyLoop  . . . . . . . . . . .	L Near	 00000090 _TEXT	
+  EndLoop  . . . . . . . . . . .	L Near	 000000B2 _TEXT	
+newNum . . . . . . . . . . . . .	P Near	 0000016E _TEXT	Length= 00000093 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000179 _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 0000018D _TEXT	
+  above  . . . . . . . . . . . .	L Near	 0000019C _TEXT	
+  six  . . . . . . . . . . . . .	L Near	 000001AB _TEXT	
+  eight  . . . . . . . . . . . .	L Near	 000001B4 _TEXT	
+  below  . . . . . . . . . . . .	L Near	 000001BD _TEXT	
+  either . . . . . . . . . . . .	L Near	 000001CC _TEXT	
+  two  . . . . . . . . . . . . .	L Near	 000001D9 _TEXT	
+  four . . . . . . . . . . . . .	L Near	 000001E2 _TEXT	
+  EndLoop  . . . . . . . . . . .	L Near	 000001E9 _TEXT	
+populateX  . . . . . . . . . . .	P Near	 000000B9 _TEXT	Length= 00000060 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 000000CC _TEXT	
+  Endloop  . . . . . . . . . . .	L Near	 00000114 _TEXT	
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-print  . . . . . . . . . . . . .	P Near	 00000142 _TEXT	Length= 00000053 Public STDCALL
-  if5  . . . . . . . . . . . . .	L Near	 00000172 _TEXT	
-  then5  . . . . . . . . . . . .	L Near	 0000017D _TEXT	
-  end5 . . . . . . . . . . . . .	L Near	 00000181 _TEXT	
+print  . . . . . . . . . . . . .	P Near	 0000026F _TEXT	Length= 00000071 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000287 _TEXT	
+  EndLoop  . . . . . . . . . . .	L Near	 000002C0 _TEXT	
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-startX . . . . . . . . . . . . .	P Near	 0000004E _TEXT	Length= 0000003A Public STDCALL
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 
 
@@ -751,12 +964,12 @@ VK_UP  . . . . . . . . . . . . .	Number	 00000026h
 WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h   
 WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
 WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
-beginX . . . . . . . . . . . . .	Byte	 00000012 _DATA	
+beginX . . . . . . . . . . . . .	Byte	 000000CA _DATA	
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
-deathMessage . . . . . . . . . .	Byte	 00000013 _DATA	
+deathMessage . . . . . . . . . .	Byte	 000000CB _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
@@ -767,17 +980,22 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
-rainX  . . . . . . . . . . . . .	Byte	 00000024 _DATA	
-rain . . . . . . . . . . . . . .	Byte	 00000004 _DATA	
-randPos  . . . . . . . . . . . .	DWord	 00000000 _DATA	
+numRainX . . . . . . . . . . . .	DWord	 00000000 _DATA	
+numRainY . . . . . . . . . . . .	DWord	 00000004 _DATA	
+numRaining . . . . . . . . . . .	DWord	 00000008 _DATA	
+question . . . . . . . . . . . .	Byte	 0000000C _DATA	
+rainArray  . . . . . . . . . . .	Byte	 00000032 _DATA	
+rain . . . . . . . . . . . . . .	Byte	 000000B9 _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
-replay . . . . . . . . . . . . .	Byte	 00000025 _DATA	
-response . . . . . . . . . . . .	Byte	 00000037 _DATA	
-titleStr . . . . . . . . . . . .	Byte	 00000006 _DATA	
+replay . . . . . . . . . . . . .	Byte	 000000DC _DATA	
+response . . . . . . . . . . . .	Byte	 000000EE _DATA	
+titleStr . . . . . . . . . . . .	Byte	 000000BE _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
+xArray . . . . . . . . . . . . .	DWord	 00000041 _DATA	
+yArray . . . . . . . . . . . . .	DWord	 0000007D _DATA	
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
-y  . . . . . . . . . . . . . . .	Byte	 00000005 _DATA	
+y  . . . . . . . . . . . . . . .	DWord	 000000BA _DATA	
 
 	   0 Warnings
 	   0 Errors

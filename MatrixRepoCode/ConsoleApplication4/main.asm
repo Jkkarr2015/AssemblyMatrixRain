@@ -42,7 +42,9 @@ main PROC
 	jle  EndLoop				;if num inputted is equal to 0, end
 
 	mov ecx,eax
+	
 	push esi
+	
 	mov esi,offset rainArray		
 	mov numRaining,eax			;copy number wanted to make for pieces into numRaining
 	add esi,numRaining			;add pointer and num wanted to increment accordingly later in newNum
@@ -51,17 +53,19 @@ main PROC
 	mov esi,offset xArray
 	mov ebx,4
 	mul ebx					;for each increment needed of 4
-	jc  EndLoop 
+	jo  EndLoop 
 	add eax,esi				;add multiple of 4 and pointer for array size wanted
 	mov numRainX,eax			;save in numRainX(basically just did a LengthOf for dword arrays)
 	
 	mov eax,ecx				;copy number inputted into eax
+	
 	mov esi,offset yArray
 	mov ebx,4
 	mul ebx					;for each increment needed of 4
-	jc  EndLoop 
+	jo  EndLoop 
 	add eax,esi				;add multiple of 4 and pointer for array size wanted
 	mov numRainY,eax			;save in numRainX(basically just did a LengthOf for dword arrays)	
+	
 	pop esi
 
 	xor eax,eax
@@ -72,6 +76,7 @@ main PROC
 	call newNum
 	call populateX
 	KeyLoop:;Die to break the loop
+	
 		call checkY
 		call print
 		call fall ;call fall proc
@@ -89,11 +94,14 @@ main PROC
 main ENDP
 
 populateX PROC uses eax ebx ecx;proc for popualating starting X position array for falling char Proc by kilian
-	push esi
+	push esi 
+
 	mov esi,offset xArray		;at beginning of array
 	mov ebx,offset yArray		;same
 	mov ecx,offset rainArray		;same
+
 L1:
+
 	mov eax,80           ;Maybe need to use GetMax later to check size of console window, for now does between randomly 0 and 79
 	call RandomRange     ;Getting the number
 	mov [esi],eax		 ;move the number into it's spot in array 
@@ -101,13 +109,17 @@ L1:
 	xor eax,eax		 ;reset all y's to 0
 	mov [ebx],eax
 	pop eax
+
 	mGotoxy al,[ebx]         ;Moves cursor to 0,X coordinate
 	mov al,[ecx]          ;Move rain into al
 	call WriteChar        ;Writes it
+	
 	xor eax,eax 
+	
 	add esi,4			  ;point to next array spots
 	add ebx,4
-	inc bl
+	inc cl
+
 	cmp esi,numRainX
 	ja  EndLoop		  ;if about to be greater than number wanted, stop
 	cmp ebx,numRainY
@@ -116,6 +128,8 @@ L1:
 	ja  EndLoop		  ;if about to be greater than number wanted, stop
 	jmp L1			  ;else, keep moving through array
 Endloop:
+	xor ebx,ebx
+	xor ecx,ecx
 	pop esi
 	ret
 populateX ENDP ;end populateX proc
@@ -219,6 +233,8 @@ EndLoop:
 		ja  EndLoop
 		jmp L1
 		xor eax,eax         ;clear eax
+
+		pop esi
 	ret
 	newNum ENDP;End NewNum proc
 
@@ -291,20 +307,18 @@ print PROC uses ebx eax ecx
 		push esi
 		mov esi,offset xArray
 		mov ebx,offset yArray
-		mov eax,offset rainArray
+		mov ecx,offset rainArray
 L1:
-		push eax			;save rainArray position
 		mov al,[esi]	     ;copy x Coordinate into al
-		mov cl,[ebx]		;copy y coordinate into cl
-		mGotoxy al,cl        ;Moves cursor to the position of rain
-		pop eax
-		mov al,[eax]         ;Moves rain to eax to write
+		mov dl,[ebx]		;copy y coordinate into cl
+		mGotoxy al,dl        ;Moves cursor to the position of rain
+		mov al,[ecx]         ;Moves rain to eax to write
 		call WriteChar      ;Rewrite rain
-		inc eax			;increment all pointers to arrays
+		inc ecx			;increment all pointers to arrays
 		add esi,4
 		add ebx,4
 
-		cmp eax,numRaining	;compare each to see if they're past their mark	
+		cmp ecx,numRaining	;compare each to see if they're past their mark	
 		ja  EndLoop
 		cmp ebx,numRainY
 		ja EndLoop
@@ -327,13 +341,13 @@ print	ENDP
 ;----------------------------------------------------------------------------------------------------------------------
 
 Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
-
+	push esi
 	mov esi,offset xArray
 	If4:
 checkAll:
 		mov al , beginX ; Moves the Character's X coordinate into eax for cmp
-		mov ebx,[esi]	
-		cmp al , bl	;moves rain's x coordinate into ebx
+		mov bl,[esi]	
+		cmp al , bl	;moves rain's x coordinate into bl
 		je then4
 		jmp yes
 		then4:
@@ -366,7 +380,7 @@ checkAll:
 		      mov dh, 24
 			 mov dl, 0
 			 call Gotoxy
-			
+			 
 			 exit; Exits if al is not 'y'
 			
 yes:
@@ -376,6 +390,7 @@ yes:
 		ja EndLoop
 		jmp checkAll
 EndLoop:
+		pop esi
 		ret
 Death ENDP
 
