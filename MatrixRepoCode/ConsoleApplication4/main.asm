@@ -9,12 +9,12 @@ INCLUDE Macros.inc
 .data
 
 randPos dword ?		;Random int for 1 and 0 X position
-rain byte '0'			;Random int (0 or 1)
-y byte 0				;Y for coordinate
+yArray byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				;Y for coordinate
+xArray byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+rainArray byte '0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'
 titleStr byte "Matrix Rain",0				;Title
-beginX byte 39 
+beginX byte 23 
 deathMessage byte "You were hit!...",0
-rainX byte ?
 replay byte "Play Again? (Y/N)",0
 response byte 0; Response to yes or no for replay
 
@@ -40,9 +40,24 @@ main PROC
 	   XOR eax,eax            ;clear eax
 	   call clrscr
 	   call StartPosition
-	   call newNum
-	   call startX
-	
+	   push 15
+	   push offset yArray
+	   push 0
+	   call FillArray
+	   add esp,12
+	   
+	   push 15
+	   push offset xArray
+	   push 45
+	   call FillArray
+	   add esp,12
+	  
+	   push 15
+	   push offset rainArray
+	   push 1
+	   call FillArray
+	   add esp,12
+
 KeyLoop:;Die to break the loop
 	   call checkY
 	   call fall             ;call fall proc
@@ -62,6 +77,7 @@ main ENDP
 FillArray proc uses ecx       ; Parameters (Number of elements,Offset Array, Range for numbers) made by John K
 	    push ebp             ; Pushing it to access parameters from stack
 	    mov ebp, esp
+	    call Randomize	       ;Makes RandomRange random based on time of day 
 	    mov ecx, [ebp + 16]  ; Moves first parameter that will be the number for the counter
 
 	    mov edi, [ebp + 12]  ; Offset of array put into edi
@@ -83,16 +99,32 @@ FillArray endp
 ;---------------------------------------------------------------------------------------------------------------------
 
 checkY PROC ;proc to check y-coordinate Proc by Kilian
-	     cmp y,24d           ;see if rain hits the ground
+		mov esi,0
+CheckAll:
+		cmp esi,14
+		ja  EndCheck
+
+		mov ebx,offset yArray
+		mov al,[ebx+esi]
+
+		cmp al,23d           ;see if rain hits the ground
 	     je  _there
 	     jmp _endif1
 _there:
 	     call Death
-	     call newNum         ;make new piece of rain
-	     call startX         ;make new starting X-coord
+	     push 15
+		push offset rainArray
+		push 1
+		call FillArray         ;make new piece of rain
+	     add esp,12
 
+		push 15
+		push offset xArray
+		push 45
+		call FillArray         ;make new starting X-coord
+		add esp,12
 _endif1:
-	     
+EndCheck:
 		ret
 checkY ENDP ;end checkY proc
 
@@ -101,34 +133,22 @@ checkY ENDP ;end checkY proc
 fall PROC ;proc for moving pieces downProc by Kilian	
 		mov eax,50 		 ; delay time ms
 		call Delay		 ;So we can see change speed 
-		inc y			 ;increment y coordinate 
+		mov esi,0
+All:
+		cmp esi,14
+		ja  EndAll
+		mov ebx,offset yArray
+		mov al,[ebx+esi]
+		inc al		 ;increment y coordinate
+		mov [ebx+esi],al 
 	     call print
-	     
+		inc esi
+		jmp All
+EndAll:	     
 		ret
 fall ENDP;End move proc
 
 ;---------------------------------------------------------------------------------------------------------------------
-
-newNum PROC	;Make a new number and put into rain Porc by Kilian
-		call Randomize	       ;Makes RandomRange random based on time of day 
-	     mov al,2		       ;Between 0 or 1
-	     call RandomRange      ;Get the number
-		cmp al,0			  ;compare al and 0  
-	     jne L2                ;If not equal go to L2             
-
-L1:		mov rain,'0'	       ;if al equals 0, put 0(ASCII) in rain
-		XOR eax,eax           ;clears eax
-		jmp ENDLOOP
-
-L2:  	mov rain,'1'          ;else al equals 1, move 1(ASCII) into rain
-		
-		XOR eax,eax           ;Clears eax
-ENDLOOP:
-	     
-		ret
-	newNum ENDP;End NewNum proc
-
-;------------------------------------------------------------------------------------
 
 RightIf PROC USES edx;John Proc
 	     cmp ah , 4Dh
@@ -189,16 +209,28 @@ endleft:
 ;------------------------------------------------------------------------------------------------------------------------
 
 
-;******* proc to make it easier to reprint the rain;Killian Proc
+;******* proc to make it easier to reprint the rain;Kilian Proc
 
-print PROC
+print PROC 
 		call clrscr
-		mov eax,randPos	    ;move x Coordinate into eax
-		mGotoxy al,y            ;Moves cursor to the position of rain
-		mov randPos,eax         ;Move x Coordinate back to eax
-		mov al,rain             ;Moves rain to eax to write
+		push ebp
+		mov esi,0
+PrintAll:
+		cmp esi,14
+		ja  EndPrint
+		mov ebx,offset xArray
+		mov al,[ebx+esi]
+		
+		mov ebp,offset yArray
+		mov ah,[ebp+esi]
+		mGotoxy al,ah            ;Moves cursor to the position of rain
+		
+		mov edi,offset rainArray
+		mov al,[edi+esi]
 		call WriteChar          ;Rewrite rain
-	     mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+	     inc esi
+		
+		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
 		mov dl , beginX
 if5: 
 		cmp beginX, 79          ; check if X goes past 79
@@ -213,18 +245,26 @@ end5:
 		mov al,'X'              ;move X into al                              *********
 		call WriteChar          ;print it					**********
 		call Crlf
-		xor al,al               ;clear al
-		
+		xor al,al               ;clear 
+		jmp PrintAll
+EndPrint:
+		pop ebp
 		ret
 print		ENDP
 
 ;----------------------------------------------------------------------------------------------------------------------
 
 Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
-
+		mov esi,0
+CheckAll:
 If4:
 		mov al , beginX         ; Moves the Character's X coordinate into eax for cmp
-		cmp al , rainX
+		cmp ah,14
+		ja  EndCheck
+		mov ebx,offset xArray
+		mov ah,[ebx+esi]
+
+		cmp al , ah
 		je then4
 		jmp yes
 then4:
@@ -257,13 +297,17 @@ answer:
 		mov dh, 24
 	     mov dl, 0
 		call Gotoxy
-			
+	
 		exit                   ; Exits if al is not 'y'
 		
 yes:
+	
 		mov response,0
-		
+		inc esi
+		jmp CheckAll
+EndCheck:	
 		ret
 Death ENDP
 
 END main
+
