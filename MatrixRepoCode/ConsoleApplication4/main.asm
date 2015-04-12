@@ -17,19 +17,31 @@ deathMessage byte "You were hit!...",0
 rainX byte ?
 replay byte "Play Again? (Y/N)",0
 response byte 0; Response to yes or no for replay
+
+
+outHandle Handle 0
+
+;BufferBounds COORD <46,25>
+WindowRect Small_Rect <0,0,45,24>;Left, top, right, and bottom bounds for window size
 .code
 
 main PROC
-	
-	  INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
+	   INVOKE GetStdHandle,STD_OUTPUT_HANDLE
+	   mov outHandle,eax
 
-	  mov eax,green + (black * 16);Green Text, black background
-	  call SetTextColor      ;Sets the color
-	  XOR eax,eax            ;clear eax
-	  call clrscr
-	  call StartPosition
-	  call newNum
-	  call startX
+	   ;INVOKE SetConsoleScreenBufferSize,outHandle,BufferBounds			;Set console buffer size bounds to X:45 and Y:24 
+
+	   INVOKE SetConsoleWindowInfo,outHandle,TRUE,ADDR WindowRect			;Set console window to coordinates of Size variable
+	  
+	   INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
+
+	   mov eax,green + (black * 16);Green Text, black background
+	   call SetTextColor      ;Sets the color
+	   XOR eax,eax            ;clear eax
+	   call clrscr
+	   call StartPosition
+	   call newNum
+	   call startX
 	
 KeyLoop:;Die to break the loop
 	   call checkY
@@ -162,15 +174,16 @@ endleft:
  
  StartPosition PROC USES edx;John Proc
 	     ;Player Starting Point
-	     mov dh , 23d; column 24
-	     mov dl,beginX ; row 39
-	     call Gotoxy; places cursor in the middle of the bottom part of the console window
-	     mov al,'X'; Copies player character to the AL register to be printed
-	     call WriteChar; Prints player to screen console
+	     mov dh , 23d            ; column 24
+	     mov dl,beginX           ; row 39
+	     call Gotoxy             ; places cursor in the middle of the bottom part of the console window
+	     mov al,'X'              ; Copies player character to the AL register to be printed
+	     call WriteChar          ; Prints player to screen console
 	     call crlf
-	    ;Player Starting point
+	     ;Player Starting point
 	     Xor al, al
-	     ret
+	     
+		ret
  StartPosition ENDP
 
 ;------------------------------------------------------------------------------------------------------------------------
@@ -181,24 +194,27 @@ endleft:
 print PROC
 		call clrscr
 		mov eax,randPos	    ;move x Coordinate into eax
-		mGotoxy al,y        ;Moves cursor to the position of rain
-		mov randPos,eax     ;Move x Coordinate back to eax
-		mov al,rain         ;Moves rain to eax to write
-		call WriteChar      ;Rewrite rain
-	     mov dh,23d  ;move cursor to character's current position ********* Added to this version by Killian edited by John
+		mGotoxy al,y            ;Moves cursor to the position of rain
+		mov randPos,eax         ;Move x Coordinate back to eax
+		mov al,rain             ;Moves rain to eax to write
+		call WriteChar          ;Rewrite rain
+	     mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
 		mov dl , beginX
-		if5: cmp beginX, 79; check if X goes past 79
-					jg then5
-					jmp end5
-					then5: 
-						mov dl, 78d
-						mov dh, 23d
-					end5:
+if5: 
+		cmp beginX, 79          ; check if X goes past 79
+		jg then5
+		jmp end5
+
+then5: 
+		mov dl, 78d
+		mov dh, 23d
+end5:
 		call Gotoxy
-		mov al,'X'          ;move X into al                              *********
-		call WriteChar      ;print it					**********
+		mov al,'X'              ;move X into al                              *********
+		call WriteChar          ;print it					**********
 		call Crlf
-		xor al,al           ;clear al
+		xor al,al               ;clear al
+		
 		ret
 print		ENDP
 
@@ -206,46 +222,47 @@ print		ENDP
 
 Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
 
-	If4:
-		mov al , beginX ; Moves the Character's X coordinate into eax for cmp
+If4:
+		mov al , beginX         ; Moves the Character's X coordinate into eax for cmp
 		cmp al , rainX
 		je then4
 		jmp yes
-		then4:
-			call Clrscr
-			mov dh, 12
-			mov dl, 33
-			call Gotoxy; Sets cursor to print kill message
-			mov edx, offset deathmessage
-			call WriteString; Displays deathmessage
-			call Crlf
-			XOR eax,eax; clears eax for the yes/no loop
+then4:
+		call Clrscr
+		mov dh, 12
+		mov dl, 33
+		call Gotoxy             ; Sets cursor to print kill message
+		mov edx, offset deathmessage
+		call WriteString        ; Displays deathmessage
+		call Crlf
+		XOR eax,eax             ; clears eax for the yes/no loop
 
-		loop1:
-			cmp response , 0
-			jne answer	
-			mov dl,33
-			mov dh,13
-			call Gotoxy
-			mov edx, offset replay
-			call WriteString
-			call Readchar
-			mov response, al
-			jmp loop1
+loop1:
+		cmp response , 0
+		jne answer	
+		mov dl,33
+		mov dh,13
+		call Gotoxy
+		mov edx, offset replay
+		call WriteString
+		call Readchar
+		mov response, al
+		jmp loop1
 
-		answer:
-			 Or response, 00100000B; bitmask for lowercase conversion
-			 cmp response, 'y'; Yes reponse
-			 je yes
+answer:
+		Or response, 00100000B ; bitmask for lowercase conversion
+		cmp response, 'y'      ; Yes reponse
+		je yes
 
-		      mov dh, 24
-			 mov dl, 0
-			 call Gotoxy
+		mov dh, 24
+	     mov dl, 0
+		call Gotoxy
 			
-			 exit; Exits if al is not 'y'
+		exit                   ; Exits if al is not 'y'
 		
-		yes:
+yes:
 		mov response,0
+		
 		ret
 Death ENDP
 
