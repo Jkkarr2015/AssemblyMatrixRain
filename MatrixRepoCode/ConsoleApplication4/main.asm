@@ -20,135 +20,157 @@ response byte 0; Response to yes or no for replay
 .code
 
 main PROC
-	;Laptop test
-	INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
+	
+	  INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
 
-	mov eax,green + (black * 16);Green Text, black background
-	call SetTextColor    ;Sets the color
-	XOR eax,eax          ;clear eax
-	call clrscr
-	call StartPosition
-	call newNum
-	call startX
-	KeyLoop:;Die to break the loop
-		call checkY
-		call fall ;call fall proc
-		;Testing Speed;mov eax, 35       ; Allows for OS to time slice
-		;call Delay         ; need to read key presses without losing any
-		call ReadKey       ; looks for keyboard input
-		jz KeyLoop
+	  mov eax,green + (black * 16);Green Text, black background
+	  call SetTextColor      ;Sets the color
+	  XOR eax,eax            ;clear eax
+	  call clrscr
+	  call StartPosition
+	  call newNum
+	  call startX
+	
+KeyLoop:;Die to break the loop
+	   call checkY
+	   call fall             ;call fall proc
+	   call ReadKey          ; looks for keyboard input
+	   jz KeyLoop
 
-		call RightIf
-		call LeftIf
+	   call RightIf
+	   call LeftIf
 		
-		jmp KeyLoop
-	EndLoop:
-	exit
+	   jmp KeyLoop
+EndLoop:
+
+	   exit
 main ENDP
 
-startX PROC ;proc for starting x position for falling char Proc by kilian
 
-	mov eax,80           ;Maybe need to use GetMax later to check size of console window, for now does between randomly 0 and 79
-	call RandomRange     ;Getting the number
-	mov y,0              ;resets the y
-	mGotoxy al,y         ;Moves cursor to 0,randPos
-	mov randPos,eax      ;eax into randPos
-	mov rainX, al
-	mov al,rain          ;Move rain into eax 
-	call WriteChar        ;Writes it
-	mov rain,al          ;Moves it back 
-	ret
-startX ENDP ;end startX proc
+FillArray proc uses ecx       ; Parameters (Number of elements,Offset Array, Range for numbers) made by John K
+	    push ebp             ; Pushing it to access parameters from stack
+	    mov ebp, esp
+	    mov ecx, [ebp + 16]  ; Moves first parameter that will be the number for the counter
 
+	    mov edi, [ebp + 12]  ; Offset of array put into edi
+L1: 
+	    cmp ecx ,0           ; Loop for setting entire array with random values
+	    je endL1
+	    mov eax,[ebp + 8]    ; Range Paramet put into eax
+	    call RandomRange
+	    cld                  ; Set direction to forward for the array intialization
+	    stosb                ; Stores contents of eax into array
+	    dec ecx              ; decrements counter
+	    jmp L1
+endL1:
+
+	    pop ebp              ; restores Ebp
+	    
+	    ret
+FillArray endp
 ;---------------------------------------------------------------------------------------------------------------------
 
 checkY PROC ;proc to check y-coordinate Proc by Kilian
-	cmp y,24d ;see if rain hits the ground
-	je  _there
-	jmp _endif1
+	     cmp y,24d           ;see if rain hits the ground
+	     je  _there
+	     jmp _endif1
 _there:
-	call Death
-	call newNum ;make new piece of rain
-	call startX ;make new starting X-coord
+	     call Death
+	     call newNum         ;make new piece of rain
+	     call startX         ;make new starting X-coord
+
 _endif1:
-	ret
+	     
+		ret
 checkY ENDP ;end checkY proc
 
 ;---------------------------------------------------------------------------------------------------------------------
 
 fall PROC ;proc for moving pieces downProc by Kilian	
-		mov eax,50 		; delay time ms
-		call Delay		;So we can see change speed 
-		inc y			;increment y coordinate 
+		mov eax,50 		 ; delay time ms
+		call Delay		 ;So we can see change speed 
+		inc y			 ;increment y coordinate 
 	     call print
-	ret
+	     
+		ret
 fall ENDP;End move proc
 
 ;---------------------------------------------------------------------------------------------------------------------
 
 newNum PROC	;Make a new number and put into rain Porc by Kilian
-		call Randomize	      ;Makes RandomRange random based on time of day 
-	        mov al,2		      ;Between 0 or 1
-	        call RandomRange     ;Get the number
-		cmp al,0			 ;compare al and 0  
-	        jne L2               ;If not equal go to L2             
-L1:		mov rain,'0'				 ;if al equals 0, put 0(ASCII) in rain
-		XOR eax,eax          ;clears eax
+		call Randomize	       ;Makes RandomRange random based on time of day 
+	     mov al,2		       ;Between 0 or 1
+	     call RandomRange      ;Get the number
+		cmp al,0			  ;compare al and 0  
+	     jne L2                ;If not equal go to L2             
+
+L1:		mov rain,'0'	       ;if al equals 0, put 0(ASCII) in rain
+		XOR eax,eax           ;clears eax
 		jmp ENDLOOP
-L2:  	        mov rain,'1'	 ;else al equals 1, move 1(ASCII) into rain
-		XOR eax,eax          ;Clears eax
+
+L2:  	mov rain,'1'          ;else al equals 1, move 1(ASCII) into rain
+		
+		XOR eax,eax           ;Clears eax
 ENDLOOP:
-	ret
+	     
+		ret
 	newNum ENDP;End NewNum proc
 
 ;------------------------------------------------------------------------------------
 
 RightIf PROC USES edx;John Proc
-	               cmp ah , 4Dh
-	               je Then1
-                       jmp endright        ; Jmp to end of proc
-			Then1: 
-				inc beginX       ; Increments X coordinate value	
-				call print
-				call ReadKeyFlush;
-	endright:
-	ret
+	     cmp ah , 4Dh
+	     je Then1
+          jmp endright           ; Jmp to end of proc
+
+Then1: 
+		inc beginX             ; Increments X coordinate value	
+	     call print
+		call ReadKeyFlush 
+	
+endright:
+	     
+		ret
  RightIf ENDP
 
  ;---------------------------------------------------------------------------------------------------------------------
  
  LeftIf PROC USES edx;John Proc
-	cmp ah, 4Bh
-	 je Then2
-			 jmp endleft        ; Jmp to end of loop if user put in value that is not 3 or left arrow
-			 Then2:
-				 dec beginX      ; Decrements X to move to the left
-				 if6: cmp beginX, 0; check if X goes under 0
-					jl then6
-					jmp end6
-					then6: 
-						mov beginX, 0
-					end6:	
-				 call print
-				 call ReadKeyFlush ;Flushes keyboard input buffer and clears internal counter for faster response time
-			endleft:
-			ret
+	     cmp ah, 4Bh
+	     je Then2
+	     jmp endleft             ; Jmp to end of loop if user put in value that is not 3 or left arrow
+Then2:
+	     dec beginX              ; Decrements X to move to the left
+if6:      
+          cmp beginX, 0           ; check if X goes under 0
+	     jl then6
+	     jmp end6
+
+then6: 
+	     mov beginX, 0
+end6:	
+      
+	     call print
+	     call ReadKeyFlush       ;Flushes keyboard input buffer and clears internal counter for faster response time
+endleft:
+	 
+	     ret
  LeftIf ENDP
 
  ;------------------------------------------------------------------------------------------------------------------------
 
  
  StartPosition PROC USES edx;John Proc
-	;Player Starting Point
-	mov dh , 23d; column 24
-	mov dl,beginX ; row 39
-	call Gotoxy; places cursor in the middle of the bottom part of the console window
-	mov al,'X'; Copies player character to the AL register to be printed
-	call WriteChar; Prints player to screen console
-	call crlf
-	;Player Starting point
-	Xor al, al
-	ret
+	     ;Player Starting Point
+	     mov dh , 23d; column 24
+	     mov dl,beginX ; row 39
+	     call Gotoxy; places cursor in the middle of the bottom part of the console window
+	     mov al,'X'; Copies player character to the AL register to be printed
+	     call WriteChar; Prints player to screen console
+	     call crlf
+	    ;Player Starting point
+	     Xor al, al
+	     ret
  StartPosition ENDP
 
 ;------------------------------------------------------------------------------------------------------------------------
