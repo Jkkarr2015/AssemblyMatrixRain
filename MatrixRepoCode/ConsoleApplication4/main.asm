@@ -40,11 +40,7 @@ main PROC
 	   XOR eax,eax            ;clear eax
 	   call clrscr
 	   call StartPosition
-	   push 15
-	   push offset yArray
-	   push 0
-	   call FillArray
-	   add esp,12
+	  
 	   
 	   push 15
 	   push offset xArray
@@ -78,13 +74,13 @@ FillArray proc uses ecx       ; Parameters (Number of elements,Offset Array, Ran
 	    push ebp             ; Pushing it to access parameters from stack
 	    mov ebp, esp
 	    call Randomize	       ;Makes RandomRange random based on time of day 
-	    mov ecx, [ebp + 16]  ; Moves first parameter that will be the number for the counter
+	    mov ecx, [ebp + 20]  ; Moves first parameter that will be the number for the counter
 
-	    mov edi, [ebp + 12]  ; Offset of array put into edi
+	    mov edi, [ebp + 16]  ; Offset of array put into edi
 L1: 
 	    cmp ecx ,0           ; Loop for setting entire array with random values
 	    je endL1
-	    mov eax,[ebp + 8]    ; Range Paramet put into eax
+	    mov eax,[ebp + 12]    ; Range Paramet put into eax
 	    call RandomRange
 	    cld                  ; Set direction to forward for the array intialization
 	    stosb                ; Stores contents of eax into array
@@ -104,8 +100,8 @@ CheckAll:
 		cmp esi,14
 		ja  EndCheck
 
-		mov ebx,offset yArray
-		mov al,[ebx+esi]
+		
+		mov al,yArray[esi]
 
 		cmp al,23d           ;see if rain hits the ground
 	     je  _there
@@ -141,10 +137,11 @@ All:
 		mov al,[ebx+esi]
 		inc al		 ;increment y coordinate
 		mov [ebx+esi],al 
-	     call print
+	     
 		inc esi
 		jmp All
 EndAll:	     
+	     call print
 		ret
 fall ENDP;End move proc
 
