@@ -8,21 +8,25 @@ INCLUDE Irvine32.inc
 INCLUDE Macros.inc
 .data
 
-randPos dword ?		;Random int for 1 and 0 X position
-yArray byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				;Y for coordinate
-xArray byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-rainArray byte '0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'
+;Array Variables
+yArray byte 15 DUP(0)				;Y for coordinate
+xArray byte 15 DUP(?)
+rainArray byte 15 DUP(?)
+
+;Title Variable
 titleStr byte "Matrix Rain",0				;Title
+
+;X / Death Proc Variables
 beginX byte 23 
 deathMessage byte "You were hit!...",0
 replay byte "Play Again? (Y/N)",0
 response byte 0; Response to yes or no for replay
 
-
+;Window Sizing Variables
 outHandle Handle 0
-
 ;BufferBounds COORD <46,25>
 WindowRect Small_Rect <0,0,45,24>;Left, top, right, and bottom bounds for window size
+
 .code
 
 main PROC
