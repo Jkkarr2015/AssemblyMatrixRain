@@ -39,21 +39,18 @@ main PROC
 	   call SetTextColor      ;Sets the color
 	   XOR eax,eax            ;clear eax
 	   call clrscr
-	   call StartPosition
+	   call newNum
+	   
 	  
 	   
-	   push 15
+	   push 5
 	   push offset xArray
 	   push 45
 	   call FillArray
 	   add esp,12
-	  
-	   push 15
-	   push offset rainArray
-	   push 1
-	   call FillArray
-	   add esp,12
-
+	 
+	   
+	   call StartPosition
 KeyLoop:;Die to break the loop
 	   call checkY
 	   call fall             ;call fall proc
@@ -210,20 +207,19 @@ endleft:
 
 print PROC 
 		call clrscr
-		push ebp
+		
 		mov esi,0
 PrintAll:
-		cmp esi,14
+		cmp esi,5
 		ja  EndPrint
-		mov ebx,offset xArray
-		mov al,[ebx+esi]
 		
-		mov ebp,offset yArray
-		mov ah,[ebp+esi]
-		mGotoxy al,ah            ;Moves cursor to the position of rain
+		mov dl,xArray[esi]
+
+		mov dh,yArray[esi]
+		call Gotoxy            ;Moves cursor to the position of rain
 		
-		mov edi,offset rainArray
-		mov al,[edi+esi]
+		
+		mov al,rainArray[esi]
 		call WriteChar          ;Rewrite rain
 	     inc esi
 		
@@ -251,6 +247,33 @@ print		ENDP
 
 ;----------------------------------------------------------------------------------------------------------------------
 
+newNum Proc
+	mov ecx, 5
+	mov esi,0
+L1:
+	mov al, 2
+	call RandomRange
+
+	cmp ecx, 0
+	je ENDL
+	cmp al, 0
+	jne L2
+	mov rainArray[esi], '0'; Movs char zero into rain
+	XOR eax,eax; Clears EAX
+	inc esi
+	dec ecx
+	jmp L1
+L2:
+	mov rainArray[esi], '1'
+	XOR eax,eax
+	inc esi
+	dec ecx
+	jmp L1
+ENDL:
+	ret
+newNum endp
+
+;--------------------------------------------------------------------------------------------------------------------------
 Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
 		mov esi,0
 CheckAll:
