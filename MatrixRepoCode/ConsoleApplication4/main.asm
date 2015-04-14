@@ -241,7 +241,7 @@ end5:
 		xor al,al               ;clear 
 		jmp PrintAll
 EndPrint:
-		pop ebp
+		
 		ret
 print		ENDP
 
