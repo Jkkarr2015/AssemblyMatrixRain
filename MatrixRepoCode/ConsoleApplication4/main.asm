@@ -44,6 +44,8 @@ main PROC
 	   call SetTextColor      ;Sets the color
 	   XOR eax,eax            ;clear eax
 	   call clrscr
+	   
+	   push 5			;count
 	   call newNum
 	   
 	  
@@ -58,6 +60,7 @@ main PROC
 	   call StartPosition
 KeyLoop:;Die to break the loop
 	   call checkY
+	   push 5
 	   call fall             ;call fall proc
 	   call ReadKey          ; looks for keyboard input
 	   jz KeyLoop
@@ -105,7 +108,7 @@ CheckAll:
 		
 		mov al,yArray[esi]
 
-		cmp al,23d           ;see if rain hits the ground
+		cmp al,22d           ;see if rain hits the ground
 	     je  _there
 	     jmp _endif1
 _there:
@@ -126,24 +129,61 @@ EndCheck:
 		ret
 checkY ENDP ;end checkY proc
 
+;----------------------------------------------------------------------------------------------------------------------
+
+Reset PROC uses eax ebx 
+	mov yArray[esi],0
+
+	mov al, 2
+	call RandomRange
+
+	cmp al, 0
+	jne L2
+	mov rainArray[esi], '0'; Movs char zero into rain
+	XOR eax,eax; Clears EAX
+	jmp _End
+L2:
+	mov rainArray[esi], '1'
+	XOR eax,eax
+_End:
+
+	mov al,45
+	call RandomRange 
+
+	mov xArray[esi],al
+	
+	ret
+Reset ENDP
+
 ;---------------------------------------------------------------------------------------------------------------------
 
 fall PROC ;proc for moving pieces downProc by Kilian	
+		push ebp 
+		mov ebp,esp
+		mov ecx,[ebp+8]
 		mov eax,50 		 ; delay time ms
-		call Delay		 ;So we can see change speed 
+		call Delay		 ;So we can see change speed
 		mov esi,0
 All:
-		cmp esi,14
-		ja  EndAll
-		mov ebx,offset yArray
-		mov al,[ebx+esi]
+		cmp ecx,0
+		jz  EndAll
+		cmp yArray[esi],23
+		je  _Reset
+		jmp EndReset
+_Reset:
+		call Reset
+		jmp skipYInc
+EndReset:
+		mov al,yArray[esi]
 		inc al		 ;increment y coordinate
-		mov [ebx+esi],al 
-	     
-		inc esi
+		mov yArray[esi],al 
+skipYInc:
+	     inc esi
+		dec ecx
 		jmp All
 EndAll:	     
-	     call print
+	     pop ebp
+		call print
 		ret
 fall ENDP;End move proc
 
@@ -231,12 +271,12 @@ PrintAll:
 		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
 		mov dl , beginX
 if5: 
-		cmp beginX, 79          ; check if X goes past 79
+		cmp beginX,45           ; check if X goes past 79
 		jg then5
 		jmp end5
 
 then5: 
-		mov dl, 78d
+		mov dl, 44d
 		mov dh, 23d
 end5:
 		call Gotoxy
@@ -253,7 +293,9 @@ print		ENDP
 ;----------------------------------------------------------------------------------------------------------------------
 
 newNum Proc
-	mov ecx, 5
+	push ebp
+	mov ebp,esp
+	mov ecx,[ebp+8]
 	mov esi,0
 L1:
 	mov al, 2
@@ -275,19 +317,21 @@ L2:
 	dec ecx
 	jmp L1
 ENDL:
+	pop ebp
 	ret
 newNum endp
 
 ;--------------------------------------------------------------------------------------------------------------------------
 Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
 		mov esi,0
+
 CheckAll:
 If4:
+
 		mov al , beginX         ; Moves the Character's X coordinate into eax for cmp
 		cmp ah,14
 		ja  EndCheck
-		mov ebx,offset xArray
-		mov ah,[ebx+esi]
+		mov ah,xArray[esi]
 
 		cmp al , ah
 		je then4
@@ -295,7 +339,7 @@ If4:
 then4:
 		call Clrscr
 		mov dh, 12
-		mov dl, 33
+		mov dl, 23
 		call Gotoxy             ; Sets cursor to print kill message
 		mov edx, offset deathmessage
 		call WriteString        ; Displays deathmessage
@@ -305,7 +349,7 @@ then4:
 loop1:
 		cmp response , 0
 		jne answer	
-		mov dl,33
+		mov dl,23
 		mov dh,13
 		call Gotoxy
 		mov edx, offset replay
