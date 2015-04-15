@@ -47,7 +47,7 @@ main PROC
 	   
 	   push 5			;count
 	   call newNum
-	   
+	   add esp,4
 	  
 	   
 	   push 5
