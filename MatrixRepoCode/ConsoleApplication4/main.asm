@@ -62,6 +62,7 @@ KeyLoop:;Die to break the loop
 	   call checkY
 	   push 5
 	   call fall             ;call fall proc
+	   add esp,4
 	   call ReadKey          ; looks for keyboard input
 	   jz KeyLoop
 
