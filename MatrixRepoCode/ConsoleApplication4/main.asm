@@ -102,6 +102,7 @@ FillArray endp
 
 checkY PROC ;proc to check y-coordinate Proc by Kilian
 		mov esi,0
+		mov ecx,0
 CheckAll:
 		cmp esi,14
 		ja  EndCheck
@@ -110,21 +111,35 @@ CheckAll:
 		mov al,yArray[esi]
 
 		cmp al,22d           ;see if rain hits the ground
-	     je  _there
-	     jmp _endif1
+	     je  _save
+		jmp _endSave
+_save:
+		push esi
+		add ecx,1
+_endSave:
+		cmp ecx,0
+		jnz  _there
+	     jz _endif1
 _there:
-	     call Death
-	     push 15
-		push offset rainArray
-		push 1
-		call FillArray         ;make new piece of rain
-	     add esp,12
+	     push ecx
+		call Death
+		
+		push 5
+		call newNum         ;make new piece of rain
+	     add esp,4
 
-		push 15
+		push 5
 		push offset xArray
 		push 45
 		call FillArray         ;make new starting X-coord
 		add esp,12
+
+		push 5
+		push offset yArray
+		push 1
+		call FillArray			;make y-coordinates 0
+		add esp,12
+
 _endif1:
 EndCheck:
 		ret
@@ -324,20 +339,27 @@ newNum endp
 
 ;--------------------------------------------------------------------------------------------------------------------------
 Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
-		mov esi,0
-
+		pop ecx
+		mov al , beginX         ; Moves the Character's X coordinate into eax for cmp
 CheckAll:
 If4:
-
-		mov al , beginX         ; Moves the Character's X coordinate into eax for cmp
-		cmp ah,14
-		ja  EndCheck
+		cmp ecx,0
+		jz  EndCheck
+		pop esi
+		dec ecx
 		mov ah,xArray[esi]
 
 		cmp al , ah
 		je then4
 		jmp yes
 then4:
+popAll:
+		cmp ecx,0
+		jz endPop
+		pop esi
+		dec ecx
+		jmp popAll
+endPop:
 		call Clrscr
 		mov dh, 12
 		mov dl, 23
@@ -373,7 +395,6 @@ answer:
 yes:
 	
 		mov response,0
-		inc esi
 		jmp CheckAll
 EndCheck:	
 		ret
