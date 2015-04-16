@@ -59,10 +59,8 @@ main PROC
 	   
 	   call StartPosition
 KeyLoop:;Die to break the loop
-	   call checkY
-	   push 5
-	   call fall             ;call fall proc
-	   add esp,4
+	   
+	   call print
 	   call ReadKey          ; looks for keyboard input
 	   jz KeyLoop
 
@@ -174,32 +172,27 @@ Reset ENDP
 ;---------------------------------------------------------------------------------------------------------------------
 
 fall PROC ;proc for moving pieces downProc by Kilian	
+; Parameter (Int indexOfElement)
 		push ebp 
 		mov ebp,esp
-		mov ecx,[ebp+8]
-		mov eax,50 		 ; delay time ms
+		mov esi,[ebp+8]
+	     mov eax, 15 ; delay time ms
 		call Delay		 ;So we can see change speed
-		mov esi,0
+		
 All:
-		cmp ecx,0
-		jz  EndAll
 		cmp yArray[esi],23
 		je  _Reset
 		jmp EndReset
 _Reset:
 		call Reset
-		jmp skipYInc
+		jmp EndAll
 EndReset:
-		mov al,yArray[esi]
-		inc al		 ;increment y coordinate
-		mov yArray[esi],al 
-skipYInc:
-	     inc esi
-		dec ecx
-		jmp All
+		
+		inc yArray[esi]		 ;increment y coordinate
+		
 EndAll:	     
 	     pop ebp
-		call print
+		
 		ret
 fall ENDP;End move proc
 
@@ -270,7 +263,8 @@ print PROC
 		call clrscr
 		
 		mov esi,0
-PrintAll:
+		
+PrintAll: 
 		cmp esi,5
 		ja  EndPrint
 		
@@ -282,11 +276,14 @@ PrintAll:
 		
 		mov al,rainArray[esi]
 		call WriteChar          ;Rewrite rain
-	     inc esi
+	     
 		
+		
+		
+if5:
 		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
 		mov dl , beginX
-if5: 
+
 		cmp beginX,45           ; check if X goes past 79
 		jg then5
 		jmp end5
@@ -299,12 +296,18 @@ end5:
 		mov al,'X'              ;move X into al                              *********
 		call WriteChar          ;print it					**********
 		call Crlf
-		xor al,al               ;clear 
+		xor al,al               ;clear
+
+		push esi
+		call fall
+		pop esi
+		inc esi 
 		jmp PrintAll
 EndPrint:
 		
 		ret
 print		ENDP
+
 
 ;----------------------------------------------------------------------------------------------------------------------
 
