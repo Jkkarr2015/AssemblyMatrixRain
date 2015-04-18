@@ -98,50 +98,6 @@ endL1:
 FillArray endp
 ;---------------------------------------------------------------------------------------------------------------------
 
-checkY PROC ;proc to check y-coordinate Proc by Kilian
-		mov esi,0
-		mov ecx,0
-CheckAll:
-		cmp esi,14
-		ja  EndCheck
-
-		
-		mov al,yArray[esi]
-
-		cmp al,22d           ;see if rain hits the ground
-	     je  _save
-		jmp _endSave
-_save:
-		push esi
-		add ecx,1
-_endSave:
-		cmp ecx,0
-		jnz  _there
-	     jz _endif1
-_there:
-	     push ecx
-		call Death
-		
-		push 5
-		call newNum         ;make new piece of rain
-	     add esp,4
-
-		push 5
-		push offset xArray
-		push 45
-		call FillArray         ;make new starting X-coord
-		add esp,12
-
-		push 5
-		push offset yArray
-		push 1
-		call FillArray			;make y-coordinates 0
-		add esp,12
-
-_endif1:
-EndCheck:
-		ret
-checkY ENDP ;end checkY proc
 
 ;----------------------------------------------------------------------------------------------------------------------
 
@@ -182,11 +138,18 @@ fall PROC ;proc for moving pieces downProc by Kilian
 All:
 		cmp yArray[esi],23
 		je  _Reset
-		jmp EndReset
+		jmp endDeath
 _Reset:
+		mov cl, beginX
+	     cmp xArray[esi], cl 
+		je Death
 		call Reset
 		jmp EndAll
 EndReset:
+
+Death:
+		call Death
+endDeath:
 		
 		inc yArray[esi]		 ;increment y coordinate
 		
@@ -342,27 +305,7 @@ newNum endp
 
 ;--------------------------------------------------------------------------------------------------------------------------
 Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
-		pop ecx
-		mov al , beginX         ; Moves the Character's X coordinate into eax for cmp
-CheckAll:
-If4:
-		cmp ecx,0
-		jz  EndCheck
-		pop esi
-		dec ecx
-		mov ah,xArray[esi]
-
-		cmp al , ah
-		je then4
-		jmp yes
-then4:
-popAll:
-		cmp ecx,0
-		jz endPop
-		pop esi
-		dec ecx
-		jmp popAll
-endPop:
+	
 		call Clrscr
 		mov dh, 12
 		mov dl, 23
@@ -398,7 +341,7 @@ answer:
 yes:
 	
 		mov response,0
-		jmp CheckAll
+		
 EndCheck:	
 		ret
 Death ENDP
