@@ -60,14 +60,10 @@ main PROC
 	 
 	   
 	   call Startposition
-KeyLoop:;Die to break the loop
 	   
 	   
 	   call print
-	  
-		
-	   jmp KeyLoop
-EndLoop:
+	 
 
 	   exit
 main ENDP
@@ -226,53 +222,62 @@ print PROC
 		mov count, 0; intilize as zero to reset the print proc
 		
 PrintAll: 
-		call clrscr
+		
           
 		
 
           mov ecx, count
+		mov ebx , 0
+		cmp esi,4
+		je four
+		jmp end4
 
-		cmp esi,5
-		ja  EndPrint
-		
-innerLoop:
-		
-		
+four:
+      mov esi , 4
+end4:
 
-		mov dl,xArray[esi]
+inLoop2:
+		
+		mov dl,xArray[ebx]
 
-		mov dh,yArray[esi]
+		mov dh,yArray[ebx]
 		call Gotoxy            ;Moves cursor to the position of rain
 		
 		
-		mov al,rainArray[esi]
+		mov al,rainArray[ebx]
 		call WriteChar          ;Rewrite rain
-	     
-		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
-		mov dl , beginX
-		call Gotoxy
-		mov al,'X'              ;move X into al                              *********
-		call WriteChar          ;print it					**********
-		call Crlf
-		xor al,al               ;clear
 
-
+		push ecx
+		cmp ebx, 0
+		je xmov
+		jmp endx
+xmov:
 		call ReadKey          ; looks for keyboard input
 	     call RightIf
           call LeftIf
-		
-
-		mov ebx, esi
+endx:	
+		pop ecx
 		call fall
-	
-
-	
-	  
-	
 		
+		cmp ecx, 0
+		jne decrease
+		jmp endD
+decrease:
+		dec ecx
+endD:
+		inc ebx
+
+		
+	    
+
+
+		cmp ebx, esi
+		ja endinLoop
+		jmp inLoop2
+
 endinLoop:
 		
-		mov eax , 125
+		mov eax , 105
 		call delay
 		call clrscr
 		
@@ -284,46 +289,13 @@ endinLoop:
 		call Crlf
 		xor al,al               ;clear
 
-		cmp ecx,0
+		
+		cmp ecx, 0
 		je  random
 		mov ebx, 0
 		jmp inLoop2
-
-inLoop2:
-		
-		
-		mov dl,xArray[ebx]
-
-		mov dh,yArray[ebx]
-		call Gotoxy            ;Moves cursor to the position of rain
-		
-		
-		mov al,rainArray[ebx]
-		call WriteChar          ;Rewrite rain
-
-		cmp ebx, 0
-		je xmov
-		jmp endx
-xmov:
-		call ReadKey          ; looks for keyboard input
-	     call RightIf
-          call LeftIf
-endx:	
-		call fall
-
-		dec ecx
-		inc ebx
-
-		
-	    
-
-
-		cmp ebx, esi
-		jae endinLoop
-		jmp inLoop2
-
 random:
-		call clrscr
+		
 		mov eax, 5
 		call RandomRange
 		mov ebx, eax
@@ -334,6 +306,8 @@ random:
 
 
 Increase:
+		cmp esi, 4
+		je PrintAll
 		inc count
 		inc esi 
 		jmp PrintAll
