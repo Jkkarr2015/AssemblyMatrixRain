@@ -22,6 +22,8 @@ beginX byte 23
 deathMessage byte "You were hit!...",0
 replay byte "Play Again? (Y/N)",0
 response byte 0; Response to yes or no for replay
+count dword 0
+
 
 ;Window Sizing Variables
 outHandle Handle 0
@@ -57,8 +59,9 @@ main PROC
 	   add esp,12
 	 
 	   
-	   call StartPosition
+	   call Startposition
 KeyLoop:;Die to break the loop
+	   
 	   
 	   call print
 	   call ReadKey          ; looks for keyboard input
@@ -127,21 +130,19 @@ Reset ENDP
 
 ;---------------------------------------------------------------------------------------------------------------------
 
-fall PROC ;proc for moving pieces downProc by Kilian	
+fall PROC uses eax ;proc for moving pieces downProc by Kilian	
 ; Parameter (Int indexOfElement)
-		push ebp 
-		mov ebp,esp
-		mov esi,[ebp+8]
-	     mov eax, 15 ; delay time ms
-		call Delay		 ;So we can see change speed
-		
+		push esi
+		mov esi,ebx
+	    ;mov eax, 25
+	    ;call delay
 All:
 		cmp yArray[esi],23
 		je  _Reset
 		jmp endDeath
 _Reset:
-		mov cl, beginX
-	     cmp xArray[esi], cl 
+		mov al, beginX
+	     cmp xArray[esi], al 
 		je Death
 		call Reset
 		jmp EndAll
@@ -153,9 +154,8 @@ endDeath:
 		
 		inc yArray[esi]		 ;increment y coordinate
 		
-EndAll:	     
-	     pop ebp
-		
+EndAll:	    
+		pop esi
 		ret
 fall ENDP;End move proc
 
@@ -168,7 +168,9 @@ RightIf PROC USES edx;John Proc
 
 Then1: 
 		inc beginX             ; Increments X coordinate value	
-	     call print
+	     
+		
+
 		call ReadKeyFlush 
 	
 endright:
@@ -191,9 +193,8 @@ if6:
 
 then6: 
 	     mov beginX, 0
-end6:	
-      
-	     call print
+end6:
+
 	     call ReadKeyFlush       ;Flushes keyboard input buffer and clears internal counter for faster response time
 endleft:
 	 
@@ -223,14 +224,25 @@ endleft:
 ;******* proc to make it easier to reprint the rain;Kilian Proc
 
 print PROC 
-		call clrscr
+		
 		
 		mov esi,0
+		mov count, 0; intilize as zero to reset the print proc
 		
 PrintAll: 
+		call clrscr
+          
+		
+
+          mov ecx, count
+
 		cmp esi,5
 		ja  EndPrint
 		
+innerLoop:
+		
+		
+
 		mov dl,xArray[esi]
 
 		mov dh,yArray[esi]
@@ -240,36 +252,98 @@ PrintAll:
 		mov al,rainArray[esi]
 		call WriteChar          ;Rewrite rain
 	     
-		
-		
-		
-if5:
 		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
 		mov dl , beginX
-
-		cmp beginX,45           ; check if X goes past 79
-		jg then5
-		jmp end5
-
-then5: 
-		mov dl, 44d
-		mov dh, 23d
-end5:
 		call Gotoxy
 		mov al,'X'              ;move X into al                              *********
 		call WriteChar          ;print it					**********
 		call Crlf
 		xor al,al               ;clear
 
-		push esi
+
+		call ReadKey          ; looks for keyboard input
+	     call RightIf
+          call LeftIf
+		
+
+		mov ebx, esi
 		call fall
-		pop esi
+	
+
+	
+	  
+	
+		
+endinLoop:
+		
+		mov eax , 125
+		call delay
+		call clrscr
+		
+		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+		mov dl , beginX
+		call Gotoxy
+		mov al,'X'              ;move X into al                              *********
+		call WriteChar          ;print it					**********
+		call Crlf
+		xor al,al               ;clear
+
+		cmp ecx,0
+		je  random
+		mov ebx, 0
+		jmp inLoop2
+
+inLoop2:
+		
+		
+		mov dl,xArray[ebx]
+
+		mov dh,yArray[ebx]
+		call Gotoxy            ;Moves cursor to the position of rain
+		
+		
+		mov al,rainArray[ebx]
+		call WriteChar          ;Rewrite rain
+
+		
+		call ReadKey          ; looks for keyboard input
+	     call RightIf
+          call LeftIf
+		
+		call fall
+
+		dec ecx
+		inc ebx
+
+		
+	    
+
+
+		cmp ebx, esi
+		jae endinLoop
+		jmp inLoop2
+
+random:
+		call clrscr
+		mov eax, 5
+		call RandomRange
+		mov ebx, eax
+
+		cmp ebx , 0
+		je Increase
+		jmp PrintAll
+
+
+Increase:
+		inc count
 		inc esi 
 		jmp PrintAll
 EndPrint:
 		
 		ret
 print		ENDP
+
+
 
 
 ;----------------------------------------------------------------------------------------------------------------------
