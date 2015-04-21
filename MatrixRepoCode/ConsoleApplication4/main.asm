@@ -64,11 +64,7 @@ KeyLoop:;Die to break the loop
 	   
 	   
 	   call print
-	   call ReadKey          ; looks for keyboard input
-	   jz KeyLoop
-
-	   call RightIf
-	   call LeftIf
+	  
 		
 	   jmp KeyLoop
 EndLoop:
@@ -305,11 +301,14 @@ inLoop2:
 		mov al,rainArray[ebx]
 		call WriteChar          ;Rewrite rain
 
-		
+		cmp ebx, 0
+		je xmov
+		jmp endx
+xmov:
 		call ReadKey          ; looks for keyboard input
 	     call RightIf
           call LeftIf
-		
+endx:	
 		call fall
 
 		dec ecx
