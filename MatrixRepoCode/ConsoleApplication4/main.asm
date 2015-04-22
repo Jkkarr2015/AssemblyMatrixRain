@@ -23,7 +23,14 @@ deathMessage byte "You were hit!...",0  ;Message for being hit
 replay byte "Play Again? (Y/N)",0       ;Question if player would like to try again
 response byte 0; Response to yes or no for replay
 count dword 0
+items dword ?		;count for number of items wanted to fall
 
+;Level Names
+Lvl1 byte "Level 1:",0
+Lvl2 byte "Level 2:",0
+Lvl3 byte "Level 3:",0
+Lvl4 byte "Level 4:",0
+Lvl5 byte "Level 5:",0
 
 ;Window Sizing Variables
 outHandle Handle 0            ;Allows us to change the window size
@@ -45,7 +52,104 @@ main PROC
 	   
 	   call clrscr ; Wipes screen for fresh start
 	  
+	   mov edx,offset Lvl1
+	   call WriteString
+	   mov eax,1000
+	   call delay
+	   call clrscr
+
 	   ; Level 1 code area
+	   push 5		;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+	   add esp,4
+	  
+	   push 5
+	   push offset xArray
+	   push 45
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+	   add esp,12
+	  
+	   call Startposition
+	   
+	   call Level1
+	   ; End of Level 1 code area
+	   
+	   mov edx,offset Lvl2
+	   call WriteString
+	   mov eax,1000
+	   call delay
+	   call clrscr
+
+	   	   ; Level 2 code area
+	   push 7		;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+	   add esp,4
+	  
+	   push 7
+	   push offset xArray
+	   push 45
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+	   add esp,12
+	  
+	   call Startposition
+	   
+	   call Level2
+
+	   ; End of Level 2 code area
+
+	   mov edx,offset Lvl3
+	   call WriteString
+	   mov eax,1000
+	   call delay
+	   call clrscr
+
+	   	   ; Level 3 code area
+	   push 9		;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+	   add esp,4
+	  
+	   push 9
+	   push offset xArray
+	   push 45
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+	   add esp,12
+	  
+	   call Startposition
+	   
+;	   call Level3
+
+	   ; End of Level 3 code area
+
+	   mov edx,offset Lvl4
+	   call WriteString
+	   mov eax,1000
+	   call delay
+	   call clrscr
+
+	   	   ; Level 4 code area
+	   push 12		;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+	   add esp,4
+	  
+	   push 12
+	   push offset xArray
+	   push 45
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+	   add esp,12
+	  
+	   call Startposition
+	   
+;	   call Level4
+
+	   ; End of Level 4 code area
+
+	   mov edx,offset Lvl5
+	   call WriteString
+	   mov eax,1000
+	   call delay
+	   call clrscr
+
+	   	   ; Level 5 code area
 	   push 15		;Push number of falling items
 	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
 	   add esp,4
@@ -58,10 +162,11 @@ main PROC
 	  
 	   call Startposition
 	   
-	   call Level2
+;	   call Level5
 
-	   ;call Level1
-	   ; End of Level 1 code area
+	   ; End of Level 5 code area
+
+
 
 	   exit
 main ENDP
@@ -122,6 +227,14 @@ Reset ENDP
 
 fall PROC uses eax ;proc for moving pieces downProc by Kilian	
 ; Parameter (Int indexOfElement)
+		xor edx,edx
+
+		push ebp
+		mov ebp,esp
+		
+		mov edx,[ebp+8]
+
+
 		push esi
 		mov esi,ebx
 	    ;mov eax, 25
@@ -131,6 +244,14 @@ All:
 		je  _Reset
 		jmp endDeath
 _Reset:
+		dec edx	
+		cmp edx,0
+		jne _it
+		mov items,edx
+		jmp EndAll
+
+_it:
+
 		mov al, beginX
 	     cmp xArray[esi], al 
 		je Death
@@ -141,11 +262,12 @@ EndReset:
 Death:
 		call Death
 endDeath:
-		
+
 		inc yArray[esi]		 ;increment y coordinate
-		
+
 EndAll:	    
 		pop esi
+		pop ebp
 		ret
 fall ENDP;End move proc
 
@@ -215,15 +337,12 @@ endleft:
 
 Level1 PROC 
 		
-		
+		mov items,20		
 		mov esi,0
 		mov count, 0; intilize as zero to reset the print proc
-		
-PrintAll: 
-		
-          
-		
 
+PrintAll: 
+				
           mov ecx, count
 		mov ebx , 0
 		cmp esi,4
@@ -245,10 +364,15 @@ inLoop2:
 		mov al,rainArray[ebx]
 		call WriteChar          ;Rewrite rain
 
+		push items
 
-		
 		call fall
 		
+		add esp,4
+
+		cmp items,0
+		jz  EndPrint
+
 		cmp ecx, 0
 		jne decrease
 		jmp endD
@@ -345,9 +469,14 @@ inLoop2:
 		mov al,rainArray[ebx]
 		call WriteChar          ;Rewrite rain
 
-
+		push 50
 		
 		call fall
+		
+		add esp,4
+
+		cmp items,0
+		jz  EndPrint
 		
 		cmp ecx, 0
 		jne decrease
@@ -356,9 +485,6 @@ decrease:
 		dec ecx
 endD:
 		inc ebx
-
-		
-	    
 
 
 		cmp ebx, esi
