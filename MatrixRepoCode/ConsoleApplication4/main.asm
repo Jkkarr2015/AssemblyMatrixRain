@@ -10,60 +10,56 @@ INCLUDE Macros.inc
 .data
 
 ;Array Variables
-yArray byte 15 DUP(0)				;Y for coordinate
-xArray byte 15 DUP(?)
-rainArray byte 15 DUP(?)
+yArray byte 15 DUP(0)				;Y coordinate array
+xArray byte 15 DUP(?)                   ;X coordinate array
+rainArray byte 15 DUP(?)                ;Char array for falling pieces
 
 ;Title Variable
-titleStr byte "Matrix Rain",0				;Title
+titleStr byte "Matrix Rain",0				;Title on the title bar for the window
 
 ;X / Death Proc Variables
-beginX byte 23 
-deathMessage byte "You were hit!...",0
-replay byte "Play Again? (Y/N)",0
+beginX byte 23                          ;Begining X coordinate for player character
+deathMessage byte "You were hit!...",0  ;Message for being hit
+replay byte "Play Again? (Y/N)",0       ;Question if player would like to try again
 response byte 0; Response to yes or no for replay
 count dword 0
 
 
 ;Window Sizing Variables
-outHandle Handle 0
+outHandle Handle 0            ;Allows us to change the window size
 ;BufferBounds COORD <46,25>
 WindowRect Small_Rect <0,0,45,24>;Left, top, right, and bottom bounds for window size
 
 .code
 
 main PROC
+	   ;Window Manipulation area
 	   INVOKE GetStdHandle,STD_OUTPUT_HANDLE
 	   mov outHandle,eax
-
-	   ;INVOKE SetConsoleScreenBufferSize,outHandle,BufferBounds			;Set console buffer size bounds to X:45 and Y:24 
-
 	   INVOKE SetConsoleWindowInfo,outHandle,TRUE,ADDR WindowRect			;Set console window to coordinates of Size variable
-	  
 	   INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
-
 	   mov eax,green + (black * 16);Green Text, black background
 	   call SetTextColor      ;Sets the color
 	   XOR eax,eax            ;clear eax
-	   call clrscr
+	   ;End Window Manipulation area
 	   
-	   push 5			;count
-	   call newNum
+	   call clrscr ; Wipes screen for fresh start
+	  
+	   ; Level 1 code area
+	   push 5			;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
 	   add esp,4
 	  
-	   
 	   push 5
 	   push offset xArray
 	   push 45
-	   call FillArray
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
 	   add esp,12
-	 
-	   
+	  
 	   call Startposition
 	   
-	   
-	   call print
-	 
+	   call Level1
+	   ; End of Level 1 code area
 
 	   exit
 main ENDP
@@ -215,7 +211,7 @@ endleft:
 
 ;******* proc to make it easier to reprint the rain;Kilian Proc
 
-print PROC 
+Level1 PROC 
 		
 		
 		mov esi,0
@@ -311,7 +307,7 @@ Increase:
 EndPrint:
 		
 		ret
-print		ENDP
+Level1		ENDP
 
 
 

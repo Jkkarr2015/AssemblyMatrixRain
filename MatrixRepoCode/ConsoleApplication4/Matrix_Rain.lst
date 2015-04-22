@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/22/15 12:01:30
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/22/15 12:29:04
 main.asm						     Page 1 - 1
 
 
@@ -34,28 +34,28 @@ main.asm						     Page 1 - 1
  00000000			.data
 
 				;Array Variables
- 00000000  0000000F [		yArray byte 15 DUP(0)				;Y for coordinate
+ 00000000  0000000F [		yArray byte 15 DUP(0)				;Y coordinate array
 	    00
 	   ]
- 0000000F  0000000F [		xArray byte 15 DUP(?)
+ 0000000F  0000000F [		xArray byte 15 DUP(?)                   ;X coordinate array
 	    00
 	   ]
- 0000001E  0000000F [		rainArray byte 15 DUP(?)
+ 0000001E  0000000F [		rainArray byte 15 DUP(?)                ;Char array for falling pieces
 	    00
 	   ]
 
 				;Title Variable
- 0000002D 4D 61 74 72 69	titleStr byte "Matrix Rain",0				;Title
+ 0000002D 4D 61 74 72 69	titleStr byte "Matrix Rain",0				;Title on the title bar for the window
 	   78 20 52 61 69
 	   6E 00
 
 				;X / Death Proc Variables
- 00000039 17			beginX byte 23 
- 0000003A 59 6F 75 20 77	deathMessage byte "You were hit!...",0
+ 00000039 17			beginX byte 23                          ;Begining X coordinate for player character
+ 0000003A 59 6F 75 20 77	deathMessage byte "You were hit!...",0  ;Message for being hit
 	   65 72 65 20 68
 	   69 74 21 2E 2E
 	   2E 00
- 0000004B 50 6C 61 79 20	replay byte "Play Again? (Y/N)",0
+ 0000004B 50 6C 61 79 20	replay byte "Play Again? (Y/N)",0       ;Question if player would like to try again
 	   41 67 61 69 6E
 	   3F 20 28 59 2F
 	   4E 29 00
@@ -64,7 +64,7 @@ main.asm						     Page 1 - 1
 
 
 				;Window Sizing Variables
- 00000062 00000000		outHandle Handle 0
+ 00000062 00000000		outHandle Handle 0            ;Allows us to change the window size
 				;BufferBounds COORD <46,25>
  00000066 0000 0000 002D	WindowRect Small_Rect <0,0,45,24>;Left, top, right, and bottom bounds for window size
 	   0018
@@ -72,37 +72,33 @@ main.asm						     Page 1 - 1
  00000000			.code
 
  00000000			main PROC
+					   ;Window Manipulation area
 					   INVOKE GetStdHandle,STD_OUTPUT_HANDLE
  00000007  A3 00000062 R		   mov outHandle,eax
-
-					   ;INVOKE SetConsoleScreenBufferSize,outHandle,BufferBounds			;Set console buffer size bounds to X:45 and Y:24 
-
 					   INVOKE SetConsoleWindowInfo,outHandle,TRUE,ADDR WindowRect			;Set console window to coordinates of Size variable
-					  
 					   INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
-
  00000028  B8 00000002			   mov eax,green + (black * 16);Green Text, black background
  0000002D  E8 00000000 E		   call SetTextColor      ;Sets the color
  00000032  33 C0			   XOR eax,eax            ;clear eax
- 00000034  E8 00000000 E		   call clrscr
+					   ;End Window Manipulation area
 					   
- 00000039  6A 05			   push 5			;count
- 0000003B  E8 000001D9			   call newNum
+ 00000034  E8 00000000 E		   call clrscr ; Wipes screen for fresh start
+					  
+					   ; Level 1 code area
+ 00000039  6A 05			   push 5			;Push number of falling items
+ 0000003B  E8 000001D9			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
  00000040  83 C4 04			   add esp,4
 					  
-					   
  00000043  6A 05			   push 5
  00000045  68 0000000F R		   push offset xArray
  0000004A  6A 2D			   push 45
- 0000004C  E8 00000014			   call FillArray
+ 0000004C  E8 00000014			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
  00000051  83 C4 0C			   add esp,12
-					 
-					   
+					  
  00000054  E8 000000D9			   call Startposition
 					   
-					   
- 00000059  E8 000000F2			   call print
-					 
+ 00000059  E8 000000F2			   call Level1
+					   ; End of Level 1 code area
 
 					   exit
  00000065			main ENDP
@@ -260,7 +256,7 @@ main.asm						     Page 1 - 1
 
 				;******* proc to make it easier to reprint the rain;Kilian Proc
 
- 00000150			print PROC 
+ 00000150			Level1 PROC 
 						
 						
  00000150  BE 00000000				mov esi,0
@@ -357,7 +353,7 @@ main.asm						     Page 1 - 1
  00000218			EndPrint:
 						
  00000218  C3					ret
- 00000219			print		ENDP
+ 00000219			Level1		ENDP
 
 
 
@@ -444,7 +440,7 @@ main.asm						     Page 1 - 1
 
 				END main
 
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/22/15 12:01:30
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/22/15 12:29:04
 main.asm						     Symbols 2 - 1
 
 
@@ -618,6 +614,17 @@ LeftIf . . . . . . . . . . . . .	P Near	 0000010B _TEXT	Length= 00000027 Public 
   then6  . . . . . . . . . . . .	L Near	 00000124 _TEXT	
   end6 . . . . . . . . . . . . .	L Near	 0000012B _TEXT	
   endleft  . . . . . . . . . . .	L Near	 00000130 _TEXT	
+Level1 . . . . . . . . . . . . .	P Near	 00000150 _TEXT	Length= 000000C9 Public STDCALL
+  PrintAll . . . . . . . . . . .	L Near	 0000015F _TEXT	
+  four . . . . . . . . . . . . .	L Near	 00000171 _TEXT	
+  end4 . . . . . . . . . . . . .	L Near	 00000176 _TEXT	
+  inLoop2  . . . . . . . . . . .	L Near	 00000176 _TEXT	
+  decrease . . . . . . . . . . .	L Near	 0000019E _TEXT	
+  endD . . . . . . . . . . . . .	L Near	 0000019F _TEXT	
+  endinLoop  . . . . . . . . . .	L Near	 000001A6 _TEXT	
+  random . . . . . . . . . . . .	L Near	 000001ED _TEXT	
+  Increase . . . . . . . . . . .	L Near	 00000203 _TEXT	
+  EndPrint . . . . . . . . . . .	L Near	 00000218 _TEXT	
 LocalFree  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MessageBoxA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MsgBoxAsk  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -698,17 +705,6 @@ newNum . . . . . . . . . . . . .	P Near	 00000219 _TEXT	Length= 00000037 Public 
   L2 . . . . . . . . . . . . . .	L Near	 00000241 _TEXT	
   ENDL . . . . . . . . . . . . .	L Near	 0000024E _TEXT	
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-print  . . . . . . . . . . . . .	P Near	 00000150 _TEXT	Length= 000000C9 Public STDCALL
-  PrintAll . . . . . . . . . . .	L Near	 0000015F _TEXT	
-  four . . . . . . . . . . . . .	L Near	 00000171 _TEXT	
-  end4 . . . . . . . . . . . . .	L Near	 00000176 _TEXT	
-  inLoop2  . . . . . . . . . . .	L Near	 00000176 _TEXT	
-  decrease . . . . . . . . . . .	L Near	 0000019E _TEXT	
-  endD . . . . . . . . . . . . .	L Near	 0000019F _TEXT	
-  endinLoop  . . . . . . . . . .	L Near	 000001A6 _TEXT	
-  random . . . . . . . . . . . .	L Near	 000001ED _TEXT	
-  Increase . . . . . . . . . . .	L Near	 00000203 _TEXT	
-  EndPrint . . . . . . . . . . .	L Near	 00000218 _TEXT	
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 
