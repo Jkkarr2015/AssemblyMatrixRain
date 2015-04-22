@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/21/15 12:26:55
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/22/15 12:01:30
 main.asm						     Page 1 - 1
 
 
@@ -87,7 +87,7 @@ main.asm						     Page 1 - 1
  00000034  E8 00000000 E		   call clrscr
 					   
  00000039  6A 05			   push 5			;count
- 0000003B  E8 000001E0			   call newNum
+ 0000003B  E8 000001D9			   call newNum
  00000040  83 C4 04			   add esp,4
 					  
 					   
@@ -178,7 +178,7 @@ main.asm						     Page 1 - 1
  000000D0			_Reset:
  000000D0  A0 00000039 R			mov al, beginX
  000000D5  38 86 0000000F R		     cmp xArray[esi], al 
- 000000DB  0F 84 00000176			je Death
+ 000000DB  0F 84 0000016F			je Death
  000000E1  E8 FFFFFFA3				call Reset
  000000E6  EB 0B				jmp EndAll
  000000E8			EndReset:
@@ -293,161 +293,158 @@ main.asm						     Page 1 - 1
  00000187  8A 83 0000001E R			mov al,rainArray[ebx]
  0000018D  E8 00000000 E			call WriteChar          ;Rewrite rain
 
- 00000192  51					push ecx
- 00000193  83 FB 00				cmp ebx, 0
- 00000196  74 02				je xmov
- 00000198  EB 0F				jmp endx
- 0000019A			xmov:
- 0000019A  E8 00000000 E			call ReadKey          ; looks for keyboard input
- 0000019F  E8 FFFFFF52			     call RightIf
- 000001A4  E8 FFFFFF62		          call LeftIf
- 000001A9			endx:	
- 000001A9  59					pop ecx
- 000001AA  E8 FFFFFF12				call fall
+
 						
- 000001AF  83 F9 00				cmp ecx, 0
- 000001B2  75 02				jne decrease
- 000001B4  EB 01				jmp endD
- 000001B6			decrease:
- 000001B6  49					dec ecx
- 000001B7			endD:
- 000001B7  43					inc ebx
+ 00000192  E8 FFFFFF2A				call fall
+						
+ 00000197  83 F9 00				cmp ecx, 0
+ 0000019A  75 02				jne decrease
+ 0000019C  EB 01				jmp endD
+ 0000019E			decrease:
+ 0000019E  49					dec ecx
+ 0000019F			endD:
+ 0000019F  43					inc ebx
 
 						
 					    
 
 
- 000001B8  3B DE				cmp ebx, esi
- 000001BA  77 02				ja endinLoop
- 000001BC  EB B8				jmp inLoop2
+ 000001A0  3B DE				cmp ebx, esi
+ 000001A2  77 02				ja endinLoop
+ 000001A4  EB D0				jmp inLoop2
 
- 000001BE			endinLoop:
+ 000001A6			endinLoop:
 						
- 000001BE  B8 00000069				mov eax , 105
- 000001C3  E8 00000000 E			call delay
- 000001C8  E8 00000000 E			call clrscr
+ 000001A6  B8 00000069				mov eax , 105
+ 000001AB  E8 00000000 E			call delay
+ 000001B0  E8 00000000 E			call clrscr
 						
- 000001CD  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
- 000001CF  8A 15 00000039 R			mov dl , beginX
- 000001D5  E8 00000000 E			call Gotoxy
- 000001DA  B0 58				mov al,'X'              ;move X into al                              *********
- 000001DC  E8 00000000 E			call WriteChar          ;print it					**********
- 000001E1  E8 00000000 E			call Crlf
- 000001E6  32 C0				xor al,al               ;clear
+ 000001B5  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+ 000001B7  8A 15 00000039 R			mov dl , beginX
+ 000001BD  E8 00000000 E			call Gotoxy
+ 000001C2  B0 58				mov al,'X'              ;move X into al                              *********
+ 000001C4  E8 00000000 E			call WriteChar          ;print it					**********
+ 000001C9  E8 00000000 E			call Crlf
+ 000001CE  32 C0				xor al,al               ;clear
 
-						
- 000001E8  83 F9 00				cmp ecx, 0
- 000001EB  74 07				je  random
- 000001ED  BB 00000000				mov ebx, 0
- 000001F2  EB 82				jmp inLoop2
- 000001F4			random:
-						
- 000001F4  B8 00000005				mov eax, 5
- 000001F9  E8 00000000 E			call RandomRange
- 000001FE  8B D8				mov ebx, eax
+ 000001D0  51					push ecx
+ 000001D1  E8 00000000 E			call ReadKey
+ 000001D6  E8 FFFFFF1B				call Rightif
+ 000001DB  E8 FFFFFF2B				call Leftif
+ 000001E0  59					pop ecx
 
- 00000200  83 FB 00				cmp ebx , 0
- 00000203  74 05				je Increase
- 00000205  E9 FFFFFF55				jmp PrintAll
-
-
- 0000020A			Increase:
- 0000020A  83 FE 04				cmp esi, 4
- 0000020D  0F 84 FFFFFF4C			je PrintAll
- 00000213  FF 05 0000005E R			inc count
- 00000219  46					inc esi 
- 0000021A  E9 FFFFFF40				jmp PrintAll
- 0000021F			EndPrint:
+ 000001E1  83 F9 00				cmp ecx, 0
+ 000001E4  74 07				je  random
+ 000001E6  BB 00000000				mov ebx, 0
+ 000001EB  EB 89				jmp inLoop2
+ 000001ED			random:
 						
- 0000021F  C3					ret
- 00000220			print		ENDP
+ 000001ED  B8 00000005				mov eax, 5
+ 000001F2  E8 00000000 E			call RandomRange
+ 000001F7  8B D8				mov ebx, eax
+
+ 000001F9  83 FB 00				cmp ebx , 0
+ 000001FC  74 05				je Increase
+ 000001FE  E9 FFFFFF5C				jmp PrintAll
+
+
+ 00000203			Increase:
+ 00000203  83 FE 04				cmp esi, 4
+ 00000206  0F 84 FFFFFF53			je PrintAll
+ 0000020C  FF 05 0000005E R			inc count
+ 00000212  46					inc esi 
+ 00000213  E9 FFFFFF47				jmp PrintAll
+ 00000218			EndPrint:
+						
+ 00000218  C3					ret
+ 00000219			print		ENDP
 
 
 
 
 				;----------------------------------------------------------------------------------------------------------------------
 
- 00000220			newNum Proc
- 00000220  55				push ebp
- 00000221  8B EC			mov ebp,esp
- 00000223  8B 4D 08			mov ecx,[ebp+8]
- 00000226  BE 00000000			mov esi,0
- 0000022B			L1:
- 0000022B  B0 02			mov al, 2
- 0000022D  E8 00000000 E		call RandomRange
+ 00000219			newNum Proc
+ 00000219  55				push ebp
+ 0000021A  8B EC			mov ebp,esp
+ 0000021C  8B 4D 08			mov ecx,[ebp+8]
+ 0000021F  BE 00000000			mov esi,0
+ 00000224			L1:
+ 00000224  B0 02			mov al, 2
+ 00000226  E8 00000000 E		call RandomRange
 
- 00000232  83 F9 00			cmp ecx, 0
- 00000235  74 1E			je ENDL
- 00000237  3C 00			cmp al, 0
- 00000239  75 0D			jne L2
- 0000023B  C6 86 0000001E R		mov rainArray[esi], '0'; Movs char zero into rain
+ 0000022B  83 F9 00			cmp ecx, 0
+ 0000022E  74 1E			je ENDL
+ 00000230  3C 00			cmp al, 0
+ 00000232  75 0D			jne L2
+ 00000234  C6 86 0000001E R		mov rainArray[esi], '0'; Movs char zero into rain
 	   30
- 00000242  33 C0			XOR eax,eax; Clears EAX
- 00000244  46				inc esi
- 00000245  49				dec ecx
- 00000246  EB E3			jmp L1
- 00000248			L2:
- 00000248  C6 86 0000001E R		mov rainArray[esi], '1'
+ 0000023B  33 C0			XOR eax,eax; Clears EAX
+ 0000023D  46				inc esi
+ 0000023E  49				dec ecx
+ 0000023F  EB E3			jmp L1
+ 00000241			L2:
+ 00000241  C6 86 0000001E R		mov rainArray[esi], '1'
 	   31
- 0000024F  33 C0			XOR eax,eax
- 00000251  46				inc esi
- 00000252  49				dec ecx
- 00000253  EB D6			jmp L1
- 00000255			ENDL:
- 00000255  5D				pop ebp
- 00000256  C3				ret
- 00000257			newNum endp
+ 00000248  33 C0			XOR eax,eax
+ 0000024A  46				inc esi
+ 0000024B  49				dec ecx
+ 0000024C  EB D6			jmp L1
+ 0000024E			ENDL:
+ 0000024E  5D				pop ebp
+ 0000024F  C3				ret
+ 00000250			newNum endp
 
 				;--------------------------------------------------------------------------------------------------------------------------
- 00000257			Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
+ 00000250			Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
 					
- 00000259  E8 00000000 E			call Clrscr
- 0000025E  B6 0C				mov dh, 12
- 00000260  B2 17				mov dl, 23
- 00000262  E8 00000000 E			call Gotoxy             ; Sets cursor to print kill message
- 00000267  BA 0000003A R			mov edx, offset deathmessage
- 0000026C  E8 00000000 E			call WriteString        ; Displays deathmessage
- 00000271  E8 00000000 E			call Crlf
- 00000276  33 C0				XOR eax,eax             ; clears eax for the yes/no loop
+ 00000252  E8 00000000 E			call Clrscr
+ 00000257  B6 0C				mov dh, 12
+ 00000259  B2 17				mov dl, 23
+ 0000025B  E8 00000000 E			call Gotoxy             ; Sets cursor to print kill message
+ 00000260  BA 0000003A R			mov edx, offset deathmessage
+ 00000265  E8 00000000 E			call WriteString        ; Displays deathmessage
+ 0000026A  E8 00000000 E			call Crlf
+ 0000026F  33 C0				XOR eax,eax             ; clears eax for the yes/no loop
 
- 00000278			loop1:
- 00000278  80 3D 0000005D R			cmp response , 0
+ 00000271			loop1:
+ 00000271  80 3D 0000005D R			cmp response , 0
 	   00
- 0000027F  75 1F				jne answer	
- 00000281  B2 17				mov dl,23
- 00000283  B6 0D				mov dh,13
- 00000285  E8 00000000 E			call Gotoxy
- 0000028A  BA 0000004B R			mov edx, offset replay
- 0000028F  E8 00000000 E			call WriteString
- 00000294  E8 00000000 E			call Readchar
- 00000299  A2 0000005D R			mov response, al
- 0000029E  EB D8				jmp loop1
+ 00000278  75 1F				jne answer	
+ 0000027A  B2 17				mov dl,23
+ 0000027C  B6 0D				mov dh,13
+ 0000027E  E8 00000000 E			call Gotoxy
+ 00000283  BA 0000004B R			mov edx, offset replay
+ 00000288  E8 00000000 E			call WriteString
+ 0000028D  E8 00000000 E			call Readchar
+ 00000292  A2 0000005D R			mov response, al
+ 00000297  EB D8				jmp loop1
 
- 000002A0			answer:
- 000002A0  80 0D 0000005D R			Or response, 00100000B ; bitmask for lowercase conversion
+ 00000299			answer:
+ 00000299  80 0D 0000005D R			Or response, 00100000B ; bitmask for lowercase conversion
 	   20
- 000002A7  80 3D 0000005D R			cmp response, 'y'      ; Yes reponse
+ 000002A0  80 3D 0000005D R			cmp response, 'y'      ; Yes reponse
 	   79
- 000002AE  74 10				je yes
+ 000002A7  74 10				je yes
 
- 000002B0  B6 18				mov dh, 24
- 000002B2  B2 00			     mov dl, 0
- 000002B4  E8 00000000 E			call Gotoxy
+ 000002A9  B6 18				mov dh, 24
+ 000002AB  B2 00			     mov dl, 0
+ 000002AD  E8 00000000 E			call Gotoxy
 					
 						exit                   ; Exits if al is not 'y'
 						
- 000002C0			yes:
+ 000002B9			yes:
 					
- 000002C0  C6 05 0000005D R			mov response,0
+ 000002B9  C6 05 0000005D R			mov response,0
 	   00
 						
- 000002C7			EndCheck:	
+ 000002C0			EndCheck:	
 						ret
- 000002CA			Death ENDP
+ 000002C3			Death ENDP
 
 				END main
 
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/21/15 12:26:55
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/22/15 12:01:30
 main.asm						     Symbols 2 - 1
 
 
@@ -560,7 +557,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 0000006E Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000002CA Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000002C3 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -573,11 +570,11 @@ Clrscr . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Death  . . . . . . . . . . . . .	P Near	 00000257 _TEXT	Length= 00000073 Public STDCALL
-  loop1  . . . . . . . . . . . .	L Near	 00000278 _TEXT	
-  answer . . . . . . . . . . . .	L Near	 000002A0 _TEXT	
-  yes  . . . . . . . . . . . . .	L Near	 000002C0 _TEXT	
-  EndCheck . . . . . . . . . . .	L Near	 000002C7 _TEXT	
+Death  . . . . . . . . . . . . .	P Near	 00000250 _TEXT	Length= 00000073 Public STDCALL
+  loop1  . . . . . . . . . . . .	L Near	 00000271 _TEXT	
+  answer . . . . . . . . . . . .	L Near	 00000299 _TEXT	
+  yes  . . . . . . . . . . . . .	L Near	 000002B9 _TEXT	
+  EndCheck . . . . . . . . . . .	L Near	 000002C0 _TEXT	
 Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -696,24 +693,22 @@ fall . . . . . . . . . . . . . .	P Near	 000000C1 _TEXT	Length= 00000035 Public 
   endDeath . . . . . . . . . . .	L Near	 000000ED _TEXT	
   EndAll . . . . . . . . . . . .	L Near	 000000F3 _TEXT	
 main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000065 Public STDCALL
-newNum . . . . . . . . . . . . .	P Near	 00000220 _TEXT	Length= 00000037 Public STDCALL
-  L1 . . . . . . . . . . . . . .	L Near	 0000022B _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 00000248 _TEXT	
-  ENDL . . . . . . . . . . . . .	L Near	 00000255 _TEXT	
+newNum . . . . . . . . . . . . .	P Near	 00000219 _TEXT	Length= 00000037 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000224 _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 00000241 _TEXT	
+  ENDL . . . . . . . . . . . . .	L Near	 0000024E _TEXT	
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-print  . . . . . . . . . . . . .	P Near	 00000150 _TEXT	Length= 000000D0 Public STDCALL
+print  . . . . . . . . . . . . .	P Near	 00000150 _TEXT	Length= 000000C9 Public STDCALL
   PrintAll . . . . . . . . . . .	L Near	 0000015F _TEXT	
   four . . . . . . . . . . . . .	L Near	 00000171 _TEXT	
   end4 . . . . . . . . . . . . .	L Near	 00000176 _TEXT	
   inLoop2  . . . . . . . . . . .	L Near	 00000176 _TEXT	
-  xmov . . . . . . . . . . . . .	L Near	 0000019A _TEXT	
-  endx . . . . . . . . . . . . .	L Near	 000001A9 _TEXT	
-  decrease . . . . . . . . . . .	L Near	 000001B6 _TEXT	
-  endD . . . . . . . . . . . . .	L Near	 000001B7 _TEXT	
-  endinLoop  . . . . . . . . . .	L Near	 000001BE _TEXT	
-  random . . . . . . . . . . . .	L Near	 000001F4 _TEXT	
-  Increase . . . . . . . . . . .	L Near	 0000020A _TEXT	
-  EndPrint . . . . . . . . . . .	L Near	 0000021F _TEXT	
+  decrease . . . . . . . . . . .	L Near	 0000019E _TEXT	
+  endD . . . . . . . . . . . . .	L Near	 0000019F _TEXT	
+  endinLoop  . . . . . . . . . .	L Near	 000001A6 _TEXT	
+  random . . . . . . . . . . . .	L Near	 000001ED _TEXT	
+  Increase . . . . . . . . . . .	L Near	 00000203 _TEXT	
+  EndPrint . . . . . . . . . . .	L Near	 00000218 _TEXT	
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 

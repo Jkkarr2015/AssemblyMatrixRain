@@ -247,16 +247,8 @@ inLoop2:
 		mov al,rainArray[ebx]
 		call WriteChar          ;Rewrite rain
 
-		push ecx
-		cmp ebx, 0
-		je xmov
-		jmp endx
-xmov:
-		call ReadKey          ; looks for keyboard input
-	     call RightIf
-          call LeftIf
-endx:	
-		pop ecx
+
+		
 		call fall
 		
 		cmp ecx, 0
@@ -289,7 +281,12 @@ endinLoop:
 		call Crlf
 		xor al,al               ;clear
 
-		
+		push ecx
+		call ReadKey
+		call Rightif
+		call Leftif
+		pop ecx
+
 		cmp ecx, 0
 		je  random
 		mov ebx, 0
