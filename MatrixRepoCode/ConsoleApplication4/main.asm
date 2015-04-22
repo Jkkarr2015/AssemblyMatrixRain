@@ -46,11 +46,11 @@ main PROC
 	   call clrscr ; Wipes screen for fresh start
 	  
 	   ; Level 1 code area
-	   push 5			;Push number of falling items
+	   push 15		;Push number of falling items
 	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
 	   add esp,4
 	  
-	   push 5
+	   push 15
 	   push offset xArray
 	   push 45
 	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
@@ -58,7 +58,9 @@ main PROC
 	  
 	   call Startposition
 	   
-	   call Level1
+	   call Level2
+
+	   ;call Level1
 	   ; End of Level 1 code area
 
 	   exit
@@ -209,7 +211,7 @@ endleft:
 ;------------------------------------------------------------------------------------------------------------------------
 
 
-;******* proc to make it easier to reprint the rain;Kilian Proc
+;******* proc to make it easier to reprint the rain;JOHN PROC
 
 Level1 PROC 
 		
@@ -308,6 +310,106 @@ EndPrint:
 		
 		ret
 Level1		ENDP
+
+
+
+Level2 PROC 
+		
+		
+		mov esi,0
+		mov count, 0; intilize as zero to reset the print proc
+		
+PrintAll: 
+		
+          
+		
+
+          mov ecx, count
+		mov ebx , 0
+		cmp esi,14
+		je four
+		jmp end4
+
+four:
+      mov esi , 14
+end4:
+
+inLoop2:
+		
+		mov dl,xArray[ebx]
+
+		mov dh,yArray[ebx]
+		call Gotoxy            ;Moves cursor to the position of rain
+		
+		
+		mov al,rainArray[ebx]
+		call WriteChar          ;Rewrite rain
+
+
+		
+		call fall
+		
+		cmp ecx, 0
+		jne decrease
+		jmp endD
+decrease:
+		dec ecx
+endD:
+		inc ebx
+
+		
+	    
+
+
+		cmp ebx, esi
+		ja endinLoop
+		jmp inLoop2
+
+endinLoop:
+		
+		mov eax , 105
+		call delay
+		call clrscr
+		
+		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+		mov dl , beginX
+		call Gotoxy
+		mov al,'X'              ;move X into al                              *********
+		call WriteChar          ;print it					**********
+		call Crlf
+		xor al,al               ;clear
+
+		push ecx
+		call ReadKey
+		call Rightif
+		call Leftif
+		pop ecx
+
+		cmp ecx, 0
+		je  random
+		mov ebx, 0
+		jmp inLoop2
+random:
+		
+		mov eax, 5
+		call RandomRange
+		mov ebx, eax
+
+		cmp ebx , 0
+		je Increase
+		jmp PrintAll
+
+
+Increase:
+		cmp esi, 14
+		je PrintAll
+		inc count
+		inc esi 
+		jmp PrintAll
+EndPrint:
+		
+		ret
+Level2		ENDP
 
 
 
