@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/24/15 01:21:18
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/24/15 08:47:52
 main.asm						     Page 1 - 1
 
 
@@ -34,51 +34,58 @@ main.asm						     Page 1 - 1
  00000000			.data
 
 				;Array Variables
- 00000000  0000000F [		yArray byte 15 DUP(0)				;Y coordinate array
+ 00000000  0000001E [		yArray byte 30 DUP(0)				;Y coordinate array
 	    00
 	   ]
- 0000000F  0000000F [		xArray byte 15 DUP(?)                   ;X coordinate array
+ 0000001E  0000001E [		xArray byte 30 DUP(?)                   ;X coordinate array
 	    00
 	   ]
- 0000001E  0000000F [		rainArray byte 15 DUP(?)                ;Char array for falling pieces
+ 0000003C  0000001E [		rainArray byte 30 DUP(?)                ;Char array for falling pieces
 	    00
 	   ]
 
+
 				;Title Variable
- 0000002D 4D 61 74 72 69	titleStr byte "Matrix Rain",0				;Title on the title bar for the window
+ 0000005A 4D 61 74 72 69	titleStr byte "Matrix Rain",0				;Title on the title bar for the window
 	   78 20 52 61 69
 	   6E 00
 
 				;X / Death Proc Variables
- 00000039 17			beginX byte 23                          ;Begining X coordinate for player character
- 0000003A 59 6F 75 20 77	deathMessage byte "You were hit!...",0  ;Message for being hit
+ 00000066 17			beginX byte 23                          ;Beginning X coordinate for player character
+ 00000067 17			beginY byte 23						;Beginning Y coordinate for player character
+ 00000068 59 6F 75 20 77	deathMessage byte "You were hit!...",0  ;Message for being hit
 	   65 72 65 20 68
 	   69 74 21 2E 2E
 	   2E 00
- 0000004B 50 6C 61 79 20	replay byte "Play Again? (Y/N)",0       ;Question if player would like to try again
+ 00000079 50 6C 61 79 20	replay byte "Play Again? (Y/N)",0       ;Question if player would like to try again
 	   41 67 61 69 6E
 	   3F 20 28 59 2F
 	   4E 29 00
- 0000005D 00			response byte 0; Response to yes or no for replay
- 0000005E 00000000		count dword 0
- 00000062 00000000		items dword ?		;count for number of items wanted to fall
+ 0000008B 00			response byte 0; Response to yes or no for replay
+ 0000008C 00000000		count dword 0
+ 00000090 00000000		items dword ?		;count for number of items wanted to fall
+
+				;Way for program to tell if it's in the secret level
+ 00000094 00			S byte 0
 
 				;Level Names
- 00000066 4C 65 76 65 6C	Lvl1 byte "Level 1",0
+ 00000095 4C 65 76 65 6C	Lvl1 byte "Level 1",0
 	   20 31 00
- 0000006E 4C 65 76 65 6C	Lvl2 byte "Level 2",0
+ 0000009D 4C 65 76 65 6C	Lvl2 byte "Level 2",0
 	   20 32 00
- 00000076 4C 65 76 65 6C	Lvl3 byte "Level 3",0
+ 000000A5 4C 65 76 65 6C	Lvl3 byte "Level 3",0
 	   20 33 00
- 0000007E 4C 65 76 65 6C	Lvl4 byte "Level 4",0
+ 000000AD 4C 65 76 65 6C	Lvl4 byte "Level 4",0
 	   20 34 00
- 00000086 4C 65 76 65 6C	Lvl5 byte "Level 5",0
+ 000000B5 4C 65 76 65 6C	Lvl5 byte "Level 5",0
 	   20 35 00
-
+ 000000BD 53 65 63 72 65	Secret byte "Secret Level",0
+	   74 20 4C 65 76
+	   65 6C 00
 
 				;congratulations
 
- 0000008E 43 6F 6E 67 72	Lvl1C byte "Congratulations! You've Completed Level 1!", 0
+ 000000CA 43 6F 6E 67 72	Lvl1C byte "Congratulations! You've Completed Level 1!", 0
 	   61 74 75 6C 61
 	   74 69 6F 6E 73
 	   21 20 59 6F 75
@@ -87,7 +94,7 @@ main.asm						     Page 1 - 1
 	   74 65 64 20 4C
 	   65 76 65 6C 20
 	   31 21 00
- 000000B9 43 6F 6E 67 72	Lvl2C byte "Congratulations! You've Completed Level 2!", 0
+ 000000F5 43 6F 6E 67 72	Lvl2C byte "Congratulations! You've Completed Level 2!", 0
 	   61 74 75 6C 61
 	   74 69 6F 6E 73
 	   21 20 59 6F 75
@@ -96,7 +103,7 @@ main.asm						     Page 1 - 1
 	   74 65 64 20 4C
 	   65 76 65 6C 20
 	   32 21 00
- 000000E4 43 6F 6E 67 72	Lvl3C byte "Congratulations! You've Completed Level 3!", 0
+ 00000120 43 6F 6E 67 72	Lvl3C byte "Congratulations! You've Completed Level 3!", 0
 	   61 74 75 6C 61
 	   74 69 6F 6E 73
 	   21 20 59 6F 75
@@ -105,7 +112,7 @@ main.asm						     Page 1 - 1
 	   74 65 64 20 4C
 	   65 76 65 6C 20
 	   33 21 00
- 0000010F 43 6F 6E 67 72	Lvl4C byte "Congratulations! You've Completed Level 4!", 0
+ 0000014B 43 6F 6E 67 72	Lvl4C byte "Congratulations! You've Completed Level 4!", 0
 	   61 74 75 6C 61
 	   74 69 6F 6E 73
 	   21 20 59 6F 75
@@ -114,7 +121,7 @@ main.asm						     Page 1 - 1
 	   74 65 64 20 4C
 	   65 76 65 6C 20
 	   34 21 00
- 0000013A 43 6F 6E 67 72	Lvl5C byte "Congratulations! You've Completed The Game!!", 0
+ 00000176 43 6F 6E 67 72	Lvl5C byte "Congratulations! You've Completed The Game!!", 0
 	   61 74 75 6C 61
 	   74 69 6F 6E 73
 	   21 20 59 6F 75
@@ -123,11 +130,23 @@ main.asm						     Page 1 - 1
 	   74 65 64 20 54
 	   68 65 20 47 61
 	   6D 65 21 21 00
+ 000001A3 50 72 65 73 73	SecretCode byte "Press '*' at the title screen to get to the Secret Level"
+	   20 27 2A 27 20
+	   61 74 20 74 68
+	   65 20 74 69 74
+	   6C 65 20 73 63
+	   72 65 65 6E 20
+	   74 6F 20 67 65
+	   74 20 74 6F 20
+	   74 68 65 20 53
+	   65 63 72 65 74
+	   20 4C 65 76 65
+	   6C
 
- 00000167 4D 61 74 72 69	Matrix byte "Matrix Rain",0
+ 000001DB 4D 61 74 72 69	Matrix byte "Matrix Rain",0
 	   78 20 52 61 69
 	   6E 00
- 00000173 54 6F 20 73 74	pressS byte "To start the game press S", 0
+ 000001E7 54 6F 20 73 74	pressS byte "To start the game press S", 0 
 	   61 72 74 20 74
 	   68 65 20 67 61
 	   6D 65 20 70 72
@@ -138,9 +157,8 @@ main.asm						     Page 1 - 1
 
 
 				;Window Sizing Variables
- 0000018D 00000000		outHandle Handle 0            ;Allows us to change the window size
-				;BufferBounds COORD <46,25>
- 00000191 0000 0000 002D	WindowRect Small_Rect <0,0,45,24>;Left, top, right, and bottom bounds for window size
+ 00000201 00000000		outHandle Handle 0            ;Allows us to change the window size
+ 00000205 0000 0000 002D	WindowRect Small_Rect <0,0,45,24>;Left, top, right, and bottom bounds for window size
 	   0018
 
  00000000			.code
@@ -148,1277 +166,1558 @@ main.asm						     Page 1 - 1
  00000000			main PROC
 					   ;Window Manipulation area
 					   INVOKE GetStdHandle,STD_OUTPUT_HANDLE
- 00000007  A3 0000018D R		   mov outHandle,eax
+ 00000007  A3 00000201 R		   mov outHandle,eax
 					   INVOKE SetConsoleWindowInfo,outHandle,TRUE,ADDR WindowRect  ;Set console window to coordinates of Size variable
 					   INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
  00000028  B8 00000002			   mov eax,green + (black * 16);Green Text, black background
  0000002D  E8 00000000 E		   call SetTextColor      ;Sets the color
  00000032  33 C0			   XOR eax,eax            ;clear eax
 					   ;End Window Manipulation area
-					   
+
+ 00000034			Title1:
  00000034  E8 00000000 E		   call clrscr ; Wipes screen for fresh start
  00000039  33 C0			   xor eax,eax
+
+					   ;Title Screen
 
  0000003B  B6 0C			   mov dh, 12
  0000003D  B2 12			   mov dl, 18
  0000003F  E8 00000000 E		   call gotoxy
- 00000044  BA 00000167 R		   mov edx,offset Matrix
+ 00000044  BA 000001DB R		   mov edx,offset Matrix
  00000049  E8 00000000 E		   call WriteString
 
 
  0000004E  B6 16			    mov dh, 22
  00000050  B2 00			   mov dl, 0
  00000052  E8 00000000 E		   call gotoxy
- 00000057  BA 00000173 R		   mov edx,offset pressS
+ 00000057  BA 000001E7 R		   mov edx,offset pressS
  0000005C  E8 00000000 E		   call WriteString
 
- 00000061  B6 18			    mov dh, 24
+ 00000061  B6 18			   mov dh, 24
  00000063  B2 2D			   mov dl, 45
  00000065  E8 00000000 E		   call gotoxy
 					   
+					   ;End Title Screen
+
  0000006A			StartGame:
- 0000006A  E8 00000000 E		   call ReadKey
- 0000006F  A2 0000005D R		   mov response, al
- 00000074  80 0D 0000005D R		   Or response, 00100000B ; bitmask for lowercase conversion
-	   20
- 0000007B  80 3D 0000005D R		   cmp response, 's'
-	   73
- 00000082  74 02			   je Level1Start
- 00000084  EB E4			   jmp StartGame
-					   
-					   
- 00000086			Level1Start:  
- 00000086  C6 05 0000005D R		   mov response, 0
+ 0000006A  C6 05 00000094 R		   mov S,0		;make sure all procs know they aren't in the secret level		   
 	   00
- 0000008D  E8 00000000 E		   call clrscr
+
+ 00000071  E8 00000000 E		   call ReadKey
+ 00000076  A2 0000008B R		   mov response, al
+ 0000007B  80 0D 0000008B R		   Or response, 00100000B ; bitmask for lowercase conversion
+	   20
+ 00000082  80 3D 0000008B R		   cmp response, '*'
+	   2A
+ 00000089  0F 84 0000022C		   je SecretLevelStart
+ 0000008F  80 3D 0000008B R		   cmp response, 's'
+	   73
+ 00000096  74 02			   je Level1Start
+ 00000098  EB D0			   jmp StartGame
 					   
- 00000092  B6 0C			   mov dh, 12
- 00000094  B2 14			   mov dl, 20
- 00000096  E8 00000000 E		   call gotoxy
- 0000009B  BA 00000066 R		   mov edx,offset Lvl1
- 000000A0  E8 00000000 E		   call WriteString
- 000000A5  B8 000005DC			   mov eax,1500
- 000000AA  E8 00000000 E		   call delay
- 000000AF  E8 00000000 E		   call clrscr
+					   
+ 0000009A			Level1Start:  
+ 0000009A  C6 05 0000008B R		   mov response, 0
+	   00
+ 000000A1  E8 00000000 E		   call clrscr
+					   
+ 000000A6  B6 0C			   mov dh, 12
+ 000000A8  B2 14			   mov dl, 20
+ 000000AA  E8 00000000 E		   call gotoxy
+ 000000AF  BA 00000095 R		   mov edx,offset Lvl1
+ 000000B4  E8 00000000 E		   call WriteString
+ 000000B9  B8 000005DC			   mov eax,1500
+ 000000BE  E8 00000000 E		   call delay
+ 000000C3  E8 00000000 E		   call clrscr
 
 					   ; Level 1 code area
- 000000B4  6A 05			   push 5		;Push number of falling items
- 000000B6  E8 00000797			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 000000BB  83 C4 04			   add esp,4
+ 000000C8  6A 05			   push 5		;Push number of falling items
+ 000000CA  E8 00000970			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 000000CF  83 C4 04			   add esp,4
 					  
- 000000BE  6A 05			   push 5
- 000000C0  68 0000000F R		   push offset xArray
- 000000C5  6A 2D			   push 45
- 000000C7  E8 0000021D			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 000000CC  83 C4 0C			   add esp,12
+ 000000D2  6A 05			   push 5
+ 000000D4  68 0000001E R		   push offset xArray
+ 000000D9  6A 2F			   push 47
+ 000000DB  E8 00000289			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 46
+ 000000E0  83 C4 0C			   add esp,12
 					  
- 000000CF  E8 000002F1			   call Startposition
+ 000000E3  E8 000003F9			   call Startposition
 					   
- 000000D4  E8 0000030A			   call Level1
+ 000000E8  E8 00000416			   call Level1
 					   ; End of Level 1 code area
- 000000D9  E8 00000000 E		   call clrscr
+ 000000ED  E8 00000000 E		   call clrscr
 					   
- 000000DE  B6 0C			   mov dh, 12
- 000000E0  B2 02			   mov dl, 2
- 000000E2  E8 00000000 E		   call gotoxy
- 000000E7  BA 0000008E R		   mov edx,offset Lvl1C
- 000000EC  E8 00000000 E		   call WriteString
- 000000F1  B8 000007D0			   mov eax,2000
- 000000F6  E8 00000000 E		   call delay
+ 000000F2  B6 0C			   mov dh, 12
+ 000000F4  B2 02			   mov dl, 2
+ 000000F6  E8 00000000 E		   call gotoxy
+ 000000FB  BA 000000CA R		   mov edx,offset Lvl1C
+ 00000100  E8 00000000 E		   call WriteString
+ 00000105  B8 000007D0			   mov eax,2000
+ 0000010A  E8 00000000 E		   call delay
 					  
- 000000FB			Level2Start:
- 000000FB  E8 00000000 E		   call clrscr
+ 0000010F			Level2Start:
+ 0000010F  E8 00000000 E		   call clrscr
 
 
- 00000100  E8 00000AA8			   call RefreshY
- 00000105  B6 0C			   mov dh, 12
- 00000107  B2 14			   mov dl, 20
- 00000109  E8 00000000 E		   call gotoxy
- 0000010E  BA 0000006E R		   mov edx,offset Lvl2
- 00000113  E8 00000000 E		   call WriteString
- 00000118  B8 000005DC			   mov eax,1500
- 0000011D  E8 00000000 E		   call delay
- 00000122  E8 00000000 E		   call clrscr
+ 00000114  E8 00000CFF			   call RefreshY
+ 00000119  B6 0C			   mov dh, 12
+ 0000011B  B2 14			   mov dl, 20
+ 0000011D  E8 00000000 E		   call gotoxy
+ 00000122  BA 0000009D R		   mov edx,offset Lvl2
+ 00000127  E8 00000000 E		   call WriteString
+ 0000012C  B8 000005DC			   mov eax,1500
+ 00000131  E8 00000000 E		   call delay
+ 00000136  E8 00000000 E		   call clrscr
 
 					   	   ; Level 2 code area
- 00000127  6A 07			   push 7		;Push number of falling items
- 00000129  E8 00000724			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 0000012E  83 C4 04			   add esp,4
+ 0000013B  6A 07			   push 7		;Push number of falling items
+ 0000013D  E8 000008FD			   call newNum      ;fills 7 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 00000142  83 C4 04			   add esp,4
 					  
- 00000131  6A 07			   push 7
- 00000133  68 0000000F R		   push offset xArray
- 00000138  6A 2D			   push 45
- 0000013A  E8 000001AA			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 0000013F  83 C4 0C			   add esp,12
+ 00000145  6A 07			   push 7
+ 00000147  68 0000001E R		   push offset xArray
+ 0000014C  6A 2F			   push 47
+ 0000014E  E8 00000216			   call FillArray ; Populates the xArray with 7 X coordinates from 0 to 46
+ 00000153  83 C4 0C			   add esp,12
 					  
- 00000142  E8 0000027E			   call Startposition
+ 00000156  E8 00000386			   call Startposition
 					   
- 00000147  E8 0000037A			   call Level2
+ 0000015B  E8 00000486			   call Level2
 
 					   
- 0000014C  E8 00000000 E		   call clrscr
+ 00000160  E8 00000000 E		   call clrscr
 
- 00000151  B6 0C			   mov dh, 12
- 00000153  B2 02			   mov dl, 2
- 00000155  E8 00000000 E		   call gotoxy
- 0000015A  BA 000000B9 R		   mov edx,offset Lvl2C
- 0000015F  E8 00000000 E		   call WriteString
- 00000164  B8 000007D0			   mov eax,2000
- 00000169  E8 00000000 E		   call delay
- 0000016E			Level3Start:
+ 00000165  B6 0C			   mov dh, 12
+ 00000167  B2 02			   mov dl, 2
+ 00000169  E8 00000000 E		   call gotoxy
+ 0000016E  BA 000000F5 R		   mov edx,offset Lvl2C
+ 00000173  E8 00000000 E		   call WriteString
+ 00000178  B8 000007D0			   mov eax,2000
+ 0000017D  E8 00000000 E		   call delay
+ 00000182			Level3Start:
 
- 0000016E  E8 00000000 E		   call clrscr
+ 00000182  E8 00000000 E		   call clrscr
 
- 00000173  E8 00000A35			   call RefreshY
- 00000178  B6 0C			   mov dh, 12
- 0000017A  B2 14			   mov dl, 20
- 0000017C  E8 00000000 E		   call gotoxy
- 00000181  BA 00000076 R		   mov edx,offset Lvl3
- 00000186  E8 00000000 E		   call WriteString
- 0000018B  B8 000005DC			   mov eax,1500
- 00000190  E8 00000000 E		   call delay
- 00000195  E8 00000000 E		   call clrscr
+ 00000187  E8 00000C8C			   call RefreshY
+ 0000018C  B6 0C			   mov dh, 12
+ 0000018E  B2 14			   mov dl, 20
+ 00000190  E8 00000000 E		   call gotoxy
+ 00000195  BA 000000A5 R		   mov edx,offset Lvl3
+ 0000019A  E8 00000000 E		   call WriteString
+ 0000019F  B8 000005DC			   mov eax,1500
+ 000001A4  E8 00000000 E		   call delay
+ 000001A9  E8 00000000 E		   call clrscr
 
 					   	   ; Level 3 code area
- 0000019A  6A 09			   push 9		;Push number of falling items
- 0000019C  E8 000006B1			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 000001A1  83 C4 04			   add esp,4
+ 000001AE  6A 09			   push 9		;Push number of falling items
+ 000001B0  E8 0000088A			   call newNum      ;fills 9 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 000001B5  83 C4 04			   add esp,4
 					  
- 000001A4  6A 09			   push 9
- 000001A6  68 0000000F R		   push offset xArray
- 000001AB  6A 2D			   push 45
- 000001AD  E8 00000137			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 000001B2  83 C4 0C			   add esp,12
+ 000001B8  6A 09			   push 9
+ 000001BA  68 0000001E R		   push offset xArray
+ 000001BF  6A 2F			   push 47
+ 000001C1  E8 000001A3			   call FillArray ; Populates the xArray with 9 X coordinates from 0 to 46
+ 000001C6  83 C4 0C			   add esp,12
 					  
- 000001B5  E8 0000020B			   call Startposition
+ 000001C9  E8 00000313			   call Startposition
 					   
- 000001BA  E8 000003EA			   call Level3
+ 000001CE  E8 000004F6			   call Level3
 
 					   ; End of Level 3 code area
- 000001BF  E8 00000000 E		   call clrscr
+ 000001D3  E8 00000000 E		   call clrscr
 
- 000001C4  B6 0C			   mov dh, 12
- 000001C6  B2 02			   mov dl, 2
- 000001C8  E8 00000000 E		   call gotoxy
- 000001CD  BA 000000E4 R		   mov edx,offset Lvl3C
- 000001D2  E8 00000000 E		   call WriteString
- 000001D7  B8 000007D0			   mov eax,2000
- 000001DC  E8 00000000 E		   call delay
- 000001E1			Level4Start:
- 000001E1  E8 00000000 E		   call clrscr
+ 000001D8  B6 0C			   mov dh, 12
+ 000001DA  B2 02			   mov dl, 2
+ 000001DC  E8 00000000 E		   call gotoxy
+ 000001E1  BA 00000120 R		   mov edx,offset Lvl3C
+ 000001E6  E8 00000000 E		   call WriteString
+ 000001EB  B8 000007D0			   mov eax,2000
+ 000001F0  E8 00000000 E		   call delay
+ 000001F5			Level4Start:
+ 000001F5  E8 00000000 E		   call clrscr
 
- 000001E6  E8 000009C2			   call RefreshY
- 000001EB  B6 0C			   mov dh, 12
- 000001ED  B2 14			   mov dl, 20
- 000001EF  E8 00000000 E		   call gotoxy
- 000001F4  BA 0000007E R		   mov edx,offset Lvl4
- 000001F9  E8 00000000 E		   call WriteString
- 000001FE  B8 000005DC			   mov eax,1500
- 00000203  E8 00000000 E		   call delay
- 00000208  E8 00000000 E		   call clrscr
+ 000001FA  E8 00000C19			   call RefreshY
+ 000001FF  B6 0C			   mov dh, 12
+ 00000201  B2 14			   mov dl, 20
+ 00000203  E8 00000000 E		   call gotoxy
+ 00000208  BA 000000AD R		   mov edx,offset Lvl4
+ 0000020D  E8 00000000 E		   call WriteString
+ 00000212  B8 000005DC			   mov eax,1500
+ 00000217  E8 00000000 E		   call delay
+ 0000021C  E8 00000000 E		   call clrscr
 
 					   	   ; Level 4 code area
- 0000020D  6A 0C			   push 12		;Push number of falling items
- 0000020F  E8 0000063E			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 00000214  83 C4 04			   add esp,4
+ 00000221  6A 0C			   push 12		;Push number of falling items
+ 00000223  E8 00000817			   call newNum      ;fills 12 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 00000228  83 C4 04			   add esp,4
 					  
- 00000217  6A 0C			   push 12
- 00000219  68 0000000F R		   push offset xArray
- 0000021E  6A 2D			   push 45
- 00000220  E8 000000C4			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 00000225  83 C4 0C			   add esp,12
+ 0000022B  6A 0C			   push 12
+ 0000022D  68 0000001E R		   push offset xArray
+ 00000232  6A 2F			   push 47
+ 00000234  E8 00000130			   call FillArray ; Populates the xArray with 12 X coordinates from 0 to 47
+ 00000239  83 C4 0C			   add esp,12
 					  
- 00000228  E8 00000198			   call Startposition
+ 0000023C  E8 000002A0			   call Startposition
 					   
- 0000022D  E8 0000045A			   call Level4
+ 00000241  E8 00000566			   call Level4
 
 					   ; End of Level 4 code area
- 00000232  E8 00000000 E		   call clrscr
+ 00000246  E8 00000000 E		   call clrscr
 
- 00000237  B6 0C			   mov dh, 12
- 00000239  B2 02			   mov dl, 2
- 0000023B  E8 00000000 E		   call gotoxy
- 00000240  BA 0000010F R		   mov edx,offset Lvl4C
- 00000245  E8 00000000 E		   call WriteString
- 0000024A  B8 000007D0			   mov eax,2000
- 0000024F  E8 00000000 E		   call delay
+ 0000024B  B6 0C			   mov dh, 12
+ 0000024D  B2 02			   mov dl, 2
+ 0000024F  E8 00000000 E		   call gotoxy
+ 00000254  BA 0000014B R		   mov edx,offset Lvl4C
+ 00000259  E8 00000000 E		   call WriteString
+ 0000025E  B8 000007D0			   mov eax,2000
+ 00000263  E8 00000000 E		   call delay
 					   
- 00000254			Level5Start:
- 00000254  E8 00000000 E		   call clrscr
+ 00000268			Level5Start:
+ 00000268  E8 00000000 E		   call clrscr
 
- 00000259  E8 0000094F			   call RefreshY
- 0000025E  B6 0C			   mov dh, 12
- 00000260  B2 14			   mov dl, 20
- 00000262  E8 00000000 E		   call gotoxy
- 00000267  BA 00000086 R		   mov edx,offset Lvl5
- 0000026C  E8 00000000 E		   call WriteString
- 00000271  B8 000003E8			   mov eax,1000
- 00000276  E8 00000000 E		   call delay
- 0000027B  E8 00000000 E		   call clrscr
+ 0000026D  E8 00000BA6			   call RefreshY
+ 00000272  B6 0C			   mov dh, 12
+ 00000274  B2 14			   mov dl, 20
+ 00000276  E8 00000000 E		   call gotoxy
+ 0000027B  BA 000000B5 R		   mov edx,offset Lvl5
+ 00000280  E8 00000000 E		   call WriteString
+ 00000285  B8 000003E8			   mov eax,1000
+ 0000028A  E8 00000000 E		   call delay
+ 0000028F  E8 00000000 E		   call clrscr
 
 					   	   ; Level 5 code area
- 00000280  6A 0F			   push 15		;Push number of falling items
- 00000282  E8 000005CB			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 00000287  83 C4 04			   add esp,4
+ 00000294  6A 0F			   push 15		;Push number of falling items
+ 00000296  E8 000007A4			   call newNum      ;fills 15 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 0000029B  83 C4 04			   add esp,4
 					  
- 0000028A  6A 0F			   push 15
- 0000028C  68 0000000F R		   push offset xArray
- 00000291  6A 2D			   push 45
- 00000293  E8 00000051			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 00000298  83 C4 0C			   add esp,12
+ 0000029E  6A 0F			   push 15
+ 000002A0  68 0000001E R		   push offset xArray
+ 000002A5  6A 2F			   push 47
+ 000002A7  E8 000000BD			   call FillArray ; Populates the xArray with 15 X coordinates from 0 to 46
+ 000002AC  83 C4 0C			   add esp,12
 					  
- 0000029B  E8 00000125			   call Startposition
+ 000002AF  E8 0000022D			   call Startposition
 					   
- 000002A0  E8 000004CA			   call Level5
+ 000002B4  E8 000005D6			   call Level5
 
 					   ; End of Level 5 code area
- 000002A5  E8 00000000 E		   call clrscr
-
- 000002AA  B6 0C			   mov dh, 12
- 000002AC  B2 00			   mov dl, 0
- 000002AE  E8 00000000 E		   call gotoxy
- 000002B3  BA 0000013A R		   mov edx,offset Lvl5C
- 000002B8  E8 00000000 E		   call WriteString
- 000002BD  B6 0B			   mov dh, 11
- 000002BF  B2 18			   mov dl, 24
- 000002C1  E8 00000000 E		   call gotoxy
- 000002C6  B0 01			   mov al, 1
- 000002C8  E8 00000000 E		   call WriteChar
- 000002CD  B8 000007D0			   mov eax,2000
- 000002D2  E8 00000000 E		   call delay
 					   
- 000002D7  B6 18			   mov dh , 24
- 000002D9  B2 00			   mov dl, 0
+ 000002B9  EB 58			   jmp EndSecretLevel		;only goes to secret level if password is entered at the beginning
+ 000002BB			SecretLevelStart:
+ 000002BB  E8 00000000 E		   call clrscr
 
- 000002DB  E8 00000000 E		   call gotoxy
- 000002E0  EB 00			   jmp EndGame
+ 000002C0  C6 05 00000094 R		   mov S,1				;set S to 1 for check for secret level in other procs
+	   01
 
- 000002E2			EndGame:
+ 000002C7  E8 00000B4C			   call RefreshY
+ 000002CC  B6 0C			   mov dh, 12
+ 000002CE  B2 14			   mov dl, 20
+ 000002D0  E8 00000000 E		   call gotoxy
+ 000002D5  BA 000000BD R		   mov edx,offset Secret
+ 000002DA  E8 00000000 E		   call WriteString
+ 000002DF  B8 000003E8			   mov eax,1000
+ 000002E4  E8 00000000 E		   call delay
+ 000002E9  E8 00000000 E		   call clrscr
+
+					   	   ; Secret level code area
+ 000002EE  6A 1E			   push 30		;Push number of falling items
+ 000002F0  E8 0000074A			   call newNum      ;fills 15 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 000002F5  83 C4 04			   add esp,4
+					  
+ 000002F8  6A 1E			   push 30
+ 000002FA  68 0000001E R		   push offset xArray
+ 000002FF  6A 2F			   push 47
+ 00000301  E8 00000063			   call FillArray ; Populates the xArray with 15 X coordinates from 0 to 46
+ 00000306  83 C4 0C			   add esp,12
+					  
+ 00000309  E8 000001D3			   call Startposition
+					   
+ 0000030E  E8 0000065F			   call SecretLevel
+
+					   ; End of Secret level code area
+ 00000313			EndSecretLevel:
+
+ 00000313  E8 00000000 E		   call clrscr
+
+ 00000318  B6 0C			   mov dh, 12
+ 0000031A  B2 00			   mov dl, 0
+ 0000031C  E8 00000000 E		   call gotoxy
+ 00000321  BA 00000176 R		   mov edx,offset Lvl5C
+ 00000326  E8 00000000 E		   call WriteString
+					   
+ 0000032B  E8 00000000 E		   call crlf
+ 00000330  BA 000001A3 R		   mov edx,offset SecretCode
+ 00000335  E8 00000000 E		   call WriteString
+
+ 0000033A  B6 0B			   mov dh, 11
+ 0000033C  B2 18			   mov dl, 24
+ 0000033E  E8 00000000 E		   call gotoxy
+ 00000343  B0 01			   mov al, 1
+ 00000345  E8 00000000 E		   call WriteChar
+ 0000034A  B8 000007D0			   mov eax,2000
+ 0000034F  E8 00000000 E		   call delay
+					   
+ 00000354  B6 18			   mov dh , 24
+ 00000356  B2 00			   mov dl, 0
+
+ 00000358  E8 00000000 E		   call gotoxy
+ 0000035D  E9 FFFFFCD2			   jmp Title1
+
+ 00000362			EndGame:
 					   exit
- 000002E9			main ENDP
+ 00000369			main ENDP
 
+				;---------------------------------------------------------------------------------------------------------------------
 
- 000002E9			FillArray proc uses ecx       ; Parameters (Number of elements,Offset Array, Range for numbers) made by John K
- 000002EA  55				    push ebp             ; Pushing it to access parameters from stack
- 000002EB  8B EC			    mov ebp, esp
- 000002ED  E8 00000000 E		    call Randomize	       ;Makes RandomRange random based on time of day 
- 000002F2  8B 4D 14			    mov ecx, [ebp + 20]  ; Moves first parameter that will be the number for the counter
+ 00000369			FillArray proc uses ecx       ; Parameters (Number of elements,Offset Array, Range for numbers) made by John K
+ 0000036A  55				    push ebp             ; Pushing it to access parameters from stack
+ 0000036B  8B EC			    mov ebp, esp
+ 0000036D  E8 00000000 E		    call Randomize	       ;Makes RandomRange random based on time of day 
+ 00000372  8B 4D 14			    mov ecx, [ebp + 20]  ; Moves first parameter that will be the number for the counter
 
- 000002F5  8B 7D 10			    mov edi, [ebp + 16]  ; Offset of array put into edi
- 000002F8			L1: 
- 000002F8  83 F9 00			    cmp ecx ,0           ; Loop for setting entire array with random values
- 000002FB  74 0D			    je endL1
- 000002FD  8B 45 0C			    mov eax,[ebp + 12]    ; Range Paramet put into eax
- 00000300  E8 00000000 E		    call RandomRange
- 00000305  FC				    cld                  ; Set direction to forward for the array intialization
- 00000306  AA				    stosb                ; Stores contents of eax into array
- 00000307  49				    dec ecx              ; decrements counter
- 00000308  EB EE			    jmp L1
- 0000030A			endL1:
+ 00000375  8B 7D 10			    mov edi, [ebp + 16]  ; Offset of array put into edi
+ 00000378			L1: 
+ 00000378  83 F9 00			    cmp ecx ,0           ; Loop for setting entire array with random values
+ 0000037B  74 0D			    je endL1
+ 0000037D  8B 45 0C			    mov eax,[ebp + 12]    ; Range Paramet put into eax
+ 00000380  E8 00000000 E		    call RandomRange
+ 00000385  FC				    cld                  ; Set direction to forward for the array intialization
+ 00000386  AA				    stosb                ; Stores contents of eax into array
+ 00000387  49				    dec ecx              ; decrements counter
+ 00000388  EB EE			    jmp L1
+ 0000038A			endL1:
 
- 0000030A  5D				    pop ebp              ; restores Ebp
+ 0000038A  5D				    pop ebp              ; restores Ebp
 					    
 					    ret
- 0000030D			FillArray endp
+ 0000038D			FillArray endp
+
 				;---------------------------------------------------------------------------------------------------------------------
 
 
-				;----------------------------------------------------------------------------------------------------------------------
-
- 0000030D			Reset PROC uses eax ebx 
- 0000030F  C6 86 00000000 R		mov yArray[esi],0
+ 0000038D			Reset PROC uses eax ebx 
+ 0000038F  C6 86 00000000 R		mov yArray[esi],0
 	   00
 
- 00000316  B0 02			mov al, 2
- 00000318  E8 00000000 E		call RandomRange
+ 00000396  B0 02			mov al, 2
+ 00000398  E8 00000000 E		call RandomRange		;make a random number 0 or 1
 
- 0000031D  3C 00			cmp al, 0
- 0000031F  75 0B			jne L2
- 00000321  C6 86 0000001E R		mov rainArray[esi], '0'; Movs char zero into rain
+ 0000039D  3C 00			cmp al, 0
+ 0000039F  75 0B			jne L2			   ;if the number is a 1, go to L2
+ 000003A1  C6 86 0000003C R		mov rainArray[esi], '0'; movs char zero into rain
 	   30
- 00000328  33 C0			XOR eax,eax; Clears EAX
- 0000032A  EB 09			jmp _End
- 0000032C			L2:
- 0000032C  C6 86 0000001E R		mov rainArray[esi], '1'
+ 000003A8  33 C0			XOR eax,eax; Clears EAX
+ 000003AA  EB 09			jmp _End
+ 000003AC			L2:
+ 000003AC  C6 86 0000003C R		mov rainArray[esi], '1';movs char one into rain
 	   31
- 00000333  33 C0			XOR eax,eax
- 00000335			_End:
+ 000003B3  33 C0			XOR eax,eax
+ 000003B5			_End:
 
- 00000335  B0 2D			mov al,45
- 00000337  E8 00000000 E		call RandomRange 
+ 000003B5  B0 2F			mov al,47
+ 000003B7  E8 00000000 E		call RandomRange 
 
- 0000033C  88 86 0000000F R		mov xArray[esi],al
+ 000003BC  88 86 0000001E R		mov xArray[esi],al
 					
 					ret
- 00000345			Reset ENDP
+ 000003C5			Reset ENDP
 
 				;---------------------------------------------------------------------------------------------------------------------
 
- 00000345			fall PROC uses eax ;proc for moving pieces downProc by Kilian	
+ 000003C5			fall PROC uses eax ;proc for moving pieces downProc by Kilian	
 				; Parameter (Int indexOfElement)
 
 
-					
-						
-						
+ 000003C6  56					push esi
+ 000003C7  8B F3				mov esi,ebx
+ 000003C9			All:
+						cmp yArray[esi],beginY
+main.asm(421) : error A2070:invalid instruction operands
+ 000003C9  74 02				je  _Reset
+ 000003CB  EB 2C				jmp endDeath
+ 000003CD			_Reset:
+ 000003CD  A0 00000066 R			mov al, beginX
+ 000003D2  38 86 0000001E R		     cmp xArray[esi], al 
+ 000003D8  0F 84 00000698			je Death
+ 000003DE			_Skip:
+ 000003DE  80 3D 00000094 R			cmp S,1
+	   01
+ 000003E5  74 06				je Skip
+ 000003E7  FF 0D 00000090 R			dec items
+ 000003ED			Skip:
+ 000003ED  E8 FFFFFF9B				call Reset
+ 000003F2  EB 57				jmp EndAll
+ 000003F4			EndReset:
 
+ 000003F4			Death:
+ 000003F4  E8 FFFFFFFB				call Death
+ 000003F9			endDeath:
 
- 00000346  56					push esi
- 00000347  8B F3				mov esi,ebx
-					    ;mov eax, 25
-					    ;call delay
- 00000349			All:
- 00000349  80 BE 00000000 R			cmp yArray[esi],23
-	   17
- 00000350  74 02				je  _Reset
- 00000352  EB 23				jmp endDeath
- 00000354			_Reset:
- 00000354  A0 00000039 R			mov al, beginX
- 00000359  38 86 0000000F R		     cmp xArray[esi], al 
- 0000035F  0F 84 00000524			je Death
- 00000365  FF 0D 00000062 R			dec items
- 0000036B  E8 FFFFFF9D				call Reset
- 00000370  EB 0B				jmp EndAll
- 00000372			EndReset:
+ 000003F9  FE 86 00000000 R			inc yArray[esi]		 ;increment y coordinate
 
- 00000372			Death:
- 00000372  E8 FFFFFFFB				call Death
- 00000377			endDeath:
+ 000003FF  80 3D 00000094 R			cmp S,1
+	   01
+ 00000406  74 02				je  Move
+ 00000408  EB 41				jmp EndAll
+ 0000040A			Move:
+ 0000040A  B0 03				mov al,3
+ 0000040C  E8 00000000 E			call RandomRange
+ 00000411  3C 01				cmp al,1
+ 00000413  74 14				jz  No
+ 00000415  74 02				je  One 	
+ 00000417  7F 08				jg  Two
+ 00000419			One:
+ 00000419  FE 8E 0000001E R			dec xArray[esi]
+ 0000041F  EB 08				jmp No
+ 00000421			Two:
+ 00000421  FE 86 0000001E R			inc xArray[esi]
+ 00000427  EB 00				jmp No
+ 00000429			No:
+ 00000429  80 BE 0000001E R			cmp xArray[esi],0
+	   00
+ 00000430  7C 09				jl	MoveBack
+ 00000432  80 BE 0000001E R			cmp xArray[esi],46
+	   2E
+ 00000439  7F 08				jg	MoveFw
+ 0000043B			MoveBack:
+ 0000043B  FE 8E 0000001E R			dec xArray[esi]
+ 00000441  EB 08				jmp EndAll
+ 00000443			MoveFw:
+ 00000443  FE 86 0000001E R			inc xArray[esi]
 
- 00000377  FE 86 00000000 R			inc yArray[esi]		 ;increment y coordinate
-
- 0000037D			EndAll:	    
- 0000037D  5E					pop esi
+ 00000449  EB 00				jmp EndAll
+ 0000044B			EndAll:	    
+ 0000044B  5E					pop esi
 						
 						ret
- 00000380			fall ENDP;End move proc
+ 0000044E			fall ENDP;End move proc
 
 				;---------------------------------------------------------------------------------------------------------------------
 
- 00000380			RightIf PROC USES edx;John Proc
- 00000381  80 FC 4D			     cmp ah , 4Dh
- 00000384  74 02			     je Then1
- 00000386  EB 14		          jmp endright           ; Jmp to end of proc
+ 0000044E			RightIf PROC USES edx;John Proc
+ 0000044F  80 FC 4D				cmp ah , 4Dh
+ 00000452  74 02			     je Then1
+ 00000454  EB 14		          jmp endright           ; Jmp to end of proc
 
- 00000388			Then1: 
- 00000388  80 3D 00000039 R			cmp beginX , 45
-	   2D
- 0000038F  74 06				je outX
- 00000391  FE 05 00000039 R			inc beginX             ; Increments X coordinate value	
- 00000397			outX:
+ 00000456			Then1: 
+ 00000456  80 3D 00000066 R			cmp beginX , 46
+	   2E
+ 0000045D  74 06				je outX
+ 0000045F  FE 05 00000066 R			inc beginX             ; Increments X coordinate value	
+ 00000465			outX:
 						
 
- 00000397  E8 00000000 E			call ReadKeyFlush 
+ 00000465  E8 00000000 E			call ReadKeyFlush 
 					
- 0000039C			endright:
+ 0000046A			endright:
 					     
 						ret
- 0000039E			 RightIf ENDP
+ 0000046C			 RightIf ENDP
 
 				 ;---------------------------------------------------------------------------------------------------------------------
 				 
- 0000039E			 LeftIf PROC USES edx;John Proc
- 0000039F  80 FC 4B			     cmp ah, 4Bh
- 000003A2  74 02			     je Then2
- 000003A4  EB 1D			     jmp endleft             ; Jmp to end of loop if user put in value that is not 3 or left arrow
- 000003A6			Then2:
- 000003A6  FE 0D 00000039 R		     dec beginX              ; Decrements X to move to the left
- 000003AC			if6:      
- 000003AC  80 3D 00000039 R	          cmp beginX, 0           ; check if X goes under 0
+ 0000046C			 LeftIf PROC USES edx;John Proc
+ 0000046D  80 FC 4B				cmp ah, 4Bh
+ 00000470  74 02			     je Then2
+ 00000472  EB 1D			     jmp endleft             ; Jmp to end of loop if user put in value that is not 3 or left arrow
+ 00000474			Then2:
+ 00000474  FE 0D 00000066 R		     dec beginX              ; Decrements X to move to the left
+ 0000047A			if6:      
+ 0000047A  80 3D 00000066 R	          cmp beginX, 0           ; check if X goes under 0
 	   00
- 000003B3  7C 02			     jl then6
- 000003B5  EB 07			     jmp end6
+ 00000481  7C 02			     jl then6
+ 00000483  EB 07			     jmp end6
 
- 000003B7			then6: 
- 000003B7  C6 05 00000039 R		     mov beginX, 0
+ 00000485			then6: 
+ 00000485  C6 05 00000066 R		     mov beginX, 0
 	   00
- 000003BE			end6:
+ 0000048C			end6:
 
- 000003BE  E8 00000000 E		     call ReadKeyFlush       ;Flushes keyboard input buffer and clears internal counter for faster response time
- 000003C3			endleft:
+ 0000048C  E8 00000000 E		     call ReadKeyFlush       ;Flushes keyboard input buffer and clears internal counter for faster response time
+ 00000491			endleft:
 					 
 					     ret
- 000003C5			 LeftIf ENDP
+ 00000493			 LeftIf ENDP
 
 				 ;------------------------------------------------------------------------------------------------------------------------
 
+ 00000493			  UpIf PROC USES edx;John Proc
+ 00000494  80 FC 48			     cmp ah, 48h
+ 00000497  74 02			     je Then2
+ 00000499  EB 1D			     jmp endUp             ; Jmp to end of loop if user put in value that is not 8 or up arrow
+ 0000049B			Then2:
+ 0000049B  FE 05 00000067 R		     inc beginY              ; Decrements X to move up
+ 000004A1			if6:      
+ 000004A1  80 3D 00000067 R	          cmp beginY, 0           ; check if X goes under 0
+	   00
+ 000004A8  7C 02			     jl then6
+ 000004AA  EB 07			     jmp end6
+
+ 000004AC			then6: 
+ 000004AC  C6 05 00000067 R		     mov beginY, 0
+	   00
+ 000004B3			end6:
+
+ 000004B3  E8 00000000 E		     call ReadKeyFlush       ;Flushes keyboard input buffer and clears internal counter for faster response time
+ 000004B8			endUp:
+					 
+					     ret
+ 000004BA			 UpIf ENDP
+
+				 ;------------------------------------------------------------------------------------------------------------------------
+
+ 000004BA			  DownIf PROC USES edx;John Proc
+ 000004BB  80 FC 50			     cmp ah, 50h
+ 000004BE  74 02			     je Then2
+ 000004C0  EB 1D			     jmp endDown             ; Jmp to end of loop if user put in value that is not 4 or down arrow
+ 000004C2			Then2:
+ 000004C2  FE 05 00000067 R		     inc beginY              ; Decrements X to move down
+ 000004C8			if6:      
+ 000004C8  80 3D 00000067 R	          cmp beginY,24            ; check if X goes under 0
+	   18
+ 000004CF  7F 02			     jg then6
+ 000004D1  EB 07			     jmp end6
+
+ 000004D3			then6: 
+ 000004D3  C6 05 00000067 R		     mov beginY, 24
+	   18
+ 000004DA			end6:
+
+ 000004DA  E8 00000000 E		     call ReadKeyFlush       ;Flushes keyboard input buffer and clears internal counter for faster response time
+ 000004DF			endDown:
+					 
+					     ret
+ 000004E1			 DownIf ENDP
+
+				 ;------------------------------------------------------------------------------------------------------------------------
 				 
- 000003C5			 StartPosition PROC USES edx;John Proc
-					     ;Player Starting Point
- 000003C6  B6 17			     mov dh , 23d            ; column 24
- 000003C8  8A 15 00000039 R		     mov dl,beginX           ; row 39
- 000003CE  E8 00000000 E		     call Gotoxy             ; places cursor in the middle of the bottom part of the console window
- 000003D3  B0 58			     mov al,'X'              ; Copies player character to the AL register to be printed
- 000003D5  E8 00000000 E		     call WriteChar          ; Prints player to screen console
- 000003DA  E8 00000000 E		     call crlf
+ 000004E1			 StartPosition PROC USES edx;John Proc
+
+						;Player Starting Point
+ 000004E2  8A 35 00000067 R		     mov dh ,beginY            ; column 24
+ 000004E8  8A 15 00000066 R		     mov dl,beginX           ; row 39
+ 000004EE  E8 00000000 E		     call Gotoxy             ; places cursor in the middle of the bottom part of the console window
+ 000004F3  B0 58			     mov al,'X'              ; Copies player character to the AL register to be printed
+ 000004F5  E8 00000000 E		     call WriteChar          ; Prints player to screen console
+ 000004FA  E8 00000000 E		     call crlf
 					     ;Player Starting point
- 000003DF  32 C0			     Xor al, al
+ 000004FF  32 C0			     Xor al, al
 					     
 						ret
- 000003E3			 StartPosition ENDP
+ 00000503			 StartPosition ENDP
 
 				;------------------------------------------------------------------------------------------------------------------------
 
 
 				;******* proc to make it easier to reprint the rain;JOHN PROC
 
- 000003E3			Level1 PROC 
+ 00000503			Level1 PROC 
 						
- 000003E3  C7 05 00000062 R			mov items,20		
+ 00000503  C7 05 00000090 R			mov items,20		
 	   00000014
- 000003ED  BE 00000000				mov esi,0
- 000003F2  C7 05 0000005E R			mov count, 0; intilize as zero to reset the print proc
+ 0000050D  BE 00000000				mov esi,0
+ 00000512  C7 05 0000008C R			mov count, 0; intilize as zero to reset the print proc
 	   00000000
 
- 000003FC			PrintAll: 
+ 0000051C			PrintAll: 
 								
- 000003FC  8B 0D 0000005E R	          mov ecx, count
- 00000402  BB 00000000				mov ebx , 0
- 00000407  83 FE 04				cmp esi,4
- 0000040A  74 02				je four
- 0000040C  EB 05				jmp end4
+ 0000051C  8B 0D 0000008C R	          mov ecx, count
+ 00000522  BB 00000000				mov ebx , 0
+ 00000527  83 FE 04				cmp esi,4
+ 0000052A  74 02				je four
+ 0000052C  EB 05				jmp end4
 
- 0000040E			four:
- 0000040E  BE 00000004		      mov esi , 4
- 00000413			end4:
+ 0000052E			four:
+ 0000052E  BE 00000004		      mov esi , 4
+ 00000533			end4:
 
- 00000413			inLoop2:
+ 00000533			inLoop2:
 						
- 00000413  8A 93 0000000F R			mov dl,xArray[ebx]
+ 00000533  8A 93 0000001E R			mov dl,xArray[ebx]
 
- 00000419  8A B3 00000000 R			mov dh,yArray[ebx]
- 0000041F  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
+ 00000539  8A B3 00000000 R			mov dh,yArray[ebx]
+ 0000053F  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
 						
 						
- 00000424  8A 83 0000001E R			mov al,rainArray[ebx]
- 0000042A  E8 00000000 E			call WriteChar          ;Rewrite rain
+ 00000544  8A 83 0000003C R			mov al,rainArray[ebx]
+ 0000054A  E8 00000000 E			call WriteChar          ;Rewrite rain
 
 					
 
- 0000042F  E8 FFFFFF11				call fall
+ 0000054F  E8 FFFFFE71				call fall
 					
 
- 00000434  83 3D 00000062 R			cmp items,0
+ 00000554  83 3D 00000090 R			cmp items,0
 	   00
- 0000043B  0F 84 00000084			jz  EndPrint
+ 0000055B  0F 84 00000084			jz  EndPrint
 
- 00000441  83 F9 00				cmp ecx, 0
- 00000444  75 02				jne decrease
- 00000446  EB 01				jmp endD
- 00000448			decrease:
- 00000448  49					dec ecx
- 00000449			endD:
- 00000449  43					inc ebx
+ 00000561  83 F9 00				cmp ecx, 0
+ 00000564  75 02				jne decrease
+ 00000566  EB 01				jmp endD
+ 00000568			decrease:
+ 00000568  49					dec ecx
+ 00000569			endD:
+ 00000569  43					inc ebx
 
 						
 					    
 
 
- 0000044A  3B DE				cmp ebx, esi
- 0000044C  77 02				ja endinLoop
- 0000044E  EB C3				jmp inLoop2
+ 0000056A  3B DE				cmp ebx, esi
+ 0000056C  77 02				ja endinLoop
+ 0000056E  EB C3				jmp inLoop2
 
- 00000450			endinLoop:
+ 00000570			endinLoop:
 						
- 00000450  B8 00000069				mov eax , 105
- 00000455  E8 00000000 E			call delay
- 0000045A  E8 00000000 E			call clrscr
+ 00000570  B8 00000069				mov eax , 105
+ 00000575  E8 00000000 E			call delay
+ 0000057A  E8 00000000 E			call clrscr
 						
- 0000045F  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
- 00000461  8A 15 00000039 R			mov dl , beginX
- 00000467  E8 00000000 E			call Gotoxy
- 0000046C  B0 58				mov al,'X'              ;move X into al                              *********
- 0000046E  E8 00000000 E			call WriteChar          ;print it					**********
- 00000473  E8 00000000 E			call Crlf
- 00000478  32 C0				xor al,al               ;clear
+ 0000057F  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+ 00000581  8A 15 00000066 R			mov dl , beginX
+ 00000587  E8 00000000 E			call Gotoxy
+ 0000058C  B0 58				mov al,'X'              ;move X into al                              *********
+ 0000058E  E8 00000000 E			call WriteChar          ;print it					**********
+ 00000593  E8 00000000 E			call Crlf
+ 00000598  32 C0				xor al,al               ;clear
 
- 0000047A  51					push ecx
- 0000047B  E8 00000000 E			call ReadKey
- 00000480  E8 FFFFFEFB				call Rightif
- 00000485  E8 FFFFFF14				call Leftif
- 0000048A  59					pop ecx
+ 0000059A  51					push ecx
+ 0000059B  E8 00000000 E			call ReadKey
+ 000005A0  E8 FFFFFEA9				call Rightif
+ 000005A5  E8 FFFFFEC2				call Leftif
+ 000005AA  59					pop ecx
 
- 0000048B  83 F9 00				cmp ecx, 0
- 0000048E  74 0A				je  random
- 00000490  BB 00000000				mov ebx, 0
- 00000495  E9 FFFFFF79				jmp inLoop2
- 0000049A			random:
+ 000005AB  83 F9 00				cmp ecx, 0
+ 000005AE  74 0A				je  random
+ 000005B0  BB 00000000				mov ebx, 0
+ 000005B5  E9 FFFFFF79				jmp inLoop2
+ 000005BA			random:
 						
- 0000049A  B8 00000005				mov eax, 5
- 0000049F  E8 00000000 E			call RandomRange
- 000004A4  8B D8				mov ebx, eax
+ 000005BA  B8 00000005				mov eax, 5
+ 000005BF  E8 00000000 E			call RandomRange
+ 000005C4  8B D8				mov ebx, eax
 
- 000004A6  83 FB 00				cmp ebx , 0
- 000004A9  74 05				je Increase
- 000004AB  E9 FFFFFF4C				jmp PrintAll
+ 000005C6  83 FB 00				cmp ebx , 0
+ 000005C9  74 05				je Increase
+ 000005CB  E9 FFFFFF4C				jmp PrintAll
 
 
- 000004B0			Increase:
- 000004B0  83 FE 04				cmp esi, 4
- 000004B3  0F 84 FFFFFF43			je PrintAll
- 000004B9  FF 05 0000005E R			inc count
- 000004BF  46					inc esi 
- 000004C0  E9 FFFFFF37				jmp PrintAll
- 000004C5			EndPrint:
+ 000005D0			Increase:
+ 000005D0  83 FE 04				cmp esi, 4
+ 000005D3  0F 84 FFFFFF43			je PrintAll
+ 000005D9  FF 05 0000008C R			inc count
+ 000005DF  46					inc esi 
+ 000005E0  E9 FFFFFF37				jmp PrintAll
+ 000005E5			EndPrint:
 						
- 000004C5  C3					ret
- 000004C6			Level1		ENDP
+ 000005E5  C3					ret
+ 000005E6			Level1		ENDP
 
 				;------------------------------------------------------------------------------------------------
 
 
- 000004C6			Level2 PROC 
+ 000005E6			Level2 PROC 
 						
- 000004C6  C7 05 00000062 R			mov items,40		
+ 000005E6  C7 05 00000090 R			mov items,40		
 	   00000028
- 000004D0  BE 00000000				mov esi,0
- 000004D5  C7 05 0000005E R			mov count, 0; intilize as zero to reset the print proc
+ 000005F0  BE 00000000				mov esi,0
+ 000005F5  C7 05 0000008C R			mov count, 0; intilize as zero to reset the print proc
 	   00000000
 
- 000004DF			PrintAll: 
+ 000005FF			PrintAll: 
 								
- 000004DF  8B 0D 0000005E R	          mov ecx, count
- 000004E5  BB 00000000				mov ebx , 0
- 000004EA  83 FE 06				cmp esi,6
- 000004ED  74 02				je four
- 000004EF  EB 05				jmp end4
+ 000005FF  8B 0D 0000008C R	          mov ecx, count
+ 00000605  BB 00000000				mov ebx , 0
+ 0000060A  83 FE 06				cmp esi,6
+ 0000060D  74 02				je four
+ 0000060F  EB 05				jmp end4
 
- 000004F1			four:
- 000004F1  BE 00000006		      mov esi , 6
- 000004F6			end4:
+ 00000611			four:
+ 00000611  BE 00000006		      mov esi , 6
+ 00000616			end4:
 
- 000004F6			inLoop2:
+ 00000616			inLoop2:
 						
- 000004F6  8A 93 0000000F R			mov dl,xArray[ebx]
+ 00000616  8A 93 0000001E R			mov dl,xArray[ebx]
 
- 000004FC  8A B3 00000000 R			mov dh,yArray[ebx]
- 00000502  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
+ 0000061C  8A B3 00000000 R			mov dh,yArray[ebx]
+ 00000622  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
 						
 						
- 00000507  8A 83 0000001E R			mov al,rainArray[ebx]
- 0000050D  E8 00000000 E			call WriteChar          ;Rewrite rain
+ 00000627  8A 83 0000003C R			mov al,rainArray[ebx]
+ 0000062D  E8 00000000 E			call WriteChar          ;Rewrite rain
 
 					
 
- 00000512  E8 FFFFFE2E				call fall
+ 00000632  E8 FFFFFD8E				call fall
 					
 
- 00000517  83 3D 00000062 R			cmp items,0
+ 00000637  83 3D 00000090 R			cmp items,0
 	   00
- 0000051E  0F 84 00000084			jz  EndPrint
+ 0000063E  0F 84 00000084			jz  EndPrint
 
- 00000524  83 F9 00				cmp ecx, 0
- 00000527  75 02				jne decrease
- 00000529  EB 01				jmp endD
- 0000052B			decrease:
- 0000052B  49					dec ecx
- 0000052C			endD:
- 0000052C  43					inc ebx
+ 00000644  83 F9 00				cmp ecx, 0
+ 00000647  75 02				jne decrease
+ 00000649  EB 01				jmp endD
+ 0000064B			decrease:
+ 0000064B  49					dec ecx
+ 0000064C			endD:
+ 0000064C  43					inc ebx
 
 						
 					    
 
 
- 0000052D  3B DE				cmp ebx, esi
- 0000052F  77 02				ja endinLoop
- 00000531  EB C3				jmp inLoop2
+ 0000064D  3B DE				cmp ebx, esi
+ 0000064F  77 02				ja endinLoop
+ 00000651  EB C3				jmp inLoop2
 
- 00000533			endinLoop:
+ 00000653			endinLoop:
 						
- 00000533  B8 00000067				mov eax , 103
- 00000538  E8 00000000 E			call delay
- 0000053D  E8 00000000 E			call clrscr
+ 00000653  B8 00000067				mov eax , 103
+ 00000658  E8 00000000 E			call delay
+ 0000065D  E8 00000000 E			call clrscr
 						
- 00000542  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
- 00000544  8A 15 00000039 R			mov dl , beginX
- 0000054A  E8 00000000 E			call Gotoxy
- 0000054F  B0 58				mov al,'X'              ;move X into al                              *********
- 00000551  E8 00000000 E			call WriteChar          ;print it					**********
- 00000556  E8 00000000 E			call Crlf
- 0000055B  32 C0				xor al,al               ;clear
+ 00000662  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+ 00000664  8A 15 00000066 R			mov dl , beginX
+ 0000066A  E8 00000000 E			call Gotoxy
+ 0000066F  B0 58				mov al,'X'              ;move X into al                              *********
+ 00000671  E8 00000000 E			call WriteChar          ;print it					**********
+ 00000676  E8 00000000 E			call Crlf
+ 0000067B  32 C0				xor al,al               ;clear
 
- 0000055D  51					push ecx
- 0000055E  E8 00000000 E			call ReadKey
- 00000563  E8 FFFFFE18				call Rightif
- 00000568  E8 FFFFFE31				call Leftif
- 0000056D  59					pop ecx
+ 0000067D  51					push ecx
+ 0000067E  E8 00000000 E			call ReadKey
+ 00000683  E8 FFFFFDC6				call Rightif
+ 00000688  E8 FFFFFDDF				call Leftif
+ 0000068D  59					pop ecx
 
- 0000056E  83 F9 00				cmp ecx, 0
- 00000571  74 0A				je  random
- 00000573  BB 00000000				mov ebx, 0
- 00000578  E9 FFFFFF79				jmp inLoop2
- 0000057D			random:
+ 0000068E  83 F9 00				cmp ecx, 0
+ 00000691  74 0A				je  random
+ 00000693  BB 00000000				mov ebx, 0
+ 00000698  E9 FFFFFF79				jmp inLoop2
+ 0000069D			random:
 						
- 0000057D  B8 00000005				mov eax, 5
- 00000582  E8 00000000 E			call RandomRange
- 00000587  8B D8				mov ebx, eax
+ 0000069D  B8 00000005				mov eax, 5
+ 000006A2  E8 00000000 E			call RandomRange
+ 000006A7  8B D8				mov ebx, eax
 
- 00000589  83 FB 00				cmp ebx , 0
- 0000058C  74 05				je Increase
- 0000058E  E9 FFFFFF4C				jmp PrintAll
+ 000006A9  83 FB 00				cmp ebx , 0
+ 000006AC  74 05				je Increase
+ 000006AE  E9 FFFFFF4C				jmp PrintAll
 
 
- 00000593			Increase:
- 00000593  83 FE 06				cmp esi, 6
- 00000596  0F 84 FFFFFF43			je PrintAll
- 0000059C  FF 05 0000005E R			inc count
- 000005A2  46					inc esi 
- 000005A3  E9 FFFFFF37				jmp PrintAll
- 000005A8			EndPrint:
+ 000006B3			Increase:
+ 000006B3  83 FE 06				cmp esi, 6
+ 000006B6  0F 84 FFFFFF43			je PrintAll
+ 000006BC  FF 05 0000008C R			inc count
+ 000006C2  46					inc esi 
+ 000006C3  E9 FFFFFF37				jmp PrintAll
+ 000006C8			EndPrint:
 						
- 000005A8  C3					ret
- 000005A9			Level2		ENDP
+ 000006C8  C3					ret
+ 000006C9			Level2		ENDP
 
 				;-------------------------------------------------------------------------------------
 
- 000005A9			Level3 PROC 
+ 000006C9			Level3 PROC 
 						
- 000005A9  C7 05 00000062 R			mov items,60		
+ 000006C9  C7 05 00000090 R			mov items,60		
 	   0000003C
- 000005B3  BE 00000000				mov esi,0
- 000005B8  C7 05 0000005E R			mov count, 0; intilize as zero to reset the print proc
+ 000006D3  BE 00000000				mov esi,0
+ 000006D8  C7 05 0000008C R			mov count, 0; intilize as zero to reset the print proc
 	   00000000
 
- 000005C2			PrintAll: 
+ 000006E2			PrintAll: 
 								
- 000005C2  8B 0D 0000005E R	          mov ecx, count
- 000005C8  BB 00000000				mov ebx , 0
- 000005CD  83 FE 08				cmp esi,8
- 000005D0  74 02				je four
- 000005D2  EB 05				jmp end4
+ 000006E2  8B 0D 0000008C R	          mov ecx, count
+ 000006E8  BB 00000000				mov ebx , 0
+ 000006ED  83 FE 08				cmp esi,8
+ 000006F0  74 02				je four
+ 000006F2  EB 05				jmp end4
 
- 000005D4			four:
- 000005D4  BE 00000008		      mov esi , 8
- 000005D9			end4:
+ 000006F4			four:
+ 000006F4  BE 00000008		      mov esi , 8
+ 000006F9			end4:
 
- 000005D9			inLoop2:
+ 000006F9			inLoop2:
 						
- 000005D9  8A 93 0000000F R			mov dl,xArray[ebx]
+ 000006F9  8A 93 0000001E R			mov dl,xArray[ebx]
 
- 000005DF  8A B3 00000000 R			mov dh,yArray[ebx]
- 000005E5  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
+ 000006FF  8A B3 00000000 R			mov dh,yArray[ebx]
+ 00000705  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
 						
 						
- 000005EA  8A 83 0000001E R			mov al,rainArray[ebx]
- 000005F0  E8 00000000 E			call WriteChar          ;Rewrite rain
+ 0000070A  8A 83 0000003C R			mov al,rainArray[ebx]
+ 00000710  E8 00000000 E			call WriteChar          ;Rewrite rain
 
 					
 
- 000005F5  E8 FFFFFD4B				call fall
+ 00000715  E8 FFFFFCAB				call fall
 					
 
- 000005FA  83 3D 00000062 R			cmp items,0
+ 0000071A  83 3D 00000090 R			cmp items,0
 	   00
- 00000601  0F 84 00000084			jz  EndPrint
+ 00000721  0F 84 00000084			jz  EndPrint
 
- 00000607  83 F9 00				cmp ecx, 0
- 0000060A  75 02				jne decrease
- 0000060C  EB 01				jmp endD
- 0000060E			decrease:
- 0000060E  49					dec ecx
- 0000060F			endD:
- 0000060F  43					inc ebx
+ 00000727  83 F9 00				cmp ecx, 0
+ 0000072A  75 02				jne decrease
+ 0000072C  EB 01				jmp endD
+ 0000072E			decrease:
+ 0000072E  49					dec ecx
+ 0000072F			endD:
+ 0000072F  43					inc ebx
 
 						
-					    
 
+ 00000730  3B DE				cmp ebx, esi
+ 00000732  77 02				ja endinLoop
+ 00000734  EB C3				jmp inLoop2
 
- 00000610  3B DE				cmp ebx, esi
- 00000612  77 02				ja endinLoop
- 00000614  EB C3				jmp inLoop2
-
- 00000616			endinLoop:
+ 00000736			endinLoop:
 						
- 00000616  B8 00000065				mov eax , 101
- 0000061B  E8 00000000 E			call delay
- 00000620  E8 00000000 E			call clrscr
+ 00000736  B8 00000065				mov eax , 101
+ 0000073B  E8 00000000 E			call delay
+ 00000740  E8 00000000 E			call clrscr
 						
- 00000625  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
- 00000627  8A 15 00000039 R			mov dl , beginX
- 0000062D  E8 00000000 E			call Gotoxy
- 00000632  B0 58				mov al,'X'              ;move X into al                              *********
- 00000634  E8 00000000 E			call WriteChar          ;print it					**********
- 00000639  E8 00000000 E			call Crlf
- 0000063E  32 C0				xor al,al               ;clear
+ 00000745  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+ 00000747  8A 15 00000066 R			mov dl , beginX
+ 0000074D  E8 00000000 E			call Gotoxy
+ 00000752  B0 58				mov al,'X'              ;move X into al                              *********
+ 00000754  E8 00000000 E			call WriteChar          ;print it					**********
+ 00000759  E8 00000000 E			call Crlf
+ 0000075E  32 C0				xor al,al               ;clear
 
- 00000640  51					push ecx
- 00000641  E8 00000000 E			call ReadKey
- 00000646  E8 FFFFFD35				call Rightif
- 0000064B  E8 FFFFFD4E				call Leftif
- 00000650  59					pop ecx
+ 00000760  51					push ecx
+ 00000761  E8 00000000 E			call ReadKey
+ 00000766  E8 FFFFFCE3				call Rightif
+ 0000076B  E8 FFFFFCFC				call Leftif
+ 00000770  59					pop ecx
 
- 00000651  83 F9 00				cmp ecx, 0
- 00000654  74 0A				je  random
- 00000656  BB 00000000				mov ebx, 0
- 0000065B  E9 FFFFFF79				jmp inLoop2
- 00000660			random:
+ 00000771  83 F9 00				cmp ecx, 0
+ 00000774  74 0A				je  random
+ 00000776  BB 00000000				mov ebx, 0
+ 0000077B  E9 FFFFFF79				jmp inLoop2
+ 00000780			random:
 						
- 00000660  B8 00000005				mov eax, 5
- 00000665  E8 00000000 E			call RandomRange
- 0000066A  8B D8				mov ebx, eax
+ 00000780  B8 00000005				mov eax, 5
+ 00000785  E8 00000000 E			call RandomRange
+ 0000078A  8B D8				mov ebx, eax
 
- 0000066C  83 FB 00				cmp ebx , 0
- 0000066F  74 05				je Increase
- 00000671  E9 FFFFFF4C				jmp PrintAll
+ 0000078C  83 FB 00				cmp ebx , 0
+ 0000078F  74 05				je Increase
+ 00000791  E9 FFFFFF4C				jmp PrintAll
 
 
- 00000676			Increase:
- 00000676  83 FE 08				cmp esi, 8
- 00000679  0F 84 FFFFFF43			je PrintAll
- 0000067F  FF 05 0000005E R			inc count
- 00000685  46					inc esi 
- 00000686  E9 FFFFFF37				jmp PrintAll
- 0000068B			EndPrint:
+ 00000796			Increase:
+ 00000796  83 FE 08				cmp esi, 8
+ 00000799  0F 84 FFFFFF43			je PrintAll
+ 0000079F  FF 05 0000008C R			inc count
+ 000007A5  46					inc esi 
+ 000007A6  E9 FFFFFF37				jmp PrintAll
+ 000007AB			EndPrint:
 						
- 0000068B  C3					ret
- 0000068C			Level3		ENDP
+ 000007AB  C3					ret
+ 000007AC			Level3		ENDP
 
 				;----------------------------------------------------------------------------------------------
 
- 0000068C			Level4 PROC 
+ 000007AC			Level4 PROC 
 						
- 0000068C  C7 05 00000062 R			mov items,80		
+ 000007AC  C7 05 00000090 R			mov items,80		
 	   00000050
- 00000696  BE 00000000				mov esi,0
- 0000069B  C7 05 0000005E R			mov count, 0; intilize as zero to reset the print proc
+ 000007B6  BE 00000000				mov esi,0
+ 000007BB  C7 05 0000008C R			mov count, 0; intilize as zero to reset the print proc
 	   00000000
 
- 000006A5			PrintAll: 
+ 000007C5			PrintAll: 
 								
- 000006A5  8B 0D 0000005E R	          mov ecx, count
- 000006AB  BB 00000000				mov ebx , 0
- 000006B0  83 FE 0B				cmp esi,11
- 000006B3  74 02				je four
- 000006B5  EB 05				jmp end4
+ 000007C5  8B 0D 0000008C R	          mov ecx, count
+ 000007CB  BB 00000000				mov ebx , 0
+ 000007D0  83 FE 0B				cmp esi,11
+ 000007D3  74 02				je four
+ 000007D5  EB 05				jmp end4
 
- 000006B7			four:
- 000006B7  BE 0000000B		      mov esi , 11
- 000006BC			end4:
+ 000007D7			four:
+ 000007D7  BE 0000000B		      mov esi , 11
+ 000007DC			end4:
 
- 000006BC			inLoop2:
+ 000007DC			inLoop2:
 						
- 000006BC  8A 93 0000000F R			mov dl,xArray[ebx]
+ 000007DC  8A 93 0000001E R			mov dl,xArray[ebx]
 
- 000006C2  8A B3 00000000 R			mov dh,yArray[ebx]
- 000006C8  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
+ 000007E2  8A B3 00000000 R			mov dh,yArray[ebx]
+ 000007E8  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
 						
 						
- 000006CD  8A 83 0000001E R			mov al,rainArray[ebx]
- 000006D3  E8 00000000 E			call WriteChar          ;Rewrite rain
+ 000007ED  8A 83 0000003C R			mov al,rainArray[ebx]
+ 000007F3  E8 00000000 E			call WriteChar          ;Rewrite rain
 
 					
 
- 000006D8  E8 FFFFFC68				call fall
+ 000007F8  E8 FFFFFBC8				call fall
 					
 
- 000006DD  83 3D 00000062 R			cmp items,0
+ 000007FD  83 3D 00000090 R			cmp items,0
 	   00
- 000006E4  0F 84 00000084			jz  EndPrint
+ 00000804  0F 84 00000084			jz  EndPrint
 
- 000006EA  83 F9 00				cmp ecx, 0
- 000006ED  75 02				jne decrease
- 000006EF  EB 01				jmp endD
- 000006F1			decrease:
- 000006F1  49					dec ecx
- 000006F2			endD:
- 000006F2  43					inc ebx
+ 0000080A  83 F9 00				cmp ecx, 0
+ 0000080D  75 02				jne decrease
+ 0000080F  EB 01				jmp endD
+ 00000811			decrease:
+ 00000811  49					dec ecx
+ 00000812			endD:
+ 00000812  43					inc ebx
 
 						
-					    
+ 00000813  3B DE				cmp ebx, esi
+ 00000815  77 02				ja endinLoop
+ 00000817  EB C3				jmp inLoop2
 
-
- 000006F3  3B DE				cmp ebx, esi
- 000006F5  77 02				ja endinLoop
- 000006F7  EB C3				jmp inLoop2
-
- 000006F9			endinLoop:
+ 00000819			endinLoop:
 						
- 000006F9  B8 00000063				mov eax , 99
- 000006FE  E8 00000000 E			call delay
- 00000703  E8 00000000 E			call clrscr
+ 00000819  B8 00000063				mov eax , 99
+ 0000081E  E8 00000000 E			call delay
+ 00000823  E8 00000000 E			call clrscr
 						
- 00000708  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
- 0000070A  8A 15 00000039 R			mov dl , beginX
- 00000710  E8 00000000 E			call Gotoxy
- 00000715  B0 58				mov al,'X'              ;move X into al                              *********
- 00000717  E8 00000000 E			call WriteChar          ;print it					**********
- 0000071C  E8 00000000 E			call Crlf
- 00000721  32 C0				xor al,al               ;clear
+ 00000828  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+ 0000082A  8A 15 00000066 R			mov dl , beginX
+ 00000830  E8 00000000 E			call Gotoxy
+ 00000835  B0 58				mov al,'X'              ;move X into al                              *********
+ 00000837  E8 00000000 E			call WriteChar          ;print it					**********
+ 0000083C  E8 00000000 E			call Crlf
+ 00000841  32 C0				xor al,al               ;clear
 
- 00000723  51					push ecx
- 00000724  E8 00000000 E			call ReadKey
- 00000729  E8 FFFFFC52				call Rightif
- 0000072E  E8 FFFFFC6B				call Leftif
- 00000733  59					pop ecx
+ 00000843  51					push ecx
+ 00000844  E8 00000000 E			call ReadKey
+ 00000849  E8 FFFFFC00				call Rightif
+ 0000084E  E8 FFFFFC19				call Leftif
+ 00000853  59					pop ecx
 
- 00000734  83 F9 00				cmp ecx, 0
- 00000737  74 0A				je  random
- 00000739  BB 00000000				mov ebx, 0
- 0000073E  E9 FFFFFF79				jmp inLoop2
- 00000743			random:
+ 00000854  83 F9 00				cmp ecx, 0
+ 00000857  74 0A				je  random
+ 00000859  BB 00000000				mov ebx, 0
+ 0000085E  E9 FFFFFF79				jmp inLoop2
+ 00000863			random:
 						
- 00000743  B8 00000005				mov eax, 5
- 00000748  E8 00000000 E			call RandomRange
- 0000074D  8B D8				mov ebx, eax
+ 00000863  B8 00000005				mov eax, 5
+ 00000868  E8 00000000 E			call RandomRange
+ 0000086D  8B D8				mov ebx, eax
 
- 0000074F  83 FB 00				cmp ebx , 0
- 00000752  74 05				je Increase
- 00000754  E9 FFFFFF4C				jmp PrintAll
+ 0000086F  83 FB 00				cmp ebx , 0
+ 00000872  74 05				je Increase
+ 00000874  E9 FFFFFF4C				jmp PrintAll
 
 
- 00000759			Increase:
- 00000759  83 FE 0B				cmp esi, 11
- 0000075C  0F 84 FFFFFF43			je PrintAll
- 00000762  FF 05 0000005E R			inc count
- 00000768  46					inc esi 
- 00000769  E9 FFFFFF37				jmp PrintAll
- 0000076E			EndPrint:
+ 00000879			Increase:
+ 00000879  83 FE 0B				cmp esi, 11
+ 0000087C  0F 84 FFFFFF43			je PrintAll
+ 00000882  FF 05 0000008C R			inc count
+ 00000888  46					inc esi 
+ 00000889  E9 FFFFFF37				jmp PrintAll
+ 0000088E			EndPrint:
 						
- 0000076E  C3					ret
- 0000076F			Level4		ENDP
+ 0000088E  C3					ret
+ 0000088F			Level4		ENDP
 
 				;----------------------------------------------------------------------------------------------
 
- 0000076F			Level5 PROC 
+ 0000088F			Level5 PROC 
 						
- 0000076F  C7 05 00000062 R			mov items,100		
+ 0000088F  C7 05 00000090 R			mov items,100		
 	   00000064
- 00000779  BE 00000000				mov esi,0
- 0000077E  C7 05 0000005E R			mov count, 0; intilize as zero to reset the print proc
+ 00000899  BE 00000000				mov esi,0
+ 0000089E  C7 05 0000008C R			mov count, 0; intilize as zero to reset the print proc
 	   00000000
 
- 00000788			PrintAll: 
+ 000008A8			PrintAll: 
 								
- 00000788  8B 0D 0000005E R	          mov ecx, count
- 0000078E  BB 00000000				mov ebx , 0
- 00000793  83 FE 0E				cmp esi,14
- 00000796  74 02				je four
- 00000798  EB 05				jmp end4
+ 000008A8  8B 0D 0000008C R	          mov ecx, count
+ 000008AE  BB 00000000				mov ebx , 0
+ 000008B3  83 FE 0E				cmp esi,14
+ 000008B6  74 02				je four
+ 000008B8  EB 05				jmp end4
 
- 0000079A			four:
- 0000079A  BE 0000000E		      mov esi , 14
- 0000079F			end4:
+ 000008BA			four:
+ 000008BA  BE 0000000E		      mov esi , 14
+ 000008BF			end4:
 
- 0000079F			inLoop2:
+ 000008BF			inLoop2:
 						
- 0000079F  8A 93 0000000F R			mov dl,xArray[ebx]
+ 000008BF  8A 93 0000001E R			mov dl,xArray[ebx]
 
- 000007A5  8A B3 00000000 R			mov dh,yArray[ebx]
- 000007AB  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
+ 000008C5  8A B3 00000000 R			mov dh,yArray[ebx]
+ 000008CB  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
 						
 						
- 000007B0  8A 83 0000001E R			mov al,rainArray[ebx]
- 000007B6  E8 00000000 E			call WriteChar          ;Rewrite rain
+ 000008D0  8A 83 0000003C R			mov al,rainArray[ebx]
+ 000008D6  E8 00000000 E			call WriteChar          ;Rewrite rain
 
 					
 
- 000007BB  E8 FFFFFB85				call fall
+ 000008DB  E8 FFFFFAE5				call fall
 					
 
- 000007C0  83 3D 00000062 R			cmp items,0
+ 000008E0  83 3D 00000090 R			cmp items,0
 	   00
- 000007C7  0F 84 00000084			jz  EndPrint
+ 000008E7  0F 84 00000084			jz  EndPrint
 
- 000007CD  83 F9 00				cmp ecx, 0
- 000007D0  75 02				jne decrease
- 000007D2  EB 01				jmp endD
- 000007D4			decrease:
- 000007D4  49					dec ecx
- 000007D5			endD:
- 000007D5  43					inc ebx
+ 000008ED  83 F9 00				cmp ecx, 0
+ 000008F0  75 02				jne decrease
+ 000008F2  EB 01				jmp endD
+ 000008F4			decrease:
+ 000008F4  49					dec ecx
+ 000008F5			endD:
+ 000008F5  43					inc ebx
 
 						
-					    
+ 000008F6  3B DE				cmp ebx, esi
+ 000008F8  77 02				ja endinLoop
+ 000008FA  EB C3				jmp inLoop2
 
-
- 000007D6  3B DE				cmp ebx, esi
- 000007D8  77 02				ja endinLoop
- 000007DA  EB C3				jmp inLoop2
-
- 000007DC			endinLoop:
+ 000008FC			endinLoop:
 						
- 000007DC  B8 00000061				mov eax , 97
- 000007E1  E8 00000000 E			call delay
- 000007E6  E8 00000000 E			call clrscr
+ 000008FC  B8 00000061				mov eax , 97
+ 00000901  E8 00000000 E			call delay
+ 00000906  E8 00000000 E			call clrscr
 						
- 000007EB  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
- 000007ED  8A 15 00000039 R			mov dl , beginX
- 000007F3  E8 00000000 E			call Gotoxy
- 000007F8  B0 58				mov al,'X'              ;move X into al                              *********
- 000007FA  E8 00000000 E			call WriteChar          ;print it					**********
- 000007FF  E8 00000000 E			call Crlf
- 00000804  32 C0				xor al,al               ;clear
+ 0000090B  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+ 0000090D  8A 15 00000066 R			mov dl , beginX
+ 00000913  E8 00000000 E			call Gotoxy
+ 00000918  B0 58				mov al,'X'              ;move X into al                              *********
+ 0000091A  E8 00000000 E			call WriteChar          ;print it					**********
+ 0000091F  E8 00000000 E			call Crlf
+ 00000924  32 C0				xor al,al               ;clear
 
- 00000806  51					push ecx
- 00000807  E8 00000000 E			call ReadKey
- 0000080C  E8 FFFFFB6F				call Rightif
- 00000811  E8 FFFFFB88				call Leftif
- 00000816  59					pop ecx
+ 00000926  51					push ecx
+ 00000927  E8 00000000 E			call ReadKey
+ 0000092C  E8 FFFFFB1D				call Rightif
+ 00000931  E8 FFFFFB36				call Leftif
+ 00000936  59					pop ecx
 
- 00000817  83 F9 00				cmp ecx, 0
- 0000081A  74 0A				je  random
- 0000081C  BB 00000000				mov ebx, 0
- 00000821  E9 FFFFFF79				jmp inLoop2
- 00000826			random:
+ 00000937  83 F9 00				cmp ecx, 0
+ 0000093A  74 0A				je  random
+ 0000093C  BB 00000000				mov ebx, 0
+ 00000941  E9 FFFFFF79				jmp inLoop2
+ 00000946			random:
 						
- 00000826  B8 00000005				mov eax, 5
- 0000082B  E8 00000000 E			call RandomRange
- 00000830  8B D8				mov ebx, eax
+ 00000946  B8 00000005				mov eax, 5
+ 0000094B  E8 00000000 E			call RandomRange
+ 00000950  8B D8				mov ebx, eax
 
- 00000832  83 FB 00				cmp ebx , 0
- 00000835  74 05				je Increase
- 00000837  E9 FFFFFF4C				jmp PrintAll
+ 00000952  83 FB 00				cmp ebx , 0
+ 00000955  74 05				je Increase
+ 00000957  E9 FFFFFF4C				jmp PrintAll
 
 
- 0000083C			Increase:
- 0000083C  83 FE 0E				cmp esi, 14
- 0000083F  0F 84 FFFFFF43			je PrintAll
- 00000845  FF 05 0000005E R			inc count
- 0000084B  46					inc esi 
- 0000084C  E9 FFFFFF37				jmp PrintAll
- 00000851			EndPrint:
+ 0000095C			Increase:
+ 0000095C  83 FE 0E				cmp esi, 14
+ 0000095F  0F 84 FFFFFF43			je PrintAll
+ 00000965  FF 05 0000008C R			inc count
+ 0000096B  46					inc esi 
+ 0000096C  E9 FFFFFF37				jmp PrintAll
+ 00000971			EndPrint:
 						
- 00000851  C3					ret
- 00000852			Level5		ENDP
+ 00000971  C3					ret
+ 00000972			Level5		ENDP
 
 
 				;----------------------------------------------------------------------------------------------------------------------
 
- 00000852			newNum Proc
- 00000852  55				push ebp
- 00000853  8B EC			mov ebp,esp
- 00000855  8B 4D 08			mov ecx,[ebp+8]
- 00000858  BE 00000000			mov esi,0
- 0000085D			L1:
- 0000085D  B0 02			mov al, 2
- 0000085F  E8 00000000 E		call RandomRange
 
- 00000864  83 F9 00			cmp ecx, 0
- 00000867  74 1E			je ENDL
- 00000869  3C 00			cmp al, 0
- 0000086B  75 0D			jne L2
- 0000086D  C6 86 0000001E R		mov rainArray[esi], '0'; Movs char zero into rain
+ 00000972			SecretLevel PROC 
+								
+ 00000972  BE 00000000				mov esi,0
+ 00000977  C7 05 0000008C R			mov count, 0; intilize as zero to reset the print proc
+	   00000000
+
+ 00000981			PrintAll: 
+								
+ 00000981  8B 0D 0000008C R	          mov ecx, count
+ 00000987  BB 00000000				mov ebx , 0
+ 0000098C  83 FE 1D				cmp esi,29
+ 0000098F  74 02				je four
+ 00000991  EB 05				jmp end4
+
+ 00000993			four:
+ 00000993  BE 0000000E		      mov esi , 14
+ 00000998			end4:
+
+ 00000998			inLoop2:
+						
+						mov dl xArray[ebx]
+main.asm(1108) : error A2008:syntax error : in instruction
+
+ 00000998  8A B3 00000000 R			mov dh,yArray[ebx]
+ 0000099E  E8 00000000 E			call Gotoxy            ;Moves cursor to the position of rain
+						
+						
+ 000009A3  8A 83 0000003C R			mov al,rainArray[ebx]
+ 000009A9  E8 00000000 E			call WriteChar          ;Rewrite rain
+
+					
+
+ 000009AE  E8 FFFFFA12				call fall
+					
+
+ 000009B3  83 F9 00				cmp ecx, 0
+ 000009B6  75 02				jne decrease
+ 000009B8  EB 01				jmp endD
+ 000009BA			decrease:
+ 000009BA  49					dec ecx
+ 000009BB			endD:
+ 000009BB  43					inc ebx
+
+						
+ 000009BC  3B DE				cmp ebx, esi
+ 000009BE  77 02				ja endinLoop
+ 000009C0  EB D6				jmp inLoop2
+
+ 000009C2			endinLoop:
+						
+ 000009C2  B8 00000061				mov eax , 97
+ 000009C7  E8 00000000 E			call delay
+ 000009CC  E8 00000000 E			call clrscr
+						
+ 000009D1  B6 17				mov dh,23d              ;move cursor to character's current position ********* Added to this version by Kilian edited by John
+ 000009D3  8A 15 00000066 R			mov dl , beginX
+ 000009D9  E8 00000000 E			call Gotoxy
+ 000009DE  B0 58				mov al,'X'              ;move X into al                              *********
+ 000009E0  E8 00000000 E			call WriteChar          ;print it					**********
+ 000009E5  E8 00000000 E			call Crlf
+ 000009EA  32 C0				xor al,al               ;clear
+
+ 000009EC  51					push ecx
+ 000009ED  E8 00000000 E			call ReadKey
+ 000009F2  E8 FFFFFA57				call Rightif
+ 000009F7  E8 FFFFFA70				call Leftif
+ 000009FC  E8 FFFFFA92				call UpIf
+ 00000A01  E8 FFFFFAB4				call DownIf
+ 00000A06  59					pop ecx
+
+ 00000A07  83 F9 00				cmp ecx, 0
+ 00000A0A  74 07				je  random
+ 00000A0C  BB 00000000				mov ebx, 0
+ 00000A11  EB 85				jmp inLoop2
+ 00000A13			random:
+						
+ 00000A13  B8 00000005				mov eax, 5
+ 00000A18  E8 00000000 E			call RandomRange
+ 00000A1D  8B D8				mov ebx, eax
+
+ 00000A1F  83 FB 00				cmp ebx , 0
+ 00000A22  74 05				je Increase
+ 00000A24  E9 FFFFFF58				jmp PrintAll
+
+
+ 00000A29			Increase:
+ 00000A29  83 FE 1D				cmp esi, 29
+ 00000A2C  0F 84 FFFFFF4F			je PrintAll
+ 00000A32  FF 05 0000008C R			inc count
+ 00000A38  46					inc esi 
+ 00000A39  E9 FFFFFF43				jmp PrintAll
+ 00000A3E			EndPrint:
+						
+ 00000A3E  C3					ret
+ 00000A3F			SecretLevel		ENDP
+
+
+				;----------------------------------------------------------------------------------------------------------------------
+
+
+ 00000A3F			newNum Proc
+ 00000A3F  55				push ebp
+ 00000A40  8B EC			mov ebp,esp
+ 00000A42  8B 4D 08			mov ecx,[ebp+8]
+ 00000A45  BE 00000000			mov esi,0
+ 00000A4A			L1:
+ 00000A4A  B0 02			mov al, 2
+ 00000A4C  E8 00000000 E		call RandomRange
+
+ 00000A51  83 F9 00			cmp ecx, 0
+ 00000A54  74 1E			je ENDL
+ 00000A56  3C 00			cmp al, 0
+ 00000A58  75 0D			jne L2
+ 00000A5A  C6 86 0000003C R		mov rainArray[esi], '0'; Movs char zero into rain
 	   30
- 00000874  33 C0			XOR eax,eax; Clears EAX
- 00000876  46				inc esi
- 00000877  49				dec ecx
- 00000878  EB E3			jmp L1
- 0000087A			L2:
- 0000087A  C6 86 0000001E R		mov rainArray[esi], '1'
+ 00000A61  33 C0			XOR eax,eax; Clears EAX
+ 00000A63  46				inc esi
+ 00000A64  49				dec ecx
+ 00000A65  EB E3			jmp L1
+ 00000A67			L2:
+ 00000A67  C6 86 0000003C R		mov rainArray[esi], '1'
 	   31
- 00000881  33 C0			XOR eax,eax
- 00000883  46				inc esi
- 00000884  49				dec ecx
- 00000885  EB D6			jmp L1
- 00000887			ENDL:
- 00000887  5D				pop ebp
- 00000888  C3				ret
- 00000889			newNum endp
+ 00000A6E  33 C0			XOR eax,eax
+ 00000A70  46				inc esi
+ 00000A71  49				dec ecx
+ 00000A72  EB D6			jmp L1
+ 00000A74			ENDL:
+ 00000A74  5D				pop ebp
+ 00000A75  C3				ret
+ 00000A76			newNum endp
 
 				;--------------------------------------------------------------------------------------------------------------------------
- 00000889			Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above then X char.
+ 00000A76			Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is and if it is above the X char.
 					
- 0000088B  E8 00000000 E			call Clrscr
- 00000890  B6 0C				mov dh, 12
- 00000892  B2 0E				mov dl, 14
- 00000894  E8 00000000 E			call Gotoxy             ; Sets cursor to print kill message
- 00000899  BA 0000003A R			mov edx, offset deathmessage
- 0000089E  E8 00000000 E			call WriteString        ; Displays deathmessage
- 000008A3  E8 00000000 E			call Crlf
- 000008A8  33 C0				XOR eax,eax             ; clears eax for the yes/no loop
+ 00000A78  E8 00000000 E			call Clrscr
+ 00000A7D  B6 0C				mov dh, 12
+ 00000A7F  B2 0E				mov dl, 14
+ 00000A81  E8 00000000 E			call Gotoxy             ; Sets cursor to print kill message
+ 00000A86  BA 00000068 R			mov edx, offset deathmessage
+ 00000A8B  E8 00000000 E			call WriteString        ; Displays deathmessage
+ 00000A90  E8 00000000 E			call Crlf
+ 00000A95  33 C0				XOR eax,eax             ; clears eax for the yes/no loop
 
- 000008AA			loop1:
- 000008AA  80 3D 0000005D R			cmp response , 0
+ 00000A97			loop1:
+ 00000A97  80 3D 0000008B R			cmp response , 0
 	   00
- 000008B1  75 1F				jne answer	
- 000008B3  B2 0E				mov dl,14
- 000008B5  B6 0D				mov dh,13
- 000008B7  E8 00000000 E			call Gotoxy
- 000008BC  BA 0000004B R			mov edx, offset replay
- 000008C1  E8 00000000 E			call WriteString
- 000008C6  E8 00000000 E			call Readchar
- 000008CB  A2 0000005D R			mov response, al
- 000008D0  EB D8				jmp loop1
+ 00000A9E  75 26				jne answer	
+ 00000AA0  B2 0E				mov dl,14
+ 00000AA2  B6 0D				mov dh,13
+ 00000AA4  E8 00000000 E			call Gotoxy
+ 00000AA9  BA 00000079 R			mov edx, offset replay
+ 00000AAE  E8 00000000 E			call WriteString
+ 00000AB3  E8 00000000 E			call Readchar
+ 00000AB8  C6 05 00000094 R			mov S,0
+	   00
+ 00000ABF  A2 0000008B R			mov response, al
+ 00000AC4  EB D1				jmp loop1
 
- 000008D2			answer:
- 000008D2  80 0D 0000005D R			Or response, 00100000B ; bitmask for lowercase conversion
+ 00000AC6			answer:
+ 00000AC6  80 0D 0000008B R			Or response, 00100000B ; bitmask for lowercase conversion
 	   20
- 000008D9  80 3D 0000005D R			cmp response, 'y'      ; Yes reponse
+ 00000ACD  80 3D 0000008B R			cmp response, 'y'      ; Yes reponse
 	   79
- 000008E0  74 10				je yes
+ 00000AD4  74 10				je yes
 
- 000008E2  B6 18				mov dh, 24
- 000008E4  B2 00			     mov dl, 0
- 000008E6  E8 00000000 E			call Gotoxy
+ 00000AD6  B6 18				mov dh, 24
+ 00000AD8  B2 00			     mov dl, 0
+ 00000ADA  E8 00000000 E			call Gotoxy
 					
 						exit                   ; Exits if al is not 'y'
 						
- 000008F2			yes:
-					
- 000008F2  C6 05 0000005D R			mov response,0
+ 00000AE6			yes:
+					  
+ 00000AE6  C6 05 0000008B R		   mov response,0
 	   00
 						   
- 000008F9  E8 00000000 E		   call clrscr ; Wipes screen for fresh start
- 000008FE  33 C0			   xor eax,eax
+ 00000AED  E8 00000000 E		   call clrscr ; Wipes screen for fresh start
+ 00000AF2  33 C0			   xor eax,eax
 
- 00000900  B6 0C			   mov dh, 12
- 00000902  B2 12			   mov dl, 18
- 00000904  E8 00000000 E		   call gotoxy
- 00000909  BA 00000167 R		   mov edx,offset Matrix
- 0000090E  E8 00000000 E		   call WriteString
+ 00000AF4  B6 0C			   mov dh, 12
+ 00000AF6  B2 12			   mov dl, 18
+ 00000AF8  E8 00000000 E		   call gotoxy
+ 00000AFD  BA 000001DB R		   mov edx,offset Matrix
+ 00000B02  E8 00000000 E		   call WriteString
 
 
- 00000913  B6 16			    mov dh, 22
- 00000915  B2 00			   mov dl, 0
- 00000917  E8 00000000 E		   call gotoxy
- 0000091C  BA 00000173 R		   mov edx,offset pressS
- 00000921  E8 00000000 E		   call WriteString
+ 00000B07  B6 16			    mov dh, 22
+ 00000B09  B2 00			   mov dl, 0
+ 00000B0B  E8 00000000 E		   call gotoxy
+ 00000B10  BA 000001E7 R		   mov edx,offset pressS
+ 00000B15  E8 00000000 E		   call WriteString
 
- 00000926  B6 18			    mov dh, 24
- 00000928  B2 2D			   mov dl, 45
- 0000092A  E8 00000000 E		   call gotoxy
+ 00000B1A  B6 18			    mov dh, 24
+ 00000B1C  B2 2D			   mov dl, 45
+ 00000B1E  E8 00000000 E		   call gotoxy
 					   
- 0000092F			StartGame:
- 0000092F  E8 00000000 E		   call ReadKey
- 00000934  A2 0000005D R		   mov response, al
- 00000939  80 0D 0000005D R		   Or response, 00100000B ; bitmask for lowercase conversion
-	   20
- 00000940  80 3D 0000005D R		   cmp response, 's'
-	   73
- 00000947  74 02			   je Level1Start
- 00000949  EB E4			   jmp StartGame
-					   
-					   
- 0000094B			Level1Start: 
- 0000094B  C6 05 0000005D R		   mov response, 0 
+ 00000B23			StartGame:
+ 00000B23  C6 05 00000094 R		   mov S,0
 	   00
- 00000952  E8 00000000 E		   call clrscr
+ 00000B2A  E8 00000000 E		   call ReadKey
+ 00000B2F  A2 0000008B R		   mov response, al
+ 00000B34  80 0D 0000008B R		   Or response, 00100000B ; bitmask for lowercase conversion
+	   20
+ 00000B3B  80 3D 0000008B R		   cmp response,  '*'
+	   2A
+ 00000B42  0F 84 00000232		   je SecretLevelStart
+ 00000B48  80 3D 0000008B R		   cmp response, 's'
+	   73
+ 00000B4F  0F 84 00000225		   je  SecretLevelStart
+ 00000B55  74 02			   je Level1Start
+ 00000B57  EB CA			   jmp StartGame
 					   
- 00000957  B6 0C			   mov dh, 12
- 00000959  B2 14			   mov dl, 20
- 0000095B  E8 00000000 E		   call gotoxy
- 00000960  BA 00000066 R		   mov edx,offset Lvl1
- 00000965  E8 00000000 E		   call WriteString
- 0000096A  B8 000005DC			   mov eax,1500
- 0000096F  E8 00000000 E		   call delay
- 00000974  E8 00000000 E		   call clrscr
+					   
+ 00000B59			Level1Start: 
+ 00000B59  C6 05 0000008B R		   mov response, 0 
+	   00
+ 00000B60  E8 00000000 E		   call clrscr
+					   
+ 00000B65  B6 0C			   mov dh, 12
+ 00000B67  B2 14			   mov dl, 20
+ 00000B69  E8 00000000 E		   call gotoxy
+ 00000B6E  BA 00000095 R		   mov edx,offset Lvl1
+ 00000B73  E8 00000000 E		   call WriteString
+ 00000B78  B8 000005DC			   mov eax,1500
+ 00000B7D  E8 00000000 E		   call delay
+ 00000B82  E8 00000000 E		   call clrscr
 
 					   ; Level 1 code area
- 00000979  6A 05			   push 5		;Push number of falling items
- 0000097B  E8 FFFFFED2			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 00000980  83 C4 04			   add esp,4
+ 00000B87  6A 05			   push 5		;Push number of falling items
+ 00000B89  E8 FFFFFEB1			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 00000B8E  83 C4 04			   add esp,4
 					  
- 00000983  6A 05			   push 5
- 00000985  68 0000000F R		   push offset xArray
- 0000098A  6A 2D			   push 45
- 0000098C  E8 FFFFF958			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 00000991  83 C4 0C			   add esp,12
+ 00000B91  6A 05			   push 5
+ 00000B93  68 0000001E R		   push offset xArray
+ 00000B98  6A 2D			   push 45
+ 00000B9A  E8 FFFFF7CA			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+ 00000B9F  83 C4 0C			   add esp,12
 					  
- 00000994  E8 FFFFFA2C			   call Startposition
+ 00000BA2  E8 FFFFF93A			   call Startposition
 					   
- 00000999  E8 FFFFFA45			   call Level1
+ 00000BA7  E8 FFFFF957			   call Level1
 					   ; End of Level 1 code area
- 0000099E  E8 00000000 E		   call clrscr
+ 00000BAC  E8 00000000 E		   call clrscr
 					   
- 000009A3  B6 0C			   mov dh, 12
- 000009A5  B2 02			   mov dl, 2
- 000009A7  E8 00000000 E		   call gotoxy
- 000009AC  BA 0000008E R		   mov edx,offset Lvl1C
- 000009B1  E8 00000000 E		   call WriteString
- 000009B6  B8 000007D0			   mov eax,2000
- 000009BB  E8 00000000 E		   call delay
+ 00000BB1  B6 0C			   mov dh, 12
+ 00000BB3  B2 02			   mov dl, 2
+ 00000BB5  E8 00000000 E		   call gotoxy
+ 00000BBA  BA 000000CA R		   mov edx,offset Lvl1C
+ 00000BBF  E8 00000000 E		   call WriteString
+ 00000BC4  B8 000007D0			   mov eax,2000
+ 00000BC9  E8 00000000 E		   call delay
 					  
- 000009C0			Level2Start:
- 000009C0  E8 00000000 E		   call clrscr
+ 00000BCE			Level2Start:
+ 00000BCE  E8 00000000 E		   call clrscr
 
 
- 000009C5  E8 000001E3			   call RefreshY
- 000009CA  B6 0C			   mov dh, 12
- 000009CC  B2 14			   mov dl, 20
- 000009CE  E8 00000000 E		   call gotoxy
- 000009D3  BA 0000006E R		   mov edx,offset Lvl2
- 000009D8  E8 00000000 E		   call WriteString
- 000009DD  B8 000005DC			   mov eax,1500
- 000009E2  E8 00000000 E		   call delay
- 000009E7  E8 00000000 E		   call clrscr
+ 00000BD3  E8 00000240			   call RefreshY
+ 00000BD8  B6 0C			   mov dh, 12
+ 00000BDA  B2 14			   mov dl, 20
+ 00000BDC  E8 00000000 E		   call gotoxy
+ 00000BE1  BA 0000009D R		   mov edx,offset Lvl2
+ 00000BE6  E8 00000000 E		   call WriteString
+ 00000BEB  B8 000005DC			   mov eax,1500
+ 00000BF0  E8 00000000 E		   call delay
+ 00000BF5  E8 00000000 E		   call clrscr
 
 					   	   ; Level 2 code area
- 000009EC  6A 07			   push 7		;Push number of falling items
- 000009EE  E8 FFFFFE5F			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 000009F3  83 C4 04			   add esp,4
+ 00000BFA  6A 07			   push 7		;Push number of falling items
+ 00000BFC  E8 FFFFFE3E			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 00000C01  83 C4 04			   add esp,4
 					  
- 000009F6  6A 07			   push 7
- 000009F8  68 0000000F R		   push offset xArray
- 000009FD  6A 2D			   push 45
- 000009FF  E8 FFFFF8E5			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 00000A04  83 C4 0C			   add esp,12
+ 00000C04  6A 07			   push 7
+ 00000C06  68 0000001E R		   push offset xArray
+ 00000C0B  6A 2D			   push 45
+ 00000C0D  E8 FFFFF757			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+ 00000C12  83 C4 0C			   add esp,12
 					  
- 00000A07  E8 FFFFF9B9			   call Startposition
+ 00000C15  E8 FFFFF8C7			   call Startposition
 					   
- 00000A0C  E8 FFFFFAB5			   call Level2
+ 00000C1A  E8 FFFFF9C7			   call Level2
 
 					   
- 00000A11  E8 00000000 E		   call clrscr
+ 00000C1F  E8 00000000 E		   call clrscr
 
- 00000A16  B6 0C			   mov dh, 12
- 00000A18  B2 02			   mov dl, 2
- 00000A1A  E8 00000000 E		   call gotoxy
- 00000A1F  BA 000000B9 R		   mov edx,offset Lvl2C
- 00000A24  E8 00000000 E		   call WriteString
- 00000A29  B8 000007D0			   mov eax,2000
- 00000A2E  E8 00000000 E		   call delay
- 00000A33			Level3Start:
+ 00000C24  B6 0C			   mov dh, 12
+ 00000C26  B2 02			   mov dl, 2
+ 00000C28  E8 00000000 E		   call gotoxy
+ 00000C2D  BA 000000F5 R		   mov edx,offset Lvl2C
+ 00000C32  E8 00000000 E		   call WriteString
+ 00000C37  B8 000007D0			   mov eax,2000
+ 00000C3C  E8 00000000 E		   call delay
+ 00000C41			Level3Start:
 
- 00000A33  E8 00000000 E		   call clrscr
+ 00000C41  E8 00000000 E		   call clrscr
 
- 00000A38  E8 00000170			   call RefreshY
- 00000A3D  B6 0C			   mov dh, 12
- 00000A3F  B2 14			   mov dl, 20
- 00000A41  E8 00000000 E		   call gotoxy
- 00000A46  BA 00000076 R		   mov edx,offset Lvl3
- 00000A4B  E8 00000000 E		   call WriteString
- 00000A50  B8 000005DC			   mov eax,1500
- 00000A55  E8 00000000 E		   call delay
- 00000A5A  E8 00000000 E		   call clrscr
+ 00000C46  E8 000001CD			   call RefreshY
+ 00000C4B  B6 0C			   mov dh, 12
+ 00000C4D  B2 14			   mov dl, 20
+ 00000C4F  E8 00000000 E		   call gotoxy
+ 00000C54  BA 000000A5 R		   mov edx,offset Lvl3
+ 00000C59  E8 00000000 E		   call WriteString
+ 00000C5E  B8 000005DC			   mov eax,1500
+ 00000C63  E8 00000000 E		   call delay
+ 00000C68  E8 00000000 E		   call clrscr
 
 					   	   ; Level 3 code area
- 00000A5F  6A 09			   push 9		;Push number of falling items
- 00000A61  E8 FFFFFDEC			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 00000A66  83 C4 04			   add esp,4
+ 00000C6D  6A 09			   push 9		;Push number of falling items
+ 00000C6F  E8 FFFFFDCB			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 00000C74  83 C4 04			   add esp,4
 					  
- 00000A69  6A 09			   push 9
- 00000A6B  68 0000000F R		   push offset xArray
- 00000A70  6A 2D			   push 45
- 00000A72  E8 FFFFF872			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 00000A77  83 C4 0C			   add esp,12
+ 00000C77  6A 09			   push 9
+ 00000C79  68 0000001E R		   push offset xArray
+ 00000C7E  6A 2D			   push 45
+ 00000C80  E8 FFFFF6E4			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+ 00000C85  83 C4 0C			   add esp,12
 					  
- 00000A7A  E8 FFFFF946			   call Startposition
+ 00000C88  E8 FFFFF854			   call Startposition
 					   
- 00000A7F  E8 FFFFFB25			   call Level3
+ 00000C8D  E8 FFFFFA37			   call Level3
 
 					   ; End of Level 3 code area
- 00000A84  E8 00000000 E		   call clrscr
+ 00000C92  E8 00000000 E		   call clrscr
 
- 00000A89  B6 0C			   mov dh, 12
- 00000A8B  B2 02			   mov dl, 2
- 00000A8D  E8 00000000 E		   call gotoxy
- 00000A92  BA 000000E4 R		   mov edx,offset Lvl3C
- 00000A97  E8 00000000 E		   call WriteString
- 00000A9C  B8 000007D0			   mov eax,2000
- 00000AA1  E8 00000000 E		   call delay
- 00000AA6			Level4Start:
- 00000AA6  E8 00000000 E		   call clrscr
+ 00000C97  B6 0C			   mov dh, 12
+ 00000C99  B2 02			   mov dl, 2
+ 00000C9B  E8 00000000 E		   call gotoxy
+ 00000CA0  BA 00000120 R		   mov edx,offset Lvl3C
+ 00000CA5  E8 00000000 E		   call WriteString
+ 00000CAA  B8 000007D0			   mov eax,2000
+ 00000CAF  E8 00000000 E		   call delay
+ 00000CB4			Level4Start:
+ 00000CB4  E8 00000000 E		   call clrscr
 
- 00000AAB  E8 000000FD			   call RefreshY
- 00000AB0  B6 0C			   mov dh, 12
- 00000AB2  B2 14			   mov dl, 20
- 00000AB4  E8 00000000 E		   call gotoxy
- 00000AB9  BA 0000007E R		   mov edx,offset Lvl4
- 00000ABE  E8 00000000 E		   call WriteString
- 00000AC3  B8 000005DC			   mov eax,1500
- 00000AC8  E8 00000000 E		   call delay
- 00000ACD  E8 00000000 E		   call clrscr
+ 00000CB9  E8 0000015A			   call RefreshY
+ 00000CBE  B6 0C			   mov dh, 12
+ 00000CC0  B2 14			   mov dl, 20
+ 00000CC2  E8 00000000 E		   call gotoxy
+ 00000CC7  BA 000000AD R		   mov edx,offset Lvl4
+ 00000CCC  E8 00000000 E		   call WriteString
+ 00000CD1  B8 000005DC			   mov eax,1500
+ 00000CD6  E8 00000000 E		   call delay
+ 00000CDB  E8 00000000 E		   call clrscr
 
 					   	   ; Level 4 code area
- 00000AD2  6A 0C			   push 12		;Push number of falling items
- 00000AD4  E8 FFFFFD79			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 00000AD9  83 C4 04			   add esp,4
+ 00000CE0  6A 0C			   push 12		;Push number of falling items
+ 00000CE2  E8 FFFFFD58			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 00000CE7  83 C4 04			   add esp,4
 					  
- 00000ADC  6A 0C			   push 12
- 00000ADE  68 0000000F R		   push offset xArray
- 00000AE3  6A 2D			   push 45
- 00000AE5  E8 FFFFF7FF			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 00000AEA  83 C4 0C			   add esp,12
+ 00000CEA  6A 0C			   push 12
+ 00000CEC  68 0000001E R		   push offset xArray
+ 00000CF1  6A 2D			   push 45
+ 00000CF3  E8 FFFFF671			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+ 00000CF8  83 C4 0C			   add esp,12
 					  
- 00000AED  E8 FFFFF8D3			   call Startposition
+ 00000CFB  E8 FFFFF7E1			   call Startposition
 					   
- 00000AF2  E8 FFFFFB95			   call Level4
+ 00000D00  E8 FFFFFAA7			   call Level4
 
 					   ; End of Level 4 code area
- 00000AF7  E8 00000000 E		   call clrscr
+ 00000D05  E8 00000000 E		   call clrscr
 
- 00000AFC  B6 0C			   mov dh, 12
- 00000AFE  B2 02			   mov dl, 2
- 00000B00  E8 00000000 E		   call gotoxy
- 00000B05  BA 0000010F R		   mov edx,offset Lvl4C
- 00000B0A  E8 00000000 E		   call WriteString
- 00000B0F  B8 000007D0			   mov eax,2000
- 00000B14  E8 00000000 E		   call delay
+ 00000D0A  B6 0C			   mov dh, 12
+ 00000D0C  B2 02			   mov dl, 2
+ 00000D0E  E8 00000000 E		   call gotoxy
+ 00000D13  BA 0000014B R		   mov edx,offset Lvl4C
+ 00000D18  E8 00000000 E		   call WriteString
+ 00000D1D  B8 000007D0			   mov eax,2000
+ 00000D22  E8 00000000 E		   call delay
 					   
- 00000B19			Level5Start:
- 00000B19  E8 00000000 E		   call clrscr
+ 00000D27			Level5Start:
+ 00000D27  E8 00000000 E		   call clrscr
 
- 00000B1E  E8 0000008A			   call RefreshY
- 00000B23  B6 0C			   mov dh, 12
- 00000B25  B2 14			   mov dl, 20
- 00000B27  E8 00000000 E		   call gotoxy
- 00000B2C  BA 00000086 R		   mov edx,offset Lvl5
- 00000B31  E8 00000000 E		   call WriteString
- 00000B36  B8 000003E8			   mov eax,1000
- 00000B3B  E8 00000000 E		   call delay
- 00000B40  E8 00000000 E		   call clrscr
+ 00000D2C  E8 000000E7			   call RefreshY
+ 00000D31  B6 0C			   mov dh, 12
+ 00000D33  B2 14			   mov dl, 20
+ 00000D35  E8 00000000 E		   call gotoxy
+ 00000D3A  BA 000000B5 R		   mov edx,offset Lvl5
+ 00000D3F  E8 00000000 E		   call WriteString
+ 00000D44  B8 000003E8			   mov eax,1000
+ 00000D49  E8 00000000 E		   call delay
+ 00000D4E  E8 00000000 E		   call clrscr
 
 					   	   ; Level 5 code area
- 00000B45  6A 0F			   push 15		;Push number of falling items
- 00000B47  E8 FFFFFD06			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
- 00000B4C  83 C4 04			   add esp,4
+ 00000D53  6A 0F			   push 15		;Push number of falling items
+ 00000D55  E8 FFFFFCE5			   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 00000D5A  83 C4 04			   add esp,4
 					  
- 00000B4F  6A 0F			   push 15
- 00000B51  68 0000000F R		   push offset xArray
- 00000B56  6A 2D			   push 45
- 00000B58  E8 FFFFF78C			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
- 00000B5D  83 C4 0C			   add esp,12
+ 00000D5D  6A 0F			   push 15
+ 00000D5F  68 0000001E R		   push offset xArray
+ 00000D64  6A 2D			   push 45
+ 00000D66  E8 FFFFF5FE			   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+ 00000D6B  83 C4 0C			   add esp,12
 					  
- 00000B60  E8 FFFFF860			   call Startposition
+ 00000D6E  E8 FFFFF76E			   call Startposition
 					   
- 00000B65  E8 FFFFFC05			   call Level5
+ 00000D73  E8 FFFFFB17			   call Level5
 
 					   ; End of Level 5 code area
- 00000B6A  E8 00000000 E		   call clrscr
+					   
+ 00000D78  EB 58			   jmp EndSecretLevel
+ 00000D7A			SecretLevelStart:
+ 00000D7A  E8 00000000 E		   call clrscr
 
- 00000B6F  B6 0C			   mov dh, 12
- 00000B71  B2 00			   mov dl, 0
- 00000B73  E8 00000000 E		   call gotoxy
- 00000B78  BA 0000013A R		   mov edx,offset Lvl5C
- 00000B7D  E8 00000000 E		   call WriteString
- 00000B82  B6 0B			   mov dh, 11
- 00000B84  B2 18			   mov dl, 24
- 00000B86  E8 00000000 E		   call gotoxy
- 00000B8B  B0 01			   mov al, 1
- 00000B8D  E8 00000000 E		   call WriteChar
- 00000B92  B8 000007D0			   mov eax,2000
- 00000B97  E8 00000000 E		   call delay
- 00000B9C  E8 00000000 E		   call clrscr
- 00000BA1  EB 00			   jmp EndGame
+ 00000D7F  C6 05 00000094 R		   mov S,1
+	   01
 
- 00000BA3			EndGame:
+ 00000D86  E8 0000008D			   call RefreshY
+ 00000D8B  B6 0C			   mov dh, 12
+ 00000D8D  B2 14			   mov dl, 20
+ 00000D8F  E8 00000000 E		   call gotoxy
+ 00000D94  BA 000000BD R		   mov edx,offset Secret
+ 00000D99  E8 00000000 E		   call WriteString
+ 00000D9E  B8 000003E8			   mov eax,1000
+ 00000DA3  E8 00000000 E		   call delay
+ 00000DA8  E8 00000000 E		   call clrscr
+
+					   	   ; Secret level code area
+ 00000DAD  6A 1E			   push 30		;Push number of falling items
+ 00000DAF  E8 FFFFFC8B			   call newNum      ;fills 15 items in rainArray with either a char 1 or char 0 for printing purposes. 
+ 00000DB4  83 C4 04			   add esp,4
+					  
+ 00000DB7  6A 1E			   push 30
+ 00000DB9  68 0000001E R		   push offset xArray
+ 00000DBE  6A 2F			   push 47
+ 00000DC0  E8 FFFFF5A4			   call FillArray ; Populates the xArray with 15 X coordinates from 0 to 46
+ 00000DC5  83 C4 0C			   add esp,12
+					  
+ 00000DC8  E8 FFFFF714			   call Startposition
+					   
+ 00000DCD  E8 FFFFFBA0			   call SecretLevel
+
+					   ; End of Secret level code area
+ 00000DD2			EndSecretLevel:
+					
+ 00000DD2  E8 00000000 E		   call clrscr
+
+ 00000DD7  B6 0C			   mov dh, 12
+ 00000DD9  B2 00			   mov dl, 0
+ 00000DDB  E8 00000000 E		   call gotoxy
+ 00000DE0  BA 00000176 R		   mov edx,offset Lvl5C
+ 00000DE5  E8 00000000 E		   call WriteString
+ 00000DEA  B6 0B			   mov dh, 11
+ 00000DEC  B2 18			   mov dl, 24
+ 00000DEE  E8 00000000 E		   call gotoxy
+ 00000DF3  B0 01			   mov al, 1
+ 00000DF5  E8 00000000 E		   call WriteChar
+ 00000DFA  B8 000007D0			   mov eax,2000
+ 00000DFF  E8 00000000 E		   call delay
+ 00000E04  E8 00000000 E		   call clrscr
+ 00000E09  E9 FFFFFCD8			   jmp Yes
+
+ 00000E0E			EndGame:
 						exit
 						
- 00000BAA			EndCheck:	
+ 00000E15			EndCheck:	
 						ret
- 00000BAD			Death ENDP
+ 00000E18			Death ENDP
 
 				;-------------------------------------------------------------------------------
- 00000BAD			RefreshY proc
-					
- 00000BAD  BE 00000000			mov esi, 0
- 00000BB2			freshLoop:
- 00000BB2  83 FE 0E			cmp esi, 14
- 00000BB5  77 0A			ja endFresh
-					
- 00000BB7  C6 86 00000000 R		mov yArray[esi] , 0
+ 00000E18			RefreshY proc
+
+ 00000E18  BE 00000000			mov esi, 0
+ 00000E1D  80 3D 00000094 R		cmp S,1
+	   01
+ 00000E24  74 11			je  SecretLoop
+ 00000E26			freshLoop:
+ 00000E26  83 FE 0E			cmp esi, 14
+ 00000E29  77 0A			ja endFresh
+ 00000E2B  C6 86 00000000 R		mov yArray[esi] , 0
 	   00
- 00000BBE  46				inc esi
- 00000BBF  EB F1			jmp freshLoop
- 00000BC1			endFresh:
- 00000BC1  C3				ret
- 00000BC2			RefreshY endp
+ 00000E32  46				inc esi
+ 00000E33  EB F1			jmp freshLoop
+ 00000E35			endFresh:
+ 00000E35  EB 0F			jmp endSecret
+
+ 00000E37			SecretLoop:
+ 00000E37  83 FE 1D			cmp esi,29
+ 00000E3A  77 0A			ja endSecret
+ 00000E3C  C6 86 00000000 R		mov yArray[esi],0
+	   00
+ 00000E43  46				inc esi
+ 00000E44  EB F1			jmp SecretLoop
+ 00000E46			endSecret:
+
+ 00000E46  C3				ret
+ 00000E47			RefreshY endp
 
 
 
 				END main
 
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/24/15 01:21:18
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    04/24/15 08:47:52
 main.asm						     Symbols 2 - 1
 
 
@@ -1530,8 +1829,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000199 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000BC2 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000020D Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000E47 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -1544,27 +1843,35 @@ Clrscr . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Death  . . . . . . . . . . . . .	P Near	 00000889 _TEXT	Length= 00000324 Public STDCALL
-  loop1  . . . . . . . . . . . .	L Near	 000008AA _TEXT	
-  answer . . . . . . . . . . . .	L Near	 000008D2 _TEXT	
-  yes  . . . . . . . . . . . . .	L Near	 000008F2 _TEXT	
-  StartGame  . . . . . . . . . .	L Near	 0000092F _TEXT	
-  Level1Start  . . . . . . . . .	L Near	 0000094B _TEXT	
-  Level2Start  . . . . . . . . .	L Near	 000009C0 _TEXT	
-  Level3Start  . . . . . . . . .	L Near	 00000A33 _TEXT	
-  Level4Start  . . . . . . . . .	L Near	 00000AA6 _TEXT	
-  Level5Start  . . . . . . . . .	L Near	 00000B19 _TEXT	
-  EndGame  . . . . . . . . . . .	L Near	 00000BA3 _TEXT	
-  EndCheck . . . . . . . . . . .	L Near	 00000BAA _TEXT	
+Death  . . . . . . . . . . . . .	P Near	 00000A76 _TEXT	Length= 000003A2 Public STDCALL
+  loop1  . . . . . . . . . . . .	L Near	 00000A97 _TEXT	
+  answer . . . . . . . . . . . .	L Near	 00000AC6 _TEXT	
+  yes  . . . . . . . . . . . . .	L Near	 00000AE6 _TEXT	
+  StartGame  . . . . . . . . . .	L Near	 00000B23 _TEXT	
+  Level1Start  . . . . . . . . .	L Near	 00000B59 _TEXT	
+  Level2Start  . . . . . . . . .	L Near	 00000BCE _TEXT	
+  Level3Start  . . . . . . . . .	L Near	 00000C41 _TEXT	
+  Level4Start  . . . . . . . . .	L Near	 00000CB4 _TEXT	
+  Level5Start  . . . . . . . . .	L Near	 00000D27 _TEXT	
+  SecretLevelStart . . . . . . .	L Near	 00000D7A _TEXT	
+  EndSecretLevel . . . . . . . .	L Near	 00000DD2 _TEXT	
+  EndGame  . . . . . . . . . . .	L Near	 00000E0E _TEXT	
+  EndCheck . . . . . . . . . . .	L Near	 00000E15 _TEXT	
 Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+DownIf . . . . . . . . . . . . .	P Near	 000004BA _TEXT	Length= 00000027 Public STDCALL
+  Then2  . . . . . . . . . . . .	L Near	 000004C2 _TEXT	
+  if6  . . . . . . . . . . . . .	L Near	 000004C8 _TEXT	
+  then6  . . . . . . . . . . . .	L Near	 000004D3 _TEXT	
+  end6 . . . . . . . . . . . . .	L Near	 000004DA _TEXT	
+  endDown  . . . . . . . . . . .	L Near	 000004DF _TEXT	
 DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FileTimeToDosDateTime  . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FileTimeToSystemTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-FillArray  . . . . . . . . . . .	P Near	 000002E9 _TEXT	Length= 00000024 Public STDCALL
-  L1 . . . . . . . . . . . . . .	L Near	 000002F8 _TEXT	
-  endL1  . . . . . . . . . . . .	L Near	 0000030A _TEXT	
+FillArray  . . . . . . . . . . .	P Near	 00000369 _TEXT	Length= 00000024 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000378 _TEXT	
+  endL1  . . . . . . . . . . . .	L Near	 0000038A _TEXT	
 FlushConsoleInputBuffer  . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FormatMessageA . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 GetCommandLineA  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1593,67 +1900,67 @@ HeapDestroy  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 HeapFree . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 HeapSize . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 IsDigit  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-LeftIf . . . . . . . . . . . . .	P Near	 0000039E _TEXT	Length= 00000027 Public STDCALL
-  Then2  . . . . . . . . . . . .	L Near	 000003A6 _TEXT	
-  if6  . . . . . . . . . . . . .	L Near	 000003AC _TEXT	
-  then6  . . . . . . . . . . . .	L Near	 000003B7 _TEXT	
-  end6 . . . . . . . . . . . . .	L Near	 000003BE _TEXT	
-  endleft  . . . . . . . . . . .	L Near	 000003C3 _TEXT	
-Level1 . . . . . . . . . . . . .	P Near	 000003E3 _TEXT	Length= 000000E3 Public STDCALL
-  PrintAll . . . . . . . . . . .	L Near	 000003FC _TEXT	
-  four . . . . . . . . . . . . .	L Near	 0000040E _TEXT	
-  end4 . . . . . . . . . . . . .	L Near	 00000413 _TEXT	
-  inLoop2  . . . . . . . . . . .	L Near	 00000413 _TEXT	
-  decrease . . . . . . . . . . .	L Near	 00000448 _TEXT	
-  endD . . . . . . . . . . . . .	L Near	 00000449 _TEXT	
-  endinLoop  . . . . . . . . . .	L Near	 00000450 _TEXT	
-  random . . . . . . . . . . . .	L Near	 0000049A _TEXT	
-  Increase . . . . . . . . . . .	L Near	 000004B0 _TEXT	
-  EndPrint . . . . . . . . . . .	L Near	 000004C5 _TEXT	
-Level2 . . . . . . . . . . . . .	P Near	 000004C6 _TEXT	Length= 000000E3 Public STDCALL
-  PrintAll . . . . . . . . . . .	L Near	 000004DF _TEXT	
-  four . . . . . . . . . . . . .	L Near	 000004F1 _TEXT	
-  end4 . . . . . . . . . . . . .	L Near	 000004F6 _TEXT	
-  inLoop2  . . . . . . . . . . .	L Near	 000004F6 _TEXT	
-  decrease . . . . . . . . . . .	L Near	 0000052B _TEXT	
-  endD . . . . . . . . . . . . .	L Near	 0000052C _TEXT	
-  endinLoop  . . . . . . . . . .	L Near	 00000533 _TEXT	
-  random . . . . . . . . . . . .	L Near	 0000057D _TEXT	
-  Increase . . . . . . . . . . .	L Near	 00000593 _TEXT	
-  EndPrint . . . . . . . . . . .	L Near	 000005A8 _TEXT	
-Level3 . . . . . . . . . . . . .	P Near	 000005A9 _TEXT	Length= 000000E3 Public STDCALL
-  PrintAll . . . . . . . . . . .	L Near	 000005C2 _TEXT	
-  four . . . . . . . . . . . . .	L Near	 000005D4 _TEXT	
-  end4 . . . . . . . . . . . . .	L Near	 000005D9 _TEXT	
-  inLoop2  . . . . . . . . . . .	L Near	 000005D9 _TEXT	
-  decrease . . . . . . . . . . .	L Near	 0000060E _TEXT	
-  endD . . . . . . . . . . . . .	L Near	 0000060F _TEXT	
-  endinLoop  . . . . . . . . . .	L Near	 00000616 _TEXT	
-  random . . . . . . . . . . . .	L Near	 00000660 _TEXT	
-  Increase . . . . . . . . . . .	L Near	 00000676 _TEXT	
-  EndPrint . . . . . . . . . . .	L Near	 0000068B _TEXT	
-Level4 . . . . . . . . . . . . .	P Near	 0000068C _TEXT	Length= 000000E3 Public STDCALL
-  PrintAll . . . . . . . . . . .	L Near	 000006A5 _TEXT	
-  four . . . . . . . . . . . . .	L Near	 000006B7 _TEXT	
-  end4 . . . . . . . . . . . . .	L Near	 000006BC _TEXT	
-  inLoop2  . . . . . . . . . . .	L Near	 000006BC _TEXT	
-  decrease . . . . . . . . . . .	L Near	 000006F1 _TEXT	
-  endD . . . . . . . . . . . . .	L Near	 000006F2 _TEXT	
-  endinLoop  . . . . . . . . . .	L Near	 000006F9 _TEXT	
-  random . . . . . . . . . . . .	L Near	 00000743 _TEXT	
-  Increase . . . . . . . . . . .	L Near	 00000759 _TEXT	
-  EndPrint . . . . . . . . . . .	L Near	 0000076E _TEXT	
-Level5 . . . . . . . . . . . . .	P Near	 0000076F _TEXT	Length= 000000E3 Public STDCALL
-  PrintAll . . . . . . . . . . .	L Near	 00000788 _TEXT	
-  four . . . . . . . . . . . . .	L Near	 0000079A _TEXT	
-  end4 . . . . . . . . . . . . .	L Near	 0000079F _TEXT	
-  inLoop2  . . . . . . . . . . .	L Near	 0000079F _TEXT	
-  decrease . . . . . . . . . . .	L Near	 000007D4 _TEXT	
-  endD . . . . . . . . . . . . .	L Near	 000007D5 _TEXT	
-  endinLoop  . . . . . . . . . .	L Near	 000007DC _TEXT	
-  random . . . . . . . . . . . .	L Near	 00000826 _TEXT	
-  Increase . . . . . . . . . . .	L Near	 0000083C _TEXT	
-  EndPrint . . . . . . . . . . .	L Near	 00000851 _TEXT	
+LeftIf . . . . . . . . . . . . .	P Near	 0000046C _TEXT	Length= 00000027 Public STDCALL
+  Then2  . . . . . . . . . . . .	L Near	 00000474 _TEXT	
+  if6  . . . . . . . . . . . . .	L Near	 0000047A _TEXT	
+  then6  . . . . . . . . . . . .	L Near	 00000485 _TEXT	
+  end6 . . . . . . . . . . . . .	L Near	 0000048C _TEXT	
+  endleft  . . . . . . . . . . .	L Near	 00000491 _TEXT	
+Level1 . . . . . . . . . . . . .	P Near	 00000503 _TEXT	Length= 000000E3 Public STDCALL
+  PrintAll . . . . . . . . . . .	L Near	 0000051C _TEXT	
+  four . . . . . . . . . . . . .	L Near	 0000052E _TEXT	
+  end4 . . . . . . . . . . . . .	L Near	 00000533 _TEXT	
+  inLoop2  . . . . . . . . . . .	L Near	 00000533 _TEXT	
+  decrease . . . . . . . . . . .	L Near	 00000568 _TEXT	
+  endD . . . . . . . . . . . . .	L Near	 00000569 _TEXT	
+  endinLoop  . . . . . . . . . .	L Near	 00000570 _TEXT	
+  random . . . . . . . . . . . .	L Near	 000005BA _TEXT	
+  Increase . . . . . . . . . . .	L Near	 000005D0 _TEXT	
+  EndPrint . . . . . . . . . . .	L Near	 000005E5 _TEXT	
+Level2 . . . . . . . . . . . . .	P Near	 000005E6 _TEXT	Length= 000000E3 Public STDCALL
+  PrintAll . . . . . . . . . . .	L Near	 000005FF _TEXT	
+  four . . . . . . . . . . . . .	L Near	 00000611 _TEXT	
+  end4 . . . . . . . . . . . . .	L Near	 00000616 _TEXT	
+  inLoop2  . . . . . . . . . . .	L Near	 00000616 _TEXT	
+  decrease . . . . . . . . . . .	L Near	 0000064B _TEXT	
+  endD . . . . . . . . . . . . .	L Near	 0000064C _TEXT	
+  endinLoop  . . . . . . . . . .	L Near	 00000653 _TEXT	
+  random . . . . . . . . . . . .	L Near	 0000069D _TEXT	
+  Increase . . . . . . . . . . .	L Near	 000006B3 _TEXT	
+  EndPrint . . . . . . . . . . .	L Near	 000006C8 _TEXT	
+Level3 . . . . . . . . . . . . .	P Near	 000006C9 _TEXT	Length= 000000E3 Public STDCALL
+  PrintAll . . . . . . . . . . .	L Near	 000006E2 _TEXT	
+  four . . . . . . . . . . . . .	L Near	 000006F4 _TEXT	
+  end4 . . . . . . . . . . . . .	L Near	 000006F9 _TEXT	
+  inLoop2  . . . . . . . . . . .	L Near	 000006F9 _TEXT	
+  decrease . . . . . . . . . . .	L Near	 0000072E _TEXT	
+  endD . . . . . . . . . . . . .	L Near	 0000072F _TEXT	
+  endinLoop  . . . . . . . . . .	L Near	 00000736 _TEXT	
+  random . . . . . . . . . . . .	L Near	 00000780 _TEXT	
+  Increase . . . . . . . . . . .	L Near	 00000796 _TEXT	
+  EndPrint . . . . . . . . . . .	L Near	 000007AB _TEXT	
+Level4 . . . . . . . . . . . . .	P Near	 000007AC _TEXT	Length= 000000E3 Public STDCALL
+  PrintAll . . . . . . . . . . .	L Near	 000007C5 _TEXT	
+  four . . . . . . . . . . . . .	L Near	 000007D7 _TEXT	
+  end4 . . . . . . . . . . . . .	L Near	 000007DC _TEXT	
+  inLoop2  . . . . . . . . . . .	L Near	 000007DC _TEXT	
+  decrease . . . . . . . . . . .	L Near	 00000811 _TEXT	
+  endD . . . . . . . . . . . . .	L Near	 00000812 _TEXT	
+  endinLoop  . . . . . . . . . .	L Near	 00000819 _TEXT	
+  random . . . . . . . . . . . .	L Near	 00000863 _TEXT	
+  Increase . . . . . . . . . . .	L Near	 00000879 _TEXT	
+  EndPrint . . . . . . . . . . .	L Near	 0000088E _TEXT	
+Level5 . . . . . . . . . . . . .	P Near	 0000088F _TEXT	Length= 000000E3 Public STDCALL
+  PrintAll . . . . . . . . . . .	L Near	 000008A8 _TEXT	
+  four . . . . . . . . . . . . .	L Near	 000008BA _TEXT	
+  end4 . . . . . . . . . . . . .	L Near	 000008BF _TEXT	
+  inLoop2  . . . . . . . . . . .	L Near	 000008BF _TEXT	
+  decrease . . . . . . . . . . .	L Near	 000008F4 _TEXT	
+  endD . . . . . . . . . . . . .	L Near	 000008F5 _TEXT	
+  endinLoop  . . . . . . . . . .	L Near	 000008FC _TEXT	
+  random . . . . . . . . . . . .	L Near	 00000946 _TEXT	
+  Increase . . . . . . . . . . .	L Near	 0000095C _TEXT	
+  EndPrint . . . . . . . . . . .	L Near	 00000971 _TEXT	
 LocalFree  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MessageBoxA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MsgBoxAsk  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1677,16 +1984,29 @@ ReadInt  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ReadKeyFlush . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadKey  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadString . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-RefreshY . . . . . . . . . . . .	P Near	 00000BAD _TEXT	Length= 00000015 Public STDCALL
-  freshLoop  . . . . . . . . . .	L Near	 00000BB2 _TEXT	
-  endFresh . . . . . . . . . . .	L Near	 00000BC1 _TEXT	
-Reset  . . . . . . . . . . . . .	P Near	 0000030D _TEXT	Length= 00000038 Public STDCALL
-  L2 . . . . . . . . . . . . . .	L Near	 0000032C _TEXT	
-  _End . . . . . . . . . . . . .	L Near	 00000335 _TEXT	
-RightIf  . . . . . . . . . . . .	P Near	 00000380 _TEXT	Length= 0000001E Public STDCALL
-  Then1  . . . . . . . . . . . .	L Near	 00000388 _TEXT	
-  outX . . . . . . . . . . . . .	L Near	 00000397 _TEXT	
-  endright . . . . . . . . . . .	L Near	 0000039C _TEXT	
+RefreshY . . . . . . . . . . . .	P Near	 00000E18 _TEXT	Length= 0000002F Public STDCALL
+  freshLoop  . . . . . . . . . .	L Near	 00000E26 _TEXT	
+  endFresh . . . . . . . . . . .	L Near	 00000E35 _TEXT	
+  SecretLoop . . . . . . . . . .	L Near	 00000E37 _TEXT	
+  endSecret  . . . . . . . . . .	L Near	 00000E46 _TEXT	
+Reset  . . . . . . . . . . . . .	P Near	 0000038D _TEXT	Length= 00000038 Public STDCALL
+  L2 . . . . . . . . . . . . . .	L Near	 000003AC _TEXT	
+  _End . . . . . . . . . . . . .	L Near	 000003B5 _TEXT	
+RightIf  . . . . . . . . . . . .	P Near	 0000044E _TEXT	Length= 0000001E Public STDCALL
+  Then1  . . . . . . . . . . . .	L Near	 00000456 _TEXT	
+  outX . . . . . . . . . . . . .	L Near	 00000465 _TEXT	
+  endright . . . . . . . . . . .	L Near	 0000046A _TEXT	
+SecretLevel  . . . . . . . . . .	P Near	 00000972 _TEXT	Length= 000000CD Public STDCALL
+  PrintAll . . . . . . . . . . .	L Near	 00000981 _TEXT	
+  four . . . . . . . . . . . . .	L Near	 00000993 _TEXT	
+  end4 . . . . . . . . . . . . .	L Near	 00000998 _TEXT	
+  inLoop2  . . . . . . . . . . .	L Near	 00000998 _TEXT	
+  decrease . . . . . . . . . . .	L Near	 000009BA _TEXT	
+  endD . . . . . . . . . . . . .	L Near	 000009BB _TEXT	
+  endinLoop  . . . . . . . . . .	L Near	 000009C2 _TEXT	
+  random . . . . . . . . . . . .	L Near	 00000A13 _TEXT	
+  Increase . . . . . . . . . . .	L Near	 00000A29 _TEXT	
+  EndPrint . . . . . . . . . . .	L Near	 00000A3E _TEXT	
 SetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleCursorPosition . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1699,7 +2019,7 @@ SetLocalTime . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 SetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ShowFPUStack . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Sleep  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-StartPosition  . . . . . . . . .	P Near	 000003C5 _TEXT	Length= 0000001E Public STDCALL
+StartPosition  . . . . . . . . .	P Near	 000004E1 _TEXT	Length= 00000022 Public STDCALL
 StrLength  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_compare  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_copy . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1707,6 +2027,12 @@ Str_length . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 Str_trim . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_ucase  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SystemTimeToFileTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+UpIf . . . . . . . . . . . . . .	P Near	 00000493 _TEXT	Length= 00000027 Public STDCALL
+  Then2  . . . . . . . . . . . .	L Near	 0000049B _TEXT	
+  if6  . . . . . . . . . . . . .	L Near	 000004A1 _TEXT	
+  then6  . . . . . . . . . . . .	L Near	 000004AC _TEXT	
+  end6 . . . . . . . . . . . . .	L Near	 000004B3 _TEXT	
+  endUp  . . . . . . . . . . . .	L Near	 000004B8 _TEXT	
 WaitMsg  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteBinB  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteBin . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -1725,25 +2051,36 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-fall . . . . . . . . . . . . . .	P Near	 00000345 _TEXT	Length= 0000003B Public STDCALL
-  All  . . . . . . . . . . . . .	L Near	 00000349 _TEXT	
-  _Reset . . . . . . . . . . . .	L Near	 00000354 _TEXT	
-  EndReset . . . . . . . . . . .	L Near	 00000372 _TEXT	
-  Death  . . . . . . . . . . . .	L Near	 00000372 _TEXT	
-  endDeath . . . . . . . . . . .	L Near	 00000377 _TEXT	
-  EndAll . . . . . . . . . . . .	L Near	 0000037D _TEXT	
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000002E9 Public STDCALL
+fall . . . . . . . . . . . . . .	P Near	 000003C5 _TEXT	Length= 00000089 Public STDCALL
+  All  . . . . . . . . . . . . .	L Near	 000003C9 _TEXT	
+  _Reset . . . . . . . . . . . .	L Near	 000003CD _TEXT	
+  _Skip  . . . . . . . . . . . .	L Near	 000003DE _TEXT	
+  Skip . . . . . . . . . . . . .	L Near	 000003ED _TEXT	
+  EndReset . . . . . . . . . . .	L Near	 000003F4 _TEXT	
+  Death  . . . . . . . . . . . .	L Near	 000003F4 _TEXT	
+  endDeath . . . . . . . . . . .	L Near	 000003F9 _TEXT	
+  Move . . . . . . . . . . . . .	L Near	 0000040A _TEXT	
+  One  . . . . . . . . . . . . .	L Near	 00000419 _TEXT	
+  Two  . . . . . . . . . . . . .	L Near	 00000421 _TEXT	
+  No . . . . . . . . . . . . . .	L Near	 00000429 _TEXT	
+  MoveBack . . . . . . . . . . .	L Near	 0000043B _TEXT	
+  MoveFw . . . . . . . . . . . .	L Near	 00000443 _TEXT	
+  EndAll . . . . . . . . . . . .	L Near	 0000044B _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000369 Public STDCALL
+  Title1 . . . . . . . . . . . .	L Near	 00000034 _TEXT	
   StartGame  . . . . . . . . . .	L Near	 0000006A _TEXT	
-  Level1Start  . . . . . . . . .	L Near	 00000086 _TEXT	
-  Level2Start  . . . . . . . . .	L Near	 000000FB _TEXT	
-  Level3Start  . . . . . . . . .	L Near	 0000016E _TEXT	
-  Level4Start  . . . . . . . . .	L Near	 000001E1 _TEXT	
-  Level5Start  . . . . . . . . .	L Near	 00000254 _TEXT	
-  EndGame  . . . . . . . . . . .	L Near	 000002E2 _TEXT	
-newNum . . . . . . . . . . . . .	P Near	 00000852 _TEXT	Length= 00000037 Public STDCALL
-  L1 . . . . . . . . . . . . . .	L Near	 0000085D _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 0000087A _TEXT	
-  ENDL . . . . . . . . . . . . .	L Near	 00000887 _TEXT	
+  Level1Start  . . . . . . . . .	L Near	 0000009A _TEXT	
+  Level2Start  . . . . . . . . .	L Near	 0000010F _TEXT	
+  Level3Start  . . . . . . . . .	L Near	 00000182 _TEXT	
+  Level4Start  . . . . . . . . .	L Near	 000001F5 _TEXT	
+  Level5Start  . . . . . . . . .	L Near	 00000268 _TEXT	
+  SecretLevelStart . . . . . . .	L Near	 000002BB _TEXT	
+  EndSecretLevel . . . . . . . .	L Near	 00000313 _TEXT	
+  EndGame  . . . . . . . . . . .	L Near	 00000362 _TEXT	
+newNum . . . . . . . . . . . . .	P Near	 00000A3F _TEXT	Length= 00000037 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 00000A4A _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 00000A67 _TEXT	
+  ENDL . . . . . . . . . . . . .	L Near	 00000A74 _TEXT	
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -1835,16 +2172,16 @@ KEY_EVENT  . . . . . . . . . . .	Number	 00000001h
 KEY_MASKS  . . . . . . . . . . .	Number	 0000001Fh   
 LEFT_ALT_PRESSED . . . . . . . .	Number	 00000002h   
 LEFT_CTRL_PRESSED  . . . . . . .	Number	 00000008h   
-Lvl1C  . . . . . . . . . . . . .	Byte	 0000008E _DATA	
-Lvl1 . . . . . . . . . . . . . .	Byte	 00000066 _DATA	
-Lvl2C  . . . . . . . . . . . . .	Byte	 000000B9 _DATA	
-Lvl2 . . . . . . . . . . . . . .	Byte	 0000006E _DATA	
-Lvl3C  . . . . . . . . . . . . .	Byte	 000000E4 _DATA	
-Lvl3 . . . . . . . . . . . . . .	Byte	 00000076 _DATA	
-Lvl4C  . . . . . . . . . . . . .	Byte	 0000010F _DATA	
-Lvl4 . . . . . . . . . . . . . .	Byte	 0000007E _DATA	
-Lvl5C  . . . . . . . . . . . . .	Byte	 0000013A _DATA	
-Lvl5 . . . . . . . . . . . . . .	Byte	 00000086 _DATA	
+Lvl1C  . . . . . . . . . . . . .	Byte	 000000CA _DATA	
+Lvl1 . . . . . . . . . . . . . .	Byte	 00000095 _DATA	
+Lvl2C  . . . . . . . . . . . . .	Byte	 000000F5 _DATA	
+Lvl2 . . . . . . . . . . . . . .	Byte	 0000009D _DATA	
+Lvl3C  . . . . . . . . . . . . .	Byte	 00000120 _DATA	
+Lvl3 . . . . . . . . . . . . . .	Byte	 000000A5 _DATA	
+Lvl4C  . . . . . . . . . . . . .	Byte	 0000014B _DATA	
+Lvl4 . . . . . . . . . . . . . .	Byte	 000000AD _DATA	
+Lvl5C  . . . . . . . . . . . . .	Byte	 00000176 _DATA	
+Lvl5 . . . . . . . . . . . . . .	Byte	 000000B5 _DATA	
 MB_ABORTRETRYIGNORE  . . . . . .	Number	 00000002h   
 MB_APPLMODAL . . . . . . . . . .	Number	 00000000h   
 MB_CANCELTRYCONTINUE . . . . . .	Number	 00000006h   
@@ -1871,7 +2208,7 @@ MB_YESNOCANCEL . . . . . . . . .	Number	 00000003h
 MB_YESNO . . . . . . . . . . . .	Number	 00000004h   
 MENU_EVENT . . . . . . . . . . .	Number	 00000008h   
 MOUSE_EVENT  . . . . . . . . . .	Number	 00000002h   
-Matrix . . . . . . . . . . . . .	Byte	 00000167 _DATA	
+Matrix . . . . . . . . . . . . .	Byte	 000001DB _DATA	
 MessageBox . . . . . . . . . . .	Text   	 MessageBoxA
 NULL . . . . . . . . . . . . . .	Number	 00000000h   
 NUMLOCK_ON . . . . . . . . . . .	Number	 00000020h   
@@ -1888,7 +2225,10 @@ SHIFT_PRESSED  . . . . . . . . .	Number	 00000010h
 STD_ERROR_HANDLE . . . . . . . .	Number	 -0000000Ch   
 STD_INPUT_HANDLE . . . . . . . .	Number	 -0000000Ah   
 STD_OUTPUT_HANDLE  . . . . . . .	Number	 -0000000Bh   
+SecretCode . . . . . . . . . . .	Byte	 000001A3 _DATA	
+Secret . . . . . . . . . . . . .	Byte	 000000BD _DATA	
 SetConsoleTitle  . . . . . . . .	Text   	 SetConsoleTitleA
+S  . . . . . . . . . . . . . . .	Byte	 00000094 _DATA	
 TAB  . . . . . . . . . . . . . .	Number	 00000009h   
 TRUE . . . . . . . . . . . . . .	Number	 00000001h   
 TRUNCATE_EXISTING  . . . . . . .	Number	 00000005h   
@@ -1971,20 +2311,21 @@ VK_SUBTRACT  . . . . . . . . . .	Number	 0000006Dh
 VK_TAB . . . . . . . . . . . . .	Number	 00000009h   
 VK_UP  . . . . . . . . . . . . .	Number	 00000026h   
 WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h   
-WindowRect . . . . . . . . . . .	SMALL_RECT  00000191 _DATA	
+WindowRect . . . . . . . . . . .	SMALL_RECT  00000205 _DATA	
 WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
 WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
-beginX . . . . . . . . . . . . .	Byte	 00000039 _DATA	
+beginX . . . . . . . . . . . . .	Byte	 00000066 _DATA	
+beginY . . . . . . . . . . . . .	Byte	 00000067 _DATA	
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
-count  . . . . . . . . . . . . .	DWord	 0000005E _DATA	
+count  . . . . . . . . . . . . .	DWord	 0000008C _DATA	
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
-deathMessage . . . . . . . . . .	Byte	 0000003A _DATA	
+deathMessage . . . . . . . . . .	Byte	 00000068 _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
-items  . . . . . . . . . . . . .	DWord	 00000062 _DATA	
+items  . . . . . . . . . . . . .	DWord	 00000090 _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
 lightGray  . . . . . . . . . . .	Number	 00000007h   
@@ -1992,18 +2333,18 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
-outHandle  . . . . . . . . . . .	DWord	 0000018D _DATA	
-pressS . . . . . . . . . . . . .	Byte	 00000173 _DATA	
-rainArray  . . . . . . . . . . .	Byte	 0000001E _DATA	
+outHandle  . . . . . . . . . . .	DWord	 00000201 _DATA	
+pressS . . . . . . . . . . . . .	Byte	 000001E7 _DATA	
+rainArray  . . . . . . . . . . .	Byte	 0000003C _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
-replay . . . . . . . . . . . . .	Byte	 0000004B _DATA	
-response . . . . . . . . . . . .	Byte	 0000005D _DATA	
-titleStr . . . . . . . . . . . .	Byte	 0000002D _DATA	
+replay . . . . . . . . . . . . .	Byte	 00000079 _DATA	
+response . . . . . . . . . . . .	Byte	 0000008B _DATA	
+titleStr . . . . . . . . . . . .	Byte	 0000005A _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
-xArray . . . . . . . . . . . . .	Byte	 0000000F _DATA	
+xArray . . . . . . . . . . . . .	Byte	 0000001E _DATA	
 yArray . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
 
 	   0 Warnings
-	   0 Errors
+	   2 Errors
