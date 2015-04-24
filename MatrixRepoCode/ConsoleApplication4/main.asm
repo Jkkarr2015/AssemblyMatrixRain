@@ -26,11 +26,26 @@ count dword 0
 items dword ?		;count for number of items wanted to fall
 
 ;Level Names
-Lvl1 byte "Level 1:",0
-Lvl2 byte "Level 2:",0
-Lvl3 byte "Level 3:",0
-Lvl4 byte "Level 4:",0
-Lvl5 byte "Level 5:",0
+Lvl1 byte "Level 1",0
+Lvl2 byte "Level 2",0
+Lvl3 byte "Level 3",0
+Lvl4 byte "Level 4",0
+Lvl5 byte "Level 5",0
+
+
+;congratulations
+
+Lvl1C byte "Congratulations! You've Completed Level 1!", 0
+Lvl2C byte "Congratulations! You've Completed Level 2!", 0
+Lvl3C byte "Congratulations! You've Completed Level 3!", 0
+Lvl4C byte "Congratulations! You've Completed Level 4!", 0
+Lvl5C byte "Congratulations! You've Completed The Game!!", 0
+
+Matrix byte "Matrix Rain",0
+pressS byte "To start the game press S", 0
+
+
+
 
 ;Window Sizing Variables
 outHandle Handle 0            ;Allows us to change the window size
@@ -43,7 +58,7 @@ main PROC
 	   ;Window Manipulation area
 	   INVOKE GetStdHandle,STD_OUTPUT_HANDLE
 	   mov outHandle,eax
-	   INVOKE SetConsoleWindowInfo,outHandle,TRUE,ADDR WindowRect			;Set console window to coordinates of Size variable
+	   INVOKE SetConsoleWindowInfo,outHandle,TRUE,ADDR WindowRect  ;Set console window to coordinates of Size variable
 	   INVOKE SetConsoleTitle, ADDR titleStr	;calls the title
 	   mov eax,green + (black * 16);Green Text, black background
 	   call SetTextColor      ;Sets the color
@@ -51,10 +66,44 @@ main PROC
 	   ;End Window Manipulation area
 	   
 	   call clrscr ; Wipes screen for fresh start
-	  
+	   xor eax,eax
+
+	   mov dh, 12
+	   mov dl, 18
+	   call gotoxy
+	   mov edx,offset Matrix
+	   call WriteString
+
+
+	    mov dh, 22
+	   mov dl, 0
+	   call gotoxy
+	   mov edx,offset pressS
+	   call WriteString
+
+	    mov dh, 24
+	   mov dl, 45
+	   call gotoxy
+	   
+StartGame:
+	   call ReadKey
+	   mov response, al
+	   Or response, 00100000B ; bitmask for lowercase conversion
+	   cmp response, 's'
+	   je Level1Start
+	   jmp StartGame
+	   
+	   
+Level1Start:  
+	   mov response, 0
+	   call clrscr
+	   
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
 	   mov edx,offset Lvl1
 	   call WriteString
-	   mov eax,1000
+	   mov eax,1500
 	   call delay
 	   call clrscr
 
@@ -73,10 +122,27 @@ main PROC
 	   
 	   call Level1
 	   ; End of Level 1 code area
+	   call clrscr
 	   
+	   mov dh, 12
+	   mov dl, 2
+	   call gotoxy
+	   mov edx,offset Lvl1C
+	   call WriteString
+	   mov eax,2000
+	   call delay
+	  
+Level2Start:
+	   call clrscr
+
+
+	   call RefreshY
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
 	   mov edx,offset Lvl2
 	   call WriteString
-	   mov eax,1000
+	   mov eax,1500
 	   call delay
 	   call clrscr
 
@@ -95,11 +161,27 @@ main PROC
 	   
 	   call Level2
 
-	   ; End of Level 2 code area
+	   
+	   call clrscr
 
+	   mov dh, 12
+	   mov dl, 2
+	   call gotoxy
+	   mov edx,offset Lvl2C
+	   call WriteString
+	   mov eax,2000
+	   call delay
+Level3Start:
+
+	   call clrscr
+
+	   call RefreshY
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
 	   mov edx,offset Lvl3
 	   call WriteString
-	   mov eax,1000
+	   mov eax,1500
 	   call delay
 	   call clrscr
 
@@ -116,13 +198,28 @@ main PROC
 	  
 	   call Startposition
 	   
-;	   call Level3
+	   call Level3
 
 	   ; End of Level 3 code area
+	   call clrscr
 
+	   mov dh, 12
+	   mov dl, 2
+	   call gotoxy
+	   mov edx,offset Lvl3C
+	   call WriteString
+	   mov eax,2000
+	   call delay
+Level4Start:
+	   call clrscr
+
+	   call RefreshY
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
 	   mov edx,offset Lvl4
 	   call WriteString
-	   mov eax,1000
+	   mov eax,1500
 	   call delay
 	   call clrscr
 
@@ -139,10 +236,26 @@ main PROC
 	  
 	   call Startposition
 	   
-;	   call Level4
+	   call Level4
 
 	   ; End of Level 4 code area
+	   call clrscr
 
+	   mov dh, 12
+	   mov dl, 2
+	   call gotoxy
+	   mov edx,offset Lvl4C
+	   call WriteString
+	   mov eax,2000
+	   call delay
+	   
+Level5Start:
+	   call clrscr
+
+	   call RefreshY
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
 	   mov edx,offset Lvl5
 	   call WriteString
 	   mov eax,1000
@@ -162,12 +275,31 @@ main PROC
 	  
 	   call Startposition
 	   
-;	   call Level5
+	   call Level5
 
 	   ; End of Level 5 code area
+	   call clrscr
 
+	   mov dh, 12
+	   mov dl, 0
+	   call gotoxy
+	   mov edx,offset Lvl5C
+	   call WriteString
+	   mov dh, 11
+	   mov dl, 24
+	   call gotoxy
+	   mov al, 1
+	   call WriteChar
+	   mov eax,2000
+	   call delay
+	   
+	   mov dh , 24
+	   mov dl, 0
 
+	   call gotoxy
+	   jmp EndGame
 
+EndGame:
 	   exit
 main ENDP
 
@@ -227,12 +359,11 @@ Reset ENDP
 
 fall PROC uses eax ;proc for moving pieces downProc by Kilian	
 ; Parameter (Int indexOfElement)
-		xor edx,edx
 
-		push ebp
-		mov ebp,esp
+
+	
 		
-		mov edx,[ebp+8]
+		
 
 
 		push esi
@@ -244,17 +375,10 @@ All:
 		je  _Reset
 		jmp endDeath
 _Reset:
-		dec edx	
-		cmp edx,0
-		jne _it
-		mov items,edx
-		jmp EndAll
-
-_it:
-
 		mov al, beginX
 	     cmp xArray[esi], al 
 		je Death
+		dec items
 		call Reset
 		jmp EndAll
 EndReset:
@@ -267,7 +391,7 @@ endDeath:
 
 EndAll:	    
 		pop esi
-		pop ebp
+		
 		ret
 fall ENDP;End move proc
 
@@ -279,8 +403,10 @@ RightIf PROC USES edx;John Proc
           jmp endright           ; Jmp to end of proc
 
 Then1: 
+		cmp beginX , 45
+		je outX
 		inc beginX             ; Increments X coordinate value	
-	     
+outX:
 		
 
 		call ReadKeyFlush 
@@ -364,11 +490,10 @@ inLoop2:
 		mov al,rainArray[ebx]
 		call WriteChar          ;Rewrite rain
 
-		push items
+	
 
 		call fall
-		
-		add esp,4
+	
 
 		cmp items,0
 		jz  EndPrint
@@ -435,19 +560,320 @@ EndPrint:
 		ret
 Level1		ENDP
 
+;------------------------------------------------------------------------------------------------
 
 
 Level2 PROC 
 		
-		
+		mov items,40		
 		mov esi,0
 		mov count, 0; intilize as zero to reset the print proc
-		
-PrintAll: 
-		
-          
-		
 
+PrintAll: 
+				
+          mov ecx, count
+		mov ebx , 0
+		cmp esi,6
+		je four
+		jmp end4
+
+four:
+      mov esi , 6
+end4:
+
+inLoop2:
+		
+		mov dl,xArray[ebx]
+
+		mov dh,yArray[ebx]
+		call Gotoxy            ;Moves cursor to the position of rain
+		
+		
+		mov al,rainArray[ebx]
+		call WriteChar          ;Rewrite rain
+
+	
+
+		call fall
+	
+
+		cmp items,0
+		jz  EndPrint
+
+		cmp ecx, 0
+		jne decrease
+		jmp endD
+decrease:
+		dec ecx
+endD:
+		inc ebx
+
+		
+	    
+
+
+		cmp ebx, esi
+		ja endinLoop
+		jmp inLoop2
+
+endinLoop:
+		
+		mov eax , 103
+		call delay
+		call clrscr
+		
+		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+		mov dl , beginX
+		call Gotoxy
+		mov al,'X'              ;move X into al                              *********
+		call WriteChar          ;print it					**********
+		call Crlf
+		xor al,al               ;clear
+
+		push ecx
+		call ReadKey
+		call Rightif
+		call Leftif
+		pop ecx
+
+		cmp ecx, 0
+		je  random
+		mov ebx, 0
+		jmp inLoop2
+random:
+		
+		mov eax, 5
+		call RandomRange
+		mov ebx, eax
+
+		cmp ebx , 0
+		je Increase
+		jmp PrintAll
+
+
+Increase:
+		cmp esi, 6
+		je PrintAll
+		inc count
+		inc esi 
+		jmp PrintAll
+EndPrint:
+		
+		ret
+Level2		ENDP
+
+;-------------------------------------------------------------------------------------
+
+Level3 PROC 
+		
+		mov items,60		
+		mov esi,0
+		mov count, 0; intilize as zero to reset the print proc
+
+PrintAll: 
+				
+          mov ecx, count
+		mov ebx , 0
+		cmp esi,8
+		je four
+		jmp end4
+
+four:
+      mov esi , 8
+end4:
+
+inLoop2:
+		
+		mov dl,xArray[ebx]
+
+		mov dh,yArray[ebx]
+		call Gotoxy            ;Moves cursor to the position of rain
+		
+		
+		mov al,rainArray[ebx]
+		call WriteChar          ;Rewrite rain
+
+	
+
+		call fall
+	
+
+		cmp items,0
+		jz  EndPrint
+
+		cmp ecx, 0
+		jne decrease
+		jmp endD
+decrease:
+		dec ecx
+endD:
+		inc ebx
+
+		
+	    
+
+
+		cmp ebx, esi
+		ja endinLoop
+		jmp inLoop2
+
+endinLoop:
+		
+		mov eax , 101
+		call delay
+		call clrscr
+		
+		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+		mov dl , beginX
+		call Gotoxy
+		mov al,'X'              ;move X into al                              *********
+		call WriteChar          ;print it					**********
+		call Crlf
+		xor al,al               ;clear
+
+		push ecx
+		call ReadKey
+		call Rightif
+		call Leftif
+		pop ecx
+
+		cmp ecx, 0
+		je  random
+		mov ebx, 0
+		jmp inLoop2
+random:
+		
+		mov eax, 5
+		call RandomRange
+		mov ebx, eax
+
+		cmp ebx , 0
+		je Increase
+		jmp PrintAll
+
+
+Increase:
+		cmp esi, 8
+		je PrintAll
+		inc count
+		inc esi 
+		jmp PrintAll
+EndPrint:
+		
+		ret
+Level3		ENDP
+
+;----------------------------------------------------------------------------------------------
+
+Level4 PROC 
+		
+		mov items,80		
+		mov esi,0
+		mov count, 0; intilize as zero to reset the print proc
+
+PrintAll: 
+				
+          mov ecx, count
+		mov ebx , 0
+		cmp esi,11
+		je four
+		jmp end4
+
+four:
+      mov esi , 11
+end4:
+
+inLoop2:
+		
+		mov dl,xArray[ebx]
+
+		mov dh,yArray[ebx]
+		call Gotoxy            ;Moves cursor to the position of rain
+		
+		
+		mov al,rainArray[ebx]
+		call WriteChar          ;Rewrite rain
+
+	
+
+		call fall
+	
+
+		cmp items,0
+		jz  EndPrint
+
+		cmp ecx, 0
+		jne decrease
+		jmp endD
+decrease:
+		dec ecx
+endD:
+		inc ebx
+
+		
+	    
+
+
+		cmp ebx, esi
+		ja endinLoop
+		jmp inLoop2
+
+endinLoop:
+		
+		mov eax , 99
+		call delay
+		call clrscr
+		
+		mov dh,23d              ;move cursor to character's current position ********* Added to this version by Killian edited by John
+		mov dl , beginX
+		call Gotoxy
+		mov al,'X'              ;move X into al                              *********
+		call WriteChar          ;print it					**********
+		call Crlf
+		xor al,al               ;clear
+
+		push ecx
+		call ReadKey
+		call Rightif
+		call Leftif
+		pop ecx
+
+		cmp ecx, 0
+		je  random
+		mov ebx, 0
+		jmp inLoop2
+random:
+		
+		mov eax, 5
+		call RandomRange
+		mov ebx, eax
+
+		cmp ebx , 0
+		je Increase
+		jmp PrintAll
+
+
+Increase:
+		cmp esi, 11
+		je PrintAll
+		inc count
+		inc esi 
+		jmp PrintAll
+EndPrint:
+		
+		ret
+Level4		ENDP
+
+;----------------------------------------------------------------------------------------------
+
+Level5 PROC 
+		
+		mov items,100		
+		mov esi,0
+		mov count, 0; intilize as zero to reset the print proc
+
+PrintAll: 
+				
           mov ecx, count
 		mov ebx , 0
 		cmp esi,14
@@ -469,15 +895,14 @@ inLoop2:
 		mov al,rainArray[ebx]
 		call WriteChar          ;Rewrite rain
 
-		push 50
-		
+	
+
 		call fall
-		
-		add esp,4
+	
 
 		cmp items,0
 		jz  EndPrint
-		
+
 		cmp ecx, 0
 		jne decrease
 		jmp endD
@@ -486,6 +911,9 @@ decrease:
 endD:
 		inc ebx
 
+		
+	    
+
 
 		cmp ebx, esi
 		ja endinLoop
@@ -493,7 +921,7 @@ endD:
 
 endinLoop:
 		
-		mov eax , 105
+		mov eax , 97
 		call delay
 		call clrscr
 		
@@ -535,9 +963,7 @@ Increase:
 EndPrint:
 		
 		ret
-Level2		ENDP
-
-
+Level5		ENDP
 
 
 ;----------------------------------------------------------------------------------------------------------------------
@@ -576,7 +1002,7 @@ Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is
 	
 		call Clrscr
 		mov dh, 12
-		mov dl, 23
+		mov dl, 14
 		call Gotoxy             ; Sets cursor to print kill message
 		mov edx, offset deathmessage
 		call WriteString        ; Displays deathmessage
@@ -586,7 +1012,7 @@ Death Proc Uses edx eax ; Added by John Descrpition: Checks where the nummber is
 loop1:
 		cmp response , 0
 		jne answer	
-		mov dl,23
+		mov dl,14
 		mov dh,13
 		call Gotoxy
 		mov edx, offset replay
@@ -609,10 +1035,260 @@ answer:
 yes:
 	
 		mov response,0
+		   
+	   call clrscr ; Wipes screen for fresh start
+	   xor eax,eax
+
+	   mov dh, 12
+	   mov dl, 18
+	   call gotoxy
+	   mov edx,offset Matrix
+	   call WriteString
+
+
+	    mov dh, 22
+	   mov dl, 0
+	   call gotoxy
+	   mov edx,offset pressS
+	   call WriteString
+
+	    mov dh, 24
+	   mov dl, 45
+	   call gotoxy
+	   
+StartGame:
+	   call ReadKey
+	   mov response, al
+	   Or response, 00100000B ; bitmask for lowercase conversion
+	   cmp response, 's'
+	   je Level1Start
+	   jmp StartGame
+	   
+	   
+Level1Start: 
+	   mov response, 0 
+	   call clrscr
+	   
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
+	   mov edx,offset Lvl1
+	   call WriteString
+	   mov eax,1500
+	   call delay
+	   call clrscr
+
+	   ; Level 1 code area
+	   push 5		;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+	   add esp,4
+	  
+	   push 5
+	   push offset xArray
+	   push 45
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+	   add esp,12
+	  
+	   call Startposition
+	   
+	   call Level1
+	   ; End of Level 1 code area
+	   call clrscr
+	   
+	   mov dh, 12
+	   mov dl, 2
+	   call gotoxy
+	   mov edx,offset Lvl1C
+	   call WriteString
+	   mov eax,2000
+	   call delay
+	  
+Level2Start:
+	   call clrscr
+
+
+	   call RefreshY
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
+	   mov edx,offset Lvl2
+	   call WriteString
+	   mov eax,1500
+	   call delay
+	   call clrscr
+
+	   	   ; Level 2 code area
+	   push 7		;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+	   add esp,4
+	  
+	   push 7
+	   push offset xArray
+	   push 45
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+	   add esp,12
+	  
+	   call Startposition
+	   
+	   call Level2
+
+	   
+	   call clrscr
+
+	   mov dh, 12
+	   mov dl, 2
+	   call gotoxy
+	   mov edx,offset Lvl2C
+	   call WriteString
+	   mov eax,2000
+	   call delay
+Level3Start:
+
+	   call clrscr
+
+	   call RefreshY
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
+	   mov edx,offset Lvl3
+	   call WriteString
+	   mov eax,1500
+	   call delay
+	   call clrscr
+
+	   	   ; Level 3 code area
+	   push 9		;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+	   add esp,4
+	  
+	   push 9
+	   push offset xArray
+	   push 45
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+	   add esp,12
+	  
+	   call Startposition
+	   
+	   call Level3
+
+	   ; End of Level 3 code area
+	   call clrscr
+
+	   mov dh, 12
+	   mov dl, 2
+	   call gotoxy
+	   mov edx,offset Lvl3C
+	   call WriteString
+	   mov eax,2000
+	   call delay
+Level4Start:
+	   call clrscr
+
+	   call RefreshY
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
+	   mov edx,offset Lvl4
+	   call WriteString
+	   mov eax,1500
+	   call delay
+	   call clrscr
+
+	   	   ; Level 4 code area
+	   push 12		;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+	   add esp,4
+	  
+	   push 12
+	   push offset xArray
+	   push 45
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+	   add esp,12
+	  
+	   call Startposition
+	   
+	   call Level4
+
+	   ; End of Level 4 code area
+	   call clrscr
+
+	   mov dh, 12
+	   mov dl, 2
+	   call gotoxy
+	   mov edx,offset Lvl4C
+	   call WriteString
+	   mov eax,2000
+	   call delay
+	   
+Level5Start:
+	   call clrscr
+
+	   call RefreshY
+	   mov dh, 12
+	   mov dl, 20
+	   call gotoxy
+	   mov edx,offset Lvl5
+	   call WriteString
+	   mov eax,1000
+	   call delay
+	   call clrscr
+
+	   	   ; Level 5 code area
+	   push 15		;Push number of falling items
+	   call newNum      ;fills 5 items in rainArray with either a char 1 or char 0 for printing purposes. 
+	   add esp,4
+	  
+	   push 15
+	   push offset xArray
+	   push 45
+	   call FillArray ; Populates the xArray with 5 X coordinates from 0 to 44
+	   add esp,12
+	  
+	   call Startposition
+	   
+	   call Level5
+
+	   ; End of Level 5 code area
+	   call clrscr
+
+	   mov dh, 12
+	   mov dl, 0
+	   call gotoxy
+	   mov edx,offset Lvl5C
+	   call WriteString
+	   mov dh, 11
+	   mov dl, 24
+	   call gotoxy
+	   mov al, 1
+	   call WriteChar
+	   mov eax,2000
+	   call delay
+	   call clrscr
+	   jmp EndGame
+
+EndGame:
+		exit
 		
 EndCheck:	
 		ret
 Death ENDP
+
+;-------------------------------------------------------------------------------
+RefreshY proc
+	
+	mov esi, 0
+freshLoop:
+	cmp esi, 14
+	ja endFresh
+	
+	mov yArray[esi] , 0
+	inc esi
+	jmp freshLoop
+endFresh:
+	ret
+RefreshY endp
+
+
 
 END main
 
